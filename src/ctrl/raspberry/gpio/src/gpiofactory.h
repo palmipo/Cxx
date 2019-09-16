@@ -17,9 +17,9 @@ class GpioFactory : public PollFactory
 		virtual Gpio * output(int32_t);
 	
 	protected:
-		virtual int32_t actionIn(PollDevice*);
-		virtual int32_t actionOut(PollDevice*);
-		virtual int32_t actionError(PollDevice*);
+		virtual int32_t actionIn(PollDevice*) = 0;
+		virtual int32_t actionOut(PollDevice*) = 0;
+		virtual int32_t actionError(PollDevice*) = 0;
 
 	protected:
 		int32_t _handler;
