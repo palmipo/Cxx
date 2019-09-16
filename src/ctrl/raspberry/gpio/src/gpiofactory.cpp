@@ -147,6 +147,7 @@ Gpio * GpioFactory::output(int32_t output_offset)
 	return out;
 }
 
+/*
 int32_t GpioFactory::actionIn(PollDevice * device)
 {
 	//Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
@@ -167,3 +168,4 @@ int32_t GpioFactory::actionError(PollDevice * device)
 
 	return device->actionError();
 }
+*/
