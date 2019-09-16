@@ -23,7 +23,8 @@ class GpioFactory : public PollFactory
 
 	protected:
 		int32_t _handler;
-		std::map < int32_t, Gpio * > _map;
+		std::map < int32_t, int32_t > _map_event;
+		std::map < int32_t, Gpio * > _map_io;
 };
 
 #endif /* GPIO_FACTORY_H */
