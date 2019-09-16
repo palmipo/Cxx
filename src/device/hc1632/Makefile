@@ -1,0 +1,53 @@
+OBJECTS = \
+	bin/hc1632.o
+
+LOG_REP = ../../ctrl/raspberry/log
+POLL_REP = ../../ctrl/raspberry/factory
+GPIO_REP = ../../ctrl/raspberry/gpio
+AR = ar
+CC = g++
+MAKE = make
+INCLUDE = -I$(LOG_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc -Ibadminton
+LIBS = -L. -lgpio -lpoll -llog -lhc1632
+
+CFLAGS = -g -std=c++11 $(INCLUDE)
+LDFLAGS = $(LIBS)
+
+all:
+
+clean:
+	$(MAKE) -C $(GPIO_REP) $@
+	$(MAKE) -C $(POLL_REP) $@
+	$(MAKE) -C $(LOG_REP) $@
+	rm bin/*.o *.so bad
+
+bad: bin/badminton.o bin/badmintonfactory.o
+	$(MAKE) libgpio.so
+	$(MAKE) libpoll.so
+	$(MAKE) liblog.so
+	$(MAKE) libhc1632.so
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+bin/badminton.o: badminton/badminton.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+bin/badmintonfactory.o: badminton/badmintonfactory.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+libgpio.so:
+	$(MAKE) -C $(GPIO_REP) $@
+	ln -s $(GPIO_REP)/$@
+
+libpoll.so:
+	$(MAKE) -C $(POLL_REP) $@
+	ln -s $(POLL_REP)/$@
+
+liblog.so:
+	$(MAKE) -C $(LOG_REP) $@
+	ln -s $(LOG_REP)/$@
+
+libhc1632.so: $(OBJECTS)
+	$(CC) -shared $^ -o $@
+
+bin/%.o: src/%.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
