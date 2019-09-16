@@ -36,8 +36,8 @@ GpioFactory::~GpioFactory()
 {
 	//Log::getLogger()->debug(__FILE__, __LINE__, "~GpioFactory");
 
-	std::map < int32_t, Gpio * >::iterator it = _map.begin();
-	while (it != _map.end())
+	std::map < int32_t, Gpio * >::iterator it = _map_io.begin();
+	while (it != _map_io.end())
 	{
 		if (it->second)
 		{
@@ -62,10 +62,10 @@ Gpio * GpioFactory::event(int32_t input_offset, int32_t event_flags)
 	//Log::getLogger()->debug(__FILE__, __LINE__, "event");
 
 	Gpio * in = 0;
-	std::map < int32_t, Gpio * >::iterator it = _map.find(input_offset);
-	if (it != _map.end())
+	std::map < int32_t, int32_t >::iterator it = _map_event.find(input_offset);
+	if (it != _map_event.end())
 	{
-		in = it->second;
+		in = (Gpio *)get(it->second);
 	}
 	else
 	{
@@ -81,7 +81,7 @@ Gpio * GpioFactory::event(int32_t input_offset, int32_t event_flags)
 
 		in = new Gpio(input_offset, input_event_request.fd);
 		add(in);
-		_map[input_offset] = in;
+		_map_event[input_offset] = input_event_request.fd;
 	}
 
 	return in;
@@ -92,8 +92,8 @@ Gpio * GpioFactory::input(int32_t input_offset)
 	//Log::getLogger()->debug(__FILE__, __LINE__, "input");
 
 	Gpio * in = 0;
-	std::map < int32_t, Gpio * >::iterator it = _map.find(input_offset);
-	if (it != _map.end())
+	std::map < int32_t, Gpio * >::iterator it = _map_io.find(input_offset);
+	if (it != _map_io.end())
 	{
 		in = it->second;
 	}
@@ -111,7 +111,7 @@ Gpio * GpioFactory::input(int32_t input_offset)
 		}
 
 		in = new Gpio(input_offset, input_event_request.fd);
-		_map[input_offset] = in;
+		_map_io[input_offset] = in;
 	}
 
 	return in;
@@ -122,8 +122,8 @@ Gpio * GpioFactory::output(int32_t output_offset)
 	//Log::getLogger()->debug(__FILE__, __LINE__, "output");
 
 	Gpio * out = 0;
-	std::map < int32_t, Gpio * >::iterator it = _map.find(output_offset);
-	if (it != _map.end())
+	std::map < int32_t, Gpio * >::iterator it = _map_io.find(output_offset);
+	if (it != _map_io.end())
 	{
 		out = it->second;
 	}
@@ -141,7 +141,7 @@ Gpio * GpioFactory::output(int32_t output_offset)
 		}
 
 		out = new Gpio(output_offset, output_request.fd);
-		_map[output_offset] = out;
+		_map_io[output_offset] = out;
 	}
 
 	return out;
