@@ -25,21 +25,21 @@ GpioFactory::GpioFactory(const std::string & device_p)
 		throw GpioException(__FILE__, __LINE__, ss.str());
 	}
 
-	struct gpiochip_info cinfo;
-	ioctl(_handler, GPIO_GET_CHIPINFO_IOCTL, &cinfo);
-	{
-		std::stringstream ss;
-		ss << "GPIO chip: " << cinfo.name << ", " << cinfo.label << ", " << cinfo.lines << " GPIO lines";
-		Log::getLogger()->info(__FILE__, __LINE__, ss.str());
-	}
+	// struct gpiochip_info cinfo;
+	// ioctl(_handler, GPIO_GET_CHIPINFO_IOCTL, &cinfo);
+	// {
+		// std::stringstream ss;
+		// ss << "GPIO chip: " << cinfo.name << ", " << cinfo.label << ", " << cinfo.lines << " GPIO lines";
+		// Log::getLogger()->info(__FILE__, __LINE__, ss.str());
+	// }
 
-	struct gpioline_info linfo;
-	ioctl(_handler, GPIO_GET_LINEINFO_IOCTL, &linfo);
-	{
-		std::stringstream ss;
-		ss << "line : " << linfo.line_offset << " : " << linfo.name;
-		Log::getLogger()->info(__FILE__, __LINE__, ss.str());
-	}
+	// struct gpioline_info linfo;
+	// ioctl(_handler, GPIO_GET_LINEINFO_IOCTL, &linfo);
+	// {
+		// std::stringstream ss;
+		// ss << "line : " << linfo.line_offset << " : " << linfo.name;
+		// Log::getLogger()->info(__FILE__, __LINE__, ss.str());
+	// }
 }
 
 GpioFactory::~GpioFactory()

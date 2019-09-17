@@ -10,7 +10,7 @@ class Test : public GpioFactory
 {
 	public:
 		Test()
-		: GpioFactory("/dev/gpiochip0");
+		: GpioFactory("/dev/gpiochip0")
 		{}
 
 	protected:
@@ -18,10 +18,10 @@ class Test : public GpioFactory
 		{
 			int32_t etat = device->actionIn();
 			if (etat & GPIOEVENT_EVENT_RISING_EDGE)
-				fprintf(stdout, " RISING");
+				Log::getLogger()->info(__FILE__, __LINE__, "RISING");
 
 			if (etat & GPIOEVENT_EVENT_FALLING_EDGE)
-				fprintf(stdout, " FALLING");
+				Log::getLogger()->info(__FILE__, __LINE__, "FALLING");
 		}
 
 		virtual int32_t actionOut(PollDevice*)
@@ -35,29 +35,13 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		Test factory("/dev/gpiochip0");
+		Test factory;
 
-		uint8_t valeur = 1;
-		factory.output(5)->write(&valeur, 1);
-		factory.output(6)->write(&valeur, 1);
-		factory.output(7)->write(&valeur, 1);
-		factory.output(8)->write(&valeur, 1);
-		factory.output(9)->write(&valeur, 1);
-		factory.output(11)->write(&valeur, 1);
-		factory.output(12)->write(&valeur, 1);
-		factory.output(13)->write(&valeur, 1);
-		factory.output(17)->write(&valeur, 1);
+		uint8_t valeur = 0;
 		factory.output(18)->write(&valeur, 1);
-		factory.output(19)->write(&valeur, 1);
-		factory.output(22)->write(&valeur, 1);
-		factory.output(25)->write(&valeur, 1);
-		factory.output(27)->write(&valeur, 1);
 		
 
-		factory.event(10, GPIOEVENT_REQUEST_BOTH_EDGES);
-	//	factory.event(16, GPIOEVENT_REQUEST_BOTH_EDGES);
-	//	factory.event(23, GPIOEVENT_REQUEST_FALLING_EDGE);
-	//	factory.event(24, GPIOEVENT_REQUEST_FALLING_EDGE);
+		factory.event(4, GPIOEVENT_REQUEST_BOTH_EDGES, GPIOHANDLE_REQUEST_ACTIVE_LOW);
 
 		while(1)
 		{

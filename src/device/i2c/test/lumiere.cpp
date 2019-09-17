@@ -18,17 +18,37 @@ Lumiere::Lumiere(const std::string & gpio_dev, int32_t led, int32_t irq, I2C * i
 	uint8_t valeur = 1;
 	gpio->write(&valeur, 1);
 	
-	event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES, GPIOHANDLE_REQUEST_OPEN_DRAIN);
+	event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES, GPIOHANDLE_REQUEST_INPUT
+	//| GPIOHANDLE_REQUEST_ACTIVE_LOW
+	//| GPIOHANDLE_REQUEST_OPEN_DRAIN
+	//| GPIOHANDLE_REQUEST_OPEN_SOURCE
+);
 
 	capteur_lumiere = new TCS34725(i2c_bus);
 
 	uint8_t AIEN = 1;
-	double ATIME = 100.;
+	double ATIME = 2.4;
 	double WTIME = 2.4;
 	uint8_t WLONG = 0;
 	uint8_t AGAIN = 1;
 	capteur_lumiere->on(AIEN, ATIME, WTIME, WLONG, AGAIN);
-	capteur_lumiere->setClearInterruptThreshold(0, 1000, 0xFFFF-1000);
+	capteur_lumiere->setClearInterruptThreshold(0, 100, -100);
+	
+	while(1)
+	{
+		uint8_t AINT;
+		capteur_lumiere->status(&AINT);
+		if (AINT)
+		{
+			uint16_t c, r, g, b;
+			capteur_lumiere->readChannels(&c, &r, &g, &b);
+			// capteur_lumiere->clearChannelInterruptClear();
+
+			std::stringstream ss_color;
+			ss_color << "Clear : " << c << ", Red : " << r << ", Green : " << g << ", Blue : " << b;
+			Log::getLogger()->debug(__FILE__, __LINE__, ss_color.str());
+		}	
+	}
 }
 
 Lumiere::~Lumiere()
@@ -43,7 +63,6 @@ Lumiere::~Lumiere()
 	gpio->write(&valeur, 1);
 }
 
-
 int32_t Lumiere::actionIn(PollDevice * device)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
@@ -52,7 +71,8 @@ int32_t Lumiere::actionIn(PollDevice * device)
 	{
 		uint16_t c, r, g, b;
 		capteur_lumiere->readChannels(&c, &r, &g, &b);
-		capteur_lumiere->clearChannelInterruptClear();
+		// capteur_lumiere->clearChannelInterruptClear();
+		// capteur_lumiere->setClearInterruptThreshold(0, 100, -100);
 
 		std::stringstream ss_color;
 		ss_color << "Clear : " << c << ", Red : " << r << ", Green : " << g << ", Blue : " << b;
