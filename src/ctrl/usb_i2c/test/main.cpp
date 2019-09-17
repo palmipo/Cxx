@@ -1,6 +1,7 @@
 #include "usb_i2c.h"
 #include "rs232.h"
 #include <iostream>
+#include <cstdint>
 
 int main(int argc, char **argv)
 {
@@ -15,7 +16,7 @@ int main(int argc, char **argv)
 		RS232 uart(argv[1]);
 		UsbI2C i2c(&uart);
 
-		u8 version = i2c.getVersion();
+		uint8_t version = i2c.getVersion();
 		std::cout << "version usbI2C : " << (int)version << std::endl;
 	}
 	catch(...)

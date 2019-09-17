@@ -114,7 +114,7 @@ void TCS34725::clearChannelInterruptClear()
 	Log::getLogger()->debug(__FILE__, __LINE__, "clearChannelInterruptClear");
 
 	uint8_t buffer;
-	buffer = cmd_register(0x0, 0x3, 0x6);
+	buffer = cmd_register(0x1, 0x3, 0x6);
 	_twi->set (_address, &buffer, 1);
 }
 
