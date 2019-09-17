@@ -24,14 +24,15 @@ I2C_PWD = ../../ctrl/raspberry/i2c
 USBI2C_PWD = ../../ctrl/usb_i2c
 RS232_PWD = ../../ctrl/raspberry/rs232
 LOG_PWD = ../../ctrl/raspberry/log
+GPIO_PWD = ../../ctrl/raspberry/gpio
 CC = g++
 MAKE = make
-INCLUDE = -I../../ctrl/interface -I../../ctrl/raspberry/factory/src -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src
-LIBS = -L. -llog -li2cdevice
+INCLUDE = -I../../ctrl/interface -I../../ctrl/raspberry/factory/src -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
+LIBS = -L. -llog -li2cdevice -lgpio -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
-#LDFLAGS = $(LIBS) -lraspii2c
-LDFLAGS = $(LIBS) -lusbi2c -lrs232 -lpoll
+LDFLAGS = $(LIBS) -lraspii2c
+#LDFLAGS = $(LIBS) -lusbi2c -lrs232
 
 all: libi2cdevice.so
 
@@ -46,18 +47,21 @@ clean:
 	rm -f bin/*.o *.so test_mcp23017 raspi_nunchuk test_nunchuk test_ds1621 test_ds1307 raspi_mcp23017 test_pca9685  test_saa1064 lumiere
 
 #
-#
-lumiere: bin/lumiere.o
+##
+lumiere: bin/lumiere.o bin/test_lumiere.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -o $@ $< $(LDFLAGS)
+	$(MAKE) libgpio.so
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 bin/lumiere.o: test/lumiere.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
+
+bin/test_lumiere.o: test/test_lumiere.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 
 #
 #
@@ -162,6 +166,12 @@ bin/test_ds1621.o: test/test_ds1621.cpp
 libraspii2c.so:
 	$(MAKE) -C $(I2C_PWD) $@
 	ln -s $(I2C_PWD)/$@
+
+#
+#
+libgpio.so:
+	$(MAKE) -C $(GPIO_PWD) $@
+	ln -s $(GPIO_PWD)/$@
 
 #
 #

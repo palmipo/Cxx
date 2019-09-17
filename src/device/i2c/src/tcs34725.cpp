@@ -10,8 +10,8 @@
 #define TCS34725_AIHTL (0x06) /**< Clear channel upper interrupt threshold (lower byte) */
 #define TCS34725_AIHTH (0x07) /**< Clear channel upper interrupt threshold (higher byte) */
 #define TCS34725_PERS (0x0C) /**< Persistence register - basic SW filtering mechanism for interrupts */
-#define TCS34725_PERS_NONE (0b0000) /**< Every RGBC cycle generates an interrupt */
-#define TCS34725_PERS_1_CYCLE (0b0001) /**< 1 clean channel value outside threshold range generates an interrupt */
+//~ #define TCS34725_PERS_NONE (0b0000) /**< Every RGBC cycle generates an interrupt */
+//~ #define TCS34725_PERS_1_CYCLE (0b0001) /**< 1 clean channel value outside threshold range generates an interrupt */
 #define TCS34725_CONFIG (0x0D) /**< Configuration **/
 #define TCS34725_CONTROL (0x0F) /**< Set the gain level for the sensor */
 #define TCS34725_ID (0x12) /**< 0x44 = TCS34721/TCS34725, 0x4D = TCS34723/TCS34727 */
@@ -29,16 +29,22 @@ TCS34725::TCS34725(I2C * i2c_ctrl)
 : DeviceI2C(0x29, i2c_ctrl)
 {}
 
-void TCS34725::on(uint8_t AIEN, uint8_t ATIME, uint8_t WTIME, uint8_t WLONG, uint8_t AGAIN)
+void TCS34725::on(uint8_t AIEN, double ATIME, double WTIME, uint8_t WLONG, uint8_t AGAIN)
 {
-	uint8_t buffer[4];
 	Log::getLogger()->debug(__FILE__, __LINE__, "on");
 
-	buffer[0] = cmd_register(1, 1, TCS34725_ENABLE);
-	buffer[1] = enable_register(AIEN, WTIME?1:0, 1, 1);
-	buffer[2] = RGBC_timing_register(ATIME);
-	buffer[3] = wait_time_register(WTIME);
-	_twi->set (_address, buffer, 4);
+	uint8_t buffer[2];
+	buffer[0] = cmd_register(1, 0, TCS34725_ENABLE);
+	buffer[1] = enable_register(AIEN, (WTIME>0.)?1:0, 1, 1);
+	_twi->set (_address, buffer, 2);
+
+	buffer[0] = cmd_register(1, 0, TCS34725_ATIME);
+	buffer[1] = RGBC_timing_register(ATIME);
+	_twi->set (_address, buffer, 2);
+
+	buffer[0] = cmd_register(1, 0, TCS34725_WTIME);
+	buffer[1] = wait_time_register(WTIME);
+	_twi->set (_address, buffer, 2);
 	Log::getLogger()->debug(__FILE__, __LINE__, "enable_register");
 
 /*
@@ -62,6 +68,8 @@ functions such as gain settings and/or diode selection.
 
 void TCS34725::off()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "off");
+
 	uint8_t buffer[2];
 
 	buffer[0] = cmd_register(1, 0, TCS34725_ENABLE);
@@ -85,6 +93,8 @@ interrupt pin
 */
 void TCS34725::setClearInterruptThreshold(uint8_t APERS, uint16_t low_threahold, uint16_t high_threahold)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "setClearInterruptThreshold");
+
 	uint8_t buffer[5];
 
 	buffer[0] = cmd_register(1, 1, TCS34725_AILTL);
@@ -99,12 +109,23 @@ void TCS34725::setClearInterruptThreshold(uint8_t APERS, uint16_t low_threahold,
 	_twi->set (_address, buffer, 2);
 }
 
+void TCS34725::clearChannelInterruptClear()
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "clearChannelInterruptClear");
+
+	uint8_t buffer;
+	buffer = cmd_register(0x0, 0x3, 0x6);
+	_twi->set (_address, &buffer, 1);
+}
+
 /*
 The ID Register provides the value for the part number. The ID 
 register is a read-only register.
 */
 uint8_t TCS34725::id()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "id");
+
 	uint32_t cmd_len = 1;
 	uint8_t cmd[cmd_len];
 	cmd[0] = cmd_register(1, 0, TCS34725_ID);
@@ -123,6 +144,8 @@ This register is read only.
 */
 uint8_t TCS34725::status(uint8_t * AINT)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "status");
+
 	uint32_t cmd_len = 1;
 	uint8_t cmd[cmd_len];
 	cmd[0] = cmd_register(1, 0, TCS34725_STATUS);
@@ -133,7 +156,7 @@ uint8_t TCS34725::status(uint8_t * AINT)
 	_twi->transfert (_address, cmd, cmd_len, buffer, buffer_len);
 	
 	if (AINT) *AINT = (buffer[0] & 0x10)?1:0;
-	return (buffer[0] & 0x01);
+	return (buffer[0] ? 0x01 : 0);
 }
 
 /*
@@ -147,8 +170,10 @@ The upper register will read the correct value even if additional
 ADC integration cycles end between the reading of the lower 
 and upper registers.
 */
-void TCS34725::read(uint16_t * c, uint16_t * r, uint16_t * g, uint16_t * b)
+void TCS34725::readChannels(uint16_t * c, uint16_t * r, uint16_t * g, uint16_t * b)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "readChannels");
+
 	uint8_t cmd = cmd_register(1, 1, TCS34725_CDATAL);
 
 	uint32_t buffer_len = 8;
@@ -162,7 +187,7 @@ void TCS34725::read(uint16_t * c, uint16_t * r, uint16_t * g, uint16_t * b)
 	*b = buffer[6] | (buffer[7] << 8);
 }
 
-uint16_t TCS34725::clear()
+uint16_t TCS34725::clearChannel()
 {
 	uint32_t cmd_len = 1;
 	uint8_t cmd[cmd_len];
@@ -176,7 +201,7 @@ uint16_t TCS34725::clear()
 	return buffer[0] | (buffer[1] << 8);
 }
 
-uint16_t TCS34725::red()
+uint16_t TCS34725::redChannel()
 {
 	uint32_t cmd_len = 1;
 	uint8_t cmd[cmd_len];
@@ -190,7 +215,7 @@ uint16_t TCS34725::red()
 	return buffer[0] | (buffer[1] << 8);
 }
 
-uint16_t TCS34725::green()
+uint16_t TCS34725::greenChannel()
 {
 	uint32_t cmd_len = 1;
 	uint8_t cmd[cmd_len];
@@ -204,7 +229,7 @@ uint16_t TCS34725::green()
 	return buffer[0] | (buffer[1] << 8);
 }
 
-uint16_t TCS34725::blue()
+uint16_t TCS34725::blueChannel()
 {
 	uint32_t cmd_len = 1;
 	uint8_t cmd[cmd_len];
@@ -240,7 +265,7 @@ uint8_t TCS34725::cmd_register(uint8_t cmd_reg, uint8_t type, uint8_t addr)
  */
 uint8_t TCS34725::enable_register(uint8_t AIEN, uint8_t WEN, uint8_t AEN, uint8_t PON)
 {
-	return ((AIEN & 0x01) << 4) | ((WEN & 0x01) << 3) | ((AEN & 0x01) << 1) | (PON & 0x01);
+	return ((AIEN ? 0x01 : 0) << 4) | ((WEN ? 0x01 : 0) << 3) | ((AEN ? 0x01 : 0) << 1) | (PON ? 0x01 : 0);
 }
 
 /*
@@ -249,9 +274,9 @@ of the RGBC clear and IR channel ADCs in 2.4-ms increments.
 Max RGBC Count = (256 - ATIME) * 1024 up to a maximum of 
 65535
 */
-uint8_t TCS34725::RGBC_timing_register(uint8_t ATIME)
+uint8_t TCS34725::RGBC_timing_register(double ATIME)
 {
-	return (256 - ATIME);
+	return (256 - (int8_t)(ATIME/2.4));
 }
 
 /*
@@ -259,9 +284,9 @@ Wait time is set 2.4 ms increments unless the WLONG bit is
 asserted, in which case the wait times are 12*longer. WTIME is 
 programmed as a 2's complement number
 */
-uint8_t TCS34725::wait_time_register(uint8_t WTIME)
+uint8_t TCS34725::wait_time_register(double WTIME)
 {
-	return (256 - WTIME);
+	return (256 - (int8_t)(WTIME/2.4));
 }
 
 /*
@@ -282,7 +307,7 @@ The configuration register sets the wait long time
 */
 uint8_t TCS34725::configuration_register(uint8_t WLONG)
 {
-	return ((WLONG?1:0) << 1);
+	return ((WLONG ? 0x1 : 0) << 1);
 }
 
 /*

@@ -10,16 +10,17 @@ class TCS34725 : public DeviceI2C
 {
 	public:
 		TCS34725(I2C * i2c_ctrl);
-		void on(uint8_t AIEN, uint8_t ATIME, uint8_t WTIME, uint8_t WLONG, uint8_t AGAIN);
-		void off();
-		void setClearInterruptThreshold(uint8_t APERS, uint16_t low_threahold, uint16_t high_threahold);
-		uint8_t id();
-		uint8_t status(uint8_t * AINT=0);
-		void read(uint16_t * c, uint16_t * r, uint16_t * g, uint16_t * b);
-		uint16_t clear();
-		uint16_t red();
-		uint16_t green();
-		uint16_t blue();
+		virtual void on(uint8_t AIEN, double ATIME, double WTIME, uint8_t WLONG, uint8_t AGAIN);
+		virtual void off();
+		virtual void setClearInterruptThreshold(uint8_t APERS, uint16_t low_threahold, uint16_t high_threahold);
+		virtual void clearChannelInterruptClear();
+		virtual uint8_t id();
+		virtual uint8_t status(uint8_t * AINT=0);
+		virtual void readChannels(uint16_t * c, uint16_t * r, uint16_t * g, uint16_t * b);
+		virtual uint16_t clearChannel();
+		virtual uint16_t redChannel();
+		virtual uint16_t greenChannel();
+		virtual uint16_t blueChannel();
 
 	protected:
 		/*
@@ -47,14 +48,14 @@ class TCS34725 : public DeviceI2C
 		Max RGBC Count = (256 − ATIME) × 1024 up to a maximum of 
 		65535
 		*/
-		uint8_t RGBC_timing_register(uint8_t ATIME);
+		uint8_t RGBC_timing_register(double ATIME);
 
 		/*
 		Wait time is set 2.4 ms increments unless the WLONG bit is 
 		asserted, in which case the wait times are 12× longer. WTIME is 
 		programmed as a 2’s complement number
 		*/
-		uint8_t wait_time_register(uint8_t WTIME);
+		uint8_t wait_time_register(double WTIME);
 
 		/*
 		The RGBC interrupt threshold registers provides the values to 

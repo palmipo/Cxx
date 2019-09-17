@@ -3,10 +3,11 @@
 
 #include "polldevice.h"
 #include "gpioevent.h"
-#include <termios.h>
-#include <string>
+// #include <termios.h>
+// #include <string>
 #include <queue>
 
+// class GpioEvent;
 class Gpio : public PollDevice
 {
 	public :
