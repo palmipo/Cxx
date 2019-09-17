@@ -15,13 +15,17 @@ clean:
 	rm -f bin/*.o libusbi2c.so librs232.so usbi2c
 
 libusbi2c.so: $(OBJECTS)
+	mkdir bin
+	$(MAKE) librs232.so
 	$(CC) -shared $^ -o $@
 
 librs232.so:
 	$(MAKE) -C $(RS232_PWD) $@
 	ln -s $(RS232_PWD)/$@
 
-usbi2c: bin/main.o libusbi2c.so librs232.so
+usbi2c: bin/main.o
+	$(MAKE) librs232.so
+	$(MAKE) libusbi2c.so
 	$(CC) $< -o $@ $(LDFLAGS)
 
 bin/main.o: test/main.cpp
