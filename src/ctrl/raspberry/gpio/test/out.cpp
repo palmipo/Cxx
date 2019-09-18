@@ -22,13 +22,18 @@ class Test : public GpioFactory
 
 			if (etat & GPIOEVENT_EVENT_FALLING_EDGE)
 				Log::getLogger()->info(__FILE__, __LINE__, "FALLING");
+			return 0;
 		}
 
 		virtual int32_t actionOut(PollDevice*)
-		{}
+		{
+			return 0;
+		}
 
 		virtual int32_t actionError(PollDevice*)
-		{}
+		{
+			return 0;
+		}
 };
 
 int main(int argc, char **argv)
