@@ -1,4 +1,4 @@
-#include "lumiere.h"
+#include "ada1334.h"
 #include "raspii2c.h"
 #include "i2cexception.h"
 #include "gpioexception.h"
@@ -12,7 +12,8 @@ int main(int argc, char **argv)
 	try
 	{
 		RaspiI2C i2c_bus("/dev/i2c-1");
-		Lumiere capteur("/dev/gpiochip0", 18, 4, &i2c_bus);
+		ADA1334 capteur("/dev/gpiochip0", 18, 4, &i2c_bus);
+		capteur.led(0);
 
 		int32_t cpt=0;
 		while(cpt < 60)

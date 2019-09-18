@@ -1,5 +1,5 @@
-#ifndef LUMIERE_H
-#define LUMIERE_H
+#ifndef ADA1334_H
+#define ADA1334_H
 
 #include "gpiofactory.h"
 #include <string>
@@ -7,11 +7,13 @@
 
 class I2C;
 class TCS34725;
-class Lumiere : public GpioFactory
+class ADA1334 : public GpioFactory
 {
 	public:
-		Lumiere(const std::string & gpio_dev, int32_t LED_PIN, int32_t IRQ_PIN, I2C * i2c_bus);
-		virtual ~Lumiere();
+		ADA1334(const std::string & gpio_dev, int32_t LED_PIN, int32_t IRQ_PIN, I2C * i2c_bus);
+		virtual ~ADA1334();
+		
+		virtual void led(uint8_t on);
 
 	protected:
 		virtual int32_t actionIn(PollDevice * device);
@@ -23,4 +25,4 @@ class Lumiere : public GpioFactory
 		int32_t IRQ_PIN;
 };
 
-#endif /* LUMIERE_H */
+#endif /* ADA1334_H */
