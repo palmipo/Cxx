@@ -28,11 +28,10 @@ GPIO_PWD = ../../ctrl/raspberry/gpio
 CC = g++
 MAKE = make
 INCLUDE = -I../../ctrl/interface -I../../ctrl/raspberry/factory/src -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -llog -li2cdevice -lgpio -lpoll
+LIBS = -L. -llog -li2cdevice -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
-LDFLAGS = $(LIBS) -lraspii2c
-#LDFLAGS = $(LIBS) -lusbi2c -lrs232
+LDFLAGS = $(LIBS)
 
 all: libi2cdevice.so
 
@@ -54,7 +53,7 @@ lumiere: bin/lumiere.o bin/test_lumiere.o
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(MAKE) libgpio.so
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) -lraspii2c
 
 bin/lumiere.o: test/lumiere.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -70,9 +69,7 @@ ph_hd: bin/ph_hd.o
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -o $@ $< $(LDFLAGS)
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 bin/ph_hd.o: test/ph_hd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -83,10 +80,9 @@ test_saa1064: bin/test_saa1064.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
-	$(MAKE) libraspii2c.so
 	$(MAKE) libusbi2c.so
 	$(MAKE) librs232.so
-	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS)
+	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS) -lusbi2c -lrs232
 
 bin/test_saa1064.o: test/test_saa1064.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -98,9 +94,7 @@ test_nunchuk: bin/test_nunchuk.o
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS)
+	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS) -lraspii2c
 
 bin/test_nunchuk.o: test/test_nunchuk.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -112,9 +106,7 @@ test_mcp23017: bin/test_mcp23017.o
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -o $@ $< $(LDFLAGS)
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 bin/test_mcp23017.o: test/test_mcp23017.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -126,9 +118,7 @@ test_pca9685: bin/test_pca9685.o
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -o $@ $< $(LDFLAGS)
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 bin/test_pca9685.o: test/test_pca9685.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -140,9 +130,7 @@ test_ds1307: bin/test_ds1307.o
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -o $@ $< $(LDFLAGS)
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 bin/test_ds1307.o: test/test_ds1307.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -154,9 +142,7 @@ test_ds1621: bin/test_ds1621.o
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
-	$(MAKE) libusbi2c.so
-	$(MAKE) librs232.so
-	$(CC) -o $@ $< $(LDFLAGS)
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 bin/test_ds1621.o: test/test_ds1621.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
