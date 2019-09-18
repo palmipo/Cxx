@@ -1,5 +1,6 @@
 OBJECTS = \
 	bin/gpio.o \
+	bin/gpiofifo.o \
 	bin/gpioevent.o \
 	bin/gpiofactory.o
 
