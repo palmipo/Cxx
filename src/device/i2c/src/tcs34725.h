@@ -10,7 +10,7 @@ class TCS34725 : public DeviceI2C
 {
 	public:
 		TCS34725(I2C * i2c_ctrl);
-		virtual void on(uint8_t AIEN, double ATIME, double WTIME, uint8_t WLONG, uint8_t AGAIN);
+		virtual void on(uint8_t AIEN, double ATIME, double WTIME, uint8_t WLONG, uint8_t AGAIN, uint8_t APERS);
 		virtual void off();
 		virtual void setClearInterruptThreshold(uint8_t APERS, uint16_t low_threahold, uint16_t high_threahold);
 		virtual void clearChannelInterruptClear();

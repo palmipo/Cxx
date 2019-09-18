@@ -29,13 +29,13 @@ TCS34725::TCS34725(I2C * i2c_ctrl)
 : DeviceI2C(0x29, i2c_ctrl)
 {}
 
-void TCS34725::on(uint8_t AIEN, double ATIME, double WTIME, uint8_t WLONG, uint8_t AGAIN)
+void TCS34725::on(uint8_t AIEN, double ATIME, double WTIME, uint8_t WLONG, uint8_t AGAIN, uint8_t APERS)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "on");
 
 	uint8_t buffer[2];
 	buffer[0] = cmd_register(1, 0, TCS34725_ENABLE);
-	buffer[1] = enable_register(AIEN, (WTIME>0.)?1:0, 1, 1);
+	buffer[1] = enable_register(AIEN, 1, 1, 1);
 	_twi->set (_address, buffer, 2);
 
 	buffer[0] = cmd_register(1, 0, TCS34725_ATIME);
@@ -64,6 +64,18 @@ functions such as gain settings and/or diode selection.
 	buffer[1] = control_register(AGAIN);
 	_twi->set (_address, buffer, 2);
 	Log::getLogger()->debug(__FILE__, __LINE__, "control_register");
+
+/*
+The persistence register controls the filtering interrupt 
+capabilities of the device. Configurable filtering is provided to 
+allow interrupts to be generated after each integration cycle or 
+if the integration has produced a result that is outside of the 
+values specified by the threshold register for some specified 
+amount of time.
+*/
+	buffer[0] = cmd_register(1, 0, TCS34725_PERS);
+	buffer[1] = persistence_register(APERS);
+	_twi->set (_address, buffer, 2);
 }
 
 void TCS34725::off()
@@ -114,7 +126,7 @@ void TCS34725::clearChannelInterruptClear()
 	Log::getLogger()->debug(__FILE__, __LINE__, "clearChannelInterruptClear");
 
 	uint8_t buffer;
-	buffer = cmd_register(0x1, 0x3, 0x6);
+	buffer = cmd_register(1, 3, 6);
 	_twi->set (_address, &buffer, 1);
 }
 
@@ -242,7 +254,7 @@ uint16_t TCS34725::blueChannel()
  */
 uint8_t TCS34725::cmd_register(uint8_t cmd_reg, uint8_t type, uint8_t addr)
 {
-	return ((cmd_reg?0x01:0x00) << 7) | ((type?1:0) << 5) | (addr & 0x1F);
+	return ((cmd_reg?0x01:0x00) << 7) | ((type & 0x03) << 5) | (addr & 0x1F);
 }
 
 /*

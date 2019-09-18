@@ -2,8 +2,8 @@ OBJECTS = \
 	bin/raspii2c.o
 
 CC = g++
-INCLUDE = -I../../interface -Isrc
-LIBS =
+INCLUDE = -I../../interface -Isrc -I../log/src
+LIBS = -L. -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)

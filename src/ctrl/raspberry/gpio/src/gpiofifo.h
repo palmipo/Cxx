@@ -18,6 +18,7 @@ class Gpio : public PollDevice
 
 		virtual int32_t write(uint8_t *, int32_t);
 		virtual int32_t read(uint8_t *, int32_t);
+		virtual int32_t getEvent(uint32_t *, uint64_t *);
 
 		virtual int32_t actionIn();
 		virtual int32_t actionOut();
@@ -25,6 +26,7 @@ class Gpio : public PollDevice
 		
 	protected:
 		int32_t _pin_number;
+		std::queue < GpioEvent > _fifo;
 };
 
 #endif /* GPIO_H */

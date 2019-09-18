@@ -9,7 +9,7 @@ public:
 	RaspiI2C(const char *);
 	virtual ~RaspiI2C();
 
-	virtual void setOwnAddress (uint8_t own_address);
+	// virtual void setOwnAddress (uint8_t own_address);
 
 	virtual void set (uint8_t addr, uint8_t* buf, int32_t len);
 	virtual void get (uint8_t addr, uint8_t* buf, int32_t len);

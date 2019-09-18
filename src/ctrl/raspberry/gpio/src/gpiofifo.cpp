@@ -58,10 +58,24 @@ int32_t Gpio::read(uint8_t * data, int32_t length)
 	return input_values.values[0];
 }
 
+int32_t Gpio::getEvent(uint32_t * id, uint64_t * timestamp)
+{
+	if (_fifo.empty())
+	{
+		throw GpioException(__FILE__, __LINE__, "fifo vide !");
+	}
+
+	int32_t len = 0;
+	GpioEvent buffer = _fifo.front();
+	*id = buffer.id();
+	*timestamp = buffer.timestamp();
+	_fifo.pop();
+
+	return len;
+}
+
 int32_t Gpio::actionError()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
-
 	return 0;
 }
 
@@ -74,13 +88,14 @@ int32_t Gpio::actionIn()
 	{
 		throw GpioException(__FILE__, __LINE__, errno);
 	}
+	
+	GpioEvent event(input_event_data.id, input_event_data.timestamp);
+	_fifo.push(event);
 
 	return input_event_data.id;
 }
 
 int32_t Gpio::actionOut()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
-
 	return 0;
 }

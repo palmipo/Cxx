@@ -1,14 +1,15 @@
 #include "raspii2c.h"
 #include "i2cexception.h"
-//~ #include <iostream>
+#include "log.h"
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <cstdio>
+// #include <cstdio>
 #include <cstring>
 #include <unistd.h>
-
+#include <sstream>
+#include <iomanip>
 
 //~ Full interface description
 //~ ==========================
@@ -76,8 +77,6 @@
 
 RaspiI2C::RaspiI2C(const char * device)
 {
-	//~ std::cout << "I2C()" << std::endl;
-
 	if ((_fd = open(device, O_RDWR)) < 0)
 		throw I2CException("I2C::I2C()");
 
@@ -90,27 +89,29 @@ RaspiI2C::RaspiI2C(const char * device)
 		throw I2CException("I2C::I2C_FUNCS()");
 	
 	if ((fct & I2C_FUNC_I2C) != I2C_FUNC_I2C)
-		throw I2CException("I2C::I2C_TENBIT()");
+		throw I2CException("I2C::I2C_FUNC_I2C()");
 }
 
 RaspiI2C::~RaspiI2C()
 {
-	//~ std::cout << "~I2C()" << std::endl;
-
 	close(_fd);
 }
 
-void RaspiI2C::setOwnAddress(uint8_t own_address)
-{
-	//~ std::cout << "I2C::setOwnAddress()" << std::endl;
-
-	if (ioctl(_fd, I2C_SLAVE, (long)own_address) < 0)
-		throw I2CException("I2C::setOwnAddress()");
-}
+// void RaspiI2C::setOwnAddress(uint8_t own_address)
+// {
+	// if (ioctl(_fd, I2C_SLAVE, (long)own_address) < 0)
+		// throw I2CException("I2C::setOwnAddress()");
+// }
 
 void RaspiI2C::set(uint8_t addr, uint8_t* buf, int32_t len)
 {
-	//~ std::cout << "I2C::write()" << std::endl;
+	std::stringstream ss;
+	ss << "I2C::write() ";
+	for (int32_t i=0; i<len; ++i)
+	{
+		ss << std::hex << (int)buf[i] << " ";
+	}
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
 	struct i2c_rdwr_ioctl_data msg;
 	msg.msgs = new i2c_msg[1];
@@ -129,8 +130,6 @@ void RaspiI2C::set(uint8_t addr, uint8_t* buf, int32_t len)
 
 void RaspiI2C::get(uint8_t addr, uint8_t* buf, int32_t len)
 {
-	//~ std::cout << "I2C::read()" << std::endl;
-
 	struct i2c_rdwr_ioctl_data msg;
 	msg.msgs = new i2c_msg[1];
 	msg.nmsgs = 1;
@@ -143,12 +142,19 @@ void RaspiI2C::get(uint8_t addr, uint8_t* buf, int32_t len)
 	if (ioctl(_fd, I2C_RDWR, &msg) < 0)
 		throw I2CException("I2C::read()");
 	
+	std::stringstream ss;
+	ss << "I2C::read() ";
+	for (int32_t i=0; i<len; ++i)
+	{
+		ss << std::hex << (int)buf[i] << " ";
+	}
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+
 	delete[] msg.msgs;
 }
 
 void RaspiI2C::transfert(uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len)
 {
-	//~ std::cout << "I2C::action()" << std::endl;
 
 	struct i2c_rdwr_ioctl_data msg;
 	msg.msgs = new i2c_msg[2];
@@ -170,5 +176,18 @@ void RaspiI2C::transfert(uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* b
 	if (ioctl(_fd, I2C_RDWR, &msg) < 0)
 		throw I2CException("I2C::I2C_RDWR()");
 	
+	std::stringstream ss;
+	ss << "I2C::transfert() emission : ";
+	for (int32_t i=0; i<cmd_len; ++i)
+	{
+		ss << std::hex << (int)cmd[i] << " ";
+	}
+	ss << "; reception : ";
+	for (int32_t i=0; i<buf_len; ++i)
+	{
+		ss << std::hex << (int)buf[i] << " ";
+	}
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+
 	delete[] msg.msgs;
 }
