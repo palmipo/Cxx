@@ -20,6 +20,9 @@ clean:
 	rm -f bin/*.o *.so *.dll out
 
 out: bin/out.o
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) libgpio.so
 	$(CC) -o $@ $< -L. $(LDFLAGS) -lgpio
 
 bin/out.o: test/out.cpp
