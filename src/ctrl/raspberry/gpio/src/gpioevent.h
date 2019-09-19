@@ -14,7 +14,7 @@ class GpioEvent
 		virtual uint32_t id();
 	
 	protected:
-		uint64_t _timestamp;
+		uint64_t _timestamp; // nanoseconds
 		uint32_t _id;
 };
 
