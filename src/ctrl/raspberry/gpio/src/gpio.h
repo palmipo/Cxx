@@ -2,12 +2,12 @@
 #define GPIO_H
 
 #include "polldevice.h"
-#include "gpioevent.h"
+//~ #include "gpioevent.h"
 // #include <termios.h>
 // #include <string>
 #include <queue>
 
-// class GpioEvent;
+class GpioEvent;
 class Gpio : public PollDevice
 {
 	public :
@@ -18,6 +18,7 @@ class Gpio : public PollDevice
 
 		virtual int32_t write(uint8_t *, int32_t);
 		virtual int32_t read(uint8_t *, int32_t);
+		virtual GpioEvent * getEvent();
 
 		virtual int32_t actionIn();
 		virtual int32_t actionOut();
@@ -25,6 +26,7 @@ class Gpio : public PollDevice
 		
 	protected:
 		int32_t _pin_number;
+		GpioEvent * _evnt;
 };
 
 #endif /* GPIO_H */

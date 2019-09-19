@@ -6,10 +6,12 @@
 class GpioEvent
 {
 	public:
+		GpioEvent();
 		GpioEvent(uint32_t, uint64_t);
-	
-		uint64_t timestamp();
-		uint32_t id();
+
+		virtual void set(uint32_t, uint64_t);
+		virtual uint64_t timestamp();
+		virtual uint32_t id();
 	
 	protected:
 		uint64_t _timestamp;

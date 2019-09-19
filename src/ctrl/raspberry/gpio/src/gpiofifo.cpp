@@ -16,20 +16,17 @@ GpioFifo::~GpioFifo()
 	Log::getLogger()->debug(__FILE__, __LINE__, "~Gpio");
 }
 
-int32_t GpioFifo::getEvent(uint32_t * id, uint64_t * timestamp)
+GpioEvent * GpioFifo::getEvent()
 {
 	if (_fifo.empty())
 	{
 		throw GpioException(__FILE__, __LINE__, "fifo vide !");
 	}
 
-	int32_t len = 0;
-	GpioEvent buffer = _fifo.front();
-	*id = buffer.id();
-	*timestamp = buffer.timestamp();
+	GpioEvent * buffer = _fifo.front();
 	_fifo.pop();
 
-	return len;
+	return buffer;
 }
 
 int32_t GpioFifo::actionIn()
@@ -42,7 +39,7 @@ int32_t GpioFifo::actionIn()
 		throw GpioException(__FILE__, __LINE__, errno);
 	}
 	
-	GpioEvent event(input_event_data.id, input_event_data.timestamp);
+	GpioEvent * event = new GpioEvent(input_event_data.id, input_event_data.timestamp);
 	_fifo.push(event);
 
 	return input_event_data.id;
