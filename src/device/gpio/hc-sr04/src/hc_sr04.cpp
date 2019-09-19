@@ -21,7 +21,7 @@ int64_t HC_SR04::distance()
 	valeur = 1;
 	out->write(&valeur, 1);
 
-	std::this_thread::sleep_for(std::chrono::microseconds(20));
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
 	valeur = 0;
 	out->write(&valeur, 1);
@@ -31,7 +31,7 @@ int64_t HC_SR04::distance()
 	scrute(500);
 
 	// vitesse du son : 340m/s
-	return abs(timestamp_falling - timestamp_rising) * 17 / 10000000;
+	return abs(timestamp_falling - timestamp_rising) * 17 / 1000000;
 }
 
 int32_t HC_SR04::actionIn(PollDevice * device)
