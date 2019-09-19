@@ -15,7 +15,7 @@ ADA1334::ADA1334(const std::string & gpio_dev, int32_t led, int32_t irq, I2C * i
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "ADA1334");
 
-	event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES, GPIOHANDLE_REQUEST_INPUT | GPIOHANDLE_REQUEST_OPEN_DRAIN);
+	event(IRQ_PIN, GPIOEVENT_REQUEST_FALLING_EDGE, /*GPIOHANDLE_REQUEST_INPUT | */ GPIOHANDLE_REQUEST_OPEN_DRAIN);
 
 	capteur_lumiere = new TCS34725(i2c_bus);
 
