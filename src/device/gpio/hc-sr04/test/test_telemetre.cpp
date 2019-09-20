@@ -15,7 +15,7 @@ int main(int argc,char **argv)
 		ss << "distance : " << dst << " mm.";
 		Log::getLogger()->info(__FILE__, __LINE__, ss.str());
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
 	return 0;

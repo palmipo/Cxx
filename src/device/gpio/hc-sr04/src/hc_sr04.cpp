@@ -11,7 +11,7 @@ HC_SR04::HC_SR04(int32_t OUT_PIN, int32_t IRQ_PIN)
 , timestamp_falling(0)
 {
 	out = output(OUT_PIN);
-	in = event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES);
+	in = event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES, GPIOHANDLE_REQUEST_OPEN_DRAIN);
 }
 
 int64_t HC_SR04::distance()
