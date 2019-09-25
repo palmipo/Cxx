@@ -110,11 +110,25 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 			break;
 	}
 
+	return bt->pinNumber();
+}
+
+int32_t BatmintonFactory::actionOut(PollDevice * device)
+{
+	return 0;
+}
+
+int32_t BatmintonFactory::actionError(PollDevice * device)
+{
+	return 0;
+}
+
+int32_t BatmintonFactory::majAffichage()
+{
 	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
 	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
 	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
 	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
 	
-	//std::this_thread::sleep_for(std::chrono::seconds(1));
 	return 0;
 }

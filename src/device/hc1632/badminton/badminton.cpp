@@ -11,7 +11,10 @@ int main(int argc, char ** argv)
 
 		while(1)
 		{
-			factory.scrute(1000);
+			if (factory.scrute(1000))
+			{
+				factory.majAffichage();
+			}
 		}
 		
 		return 0;
