@@ -10,7 +10,7 @@ INCLUDE = -Isrc -I$(POLL_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
 LIBS = -L. -llog -lgpio -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
-LDFLAGS = $(LIBS)
+LDFLAGS = $(LIBS) -lpthread
 
 all:
 

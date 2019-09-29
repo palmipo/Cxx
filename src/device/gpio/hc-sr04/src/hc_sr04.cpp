@@ -2,40 +2,65 @@
 #include "gpio.h"
 #include "gpioevent.h"
 #include "log.h"
-#include <thread>
 #include <sstream>
+#include <chrono>
 
 HC_SR04::HC_SR04(int32_t OUT_PIN, int32_t IRQ_PIN)
 : GpioFactory("/dev/gpiochip0")
-, timestamp_rising(0)
-, timestamp_falling(0)
+, _distance(0.)
+, _thread(0)
+, _fin(1)
 {
-	out = output(OUT_PIN);
-	in = event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES, GPIOHANDLE_REQUEST_OPEN_DRAIN);
+	_out = output(OUT_PIN);
+	_in = event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES);
 }
 
-int64_t HC_SR04::distance()
+HC_SR04::~HC_SR04()
+{
+	_fin = 1;
+	delete _thread;
+}
+
+void HC_SR04::stop()
+{
+	_fin = 1;
+}
+
+void HC_SR04::start(int32_t intervalle_500ms)
+{
+	_fin = 0;
+	_intervalle_500ms = (intervalle_500ms > 0) ? intervalle_500ms : 1;
+	_thread = new std::thread(run, this);
+	_thread->detach();
+}
+
+void HC_SR04::run(HC_SR04 * obj)
 {
 	uint8_t valeur;
 
-	valeur = 1;
-	out->write(&valeur, 1);
+	while (!obj->_fin)
+	{
+		valeur = 1;
+		obj->_out->write(&valeur, 1);
 
-	std::this_thread::sleep_for(std::chrono::microseconds(10));
+		std::this_thread::sleep_for(std::chrono::microseconds(10));
 
-	valeur = 0;
-	out->write(&valeur, 1);
+		valeur = 0;
+		obj->_out->write(&valeur, 1);
 
-	scrute(1000);
-	scrute(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500 * obj->_intervalle_500ms));
+	}
+}
 
-	// vitesse du son : 340m/s
-	int64_t distance = abs(timestamp_falling - timestamp_rising);
-	std::stringstream ss;
-	ss << "distance : " << distance;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+int32_t HC_SR04::status()
+{
+	return _status;
+}
 
-	return distance * 17 / 100000;
+double HC_SR04::distance()
+{
+	_status = 0;
+	return _distance;
 }
 
 int32_t HC_SR04::actionIn(PollDevice * device)
@@ -46,21 +71,20 @@ int32_t HC_SR04::actionIn(PollDevice * device)
 	int32_t etat = io->actionIn();
 	if (etat)
 	{
-		// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 		GpioEvent * evnt = io->getEvent();
 		if (evnt->id() == GPIOEVENT_EVENT_RISING_EDGE)
 		{
-			timestamp_rising = evnt->timestamp();
-			// std::stringstream ss;
-			// ss << "GPIOEVENT_EVENT_RISING_EDGE : " << timestamp_rising;
-			// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+			_timestamp_rising = std::chrono::high_resolution_clock::now();
 		}
 		else if (evnt->id() == GPIOEVENT_EVENT_FALLING_EDGE)
 		{
-			timestamp_falling = evnt->timestamp();
-			// std::stringstream ss;
-			// ss << "GPIOEVENT_EVENT_FALLING_EDGE : " << timestamp_falling;
-			// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+			_timestamp_falling = std::chrono::high_resolution_clock::now();
+
+			std::chrono::duration<double> delta_t = _timestamp_falling - _timestamp_rising;
+
+			// vitesse du son : 340m/s
+			_distance = (delta_t.count() * 170000.); //* 340. /2. * 1000.
+			_status = 1;
 		}
 	}
 	
@@ -69,14 +93,14 @@ int32_t HC_SR04::actionIn(PollDevice * device)
 
 int32_t HC_SR04::actionOut(PollDevice * device)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
 	return device->actionOut();
 }
 
 int32_t HC_SR04::actionError(PollDevice * device)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
+	// Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
 
 	return device->actionError();
 }

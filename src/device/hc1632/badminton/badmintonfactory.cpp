@@ -45,9 +45,14 @@ int32_t score_gauche = 0;
 BatmintonFactory::BatmintonFactory(const std::string & device)
 : GpioFactory(device)
 {
-	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE);
-	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
-	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+// GPIOHANDLE_REQUEST_INPUT
+// GPIOHANDLE_REQUEST_OUTPUT
+// GPIOHANDLE_REQUEST_ACTIVE_LOW
+// GPIOHANDLE_REQUEST_OPEN_DRAIN
+// GPIOHANDLE_REQUEST_OPEN_SOURCE
+	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_INPUT);
+	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_INPUT|GPIOHANDLE_REQUEST_OPEN_DRAIN);
+	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_INPUT|GPIOHANDLE_REQUEST_ACTIVE_LOW);
 
 	Gpio * _data = output(DATA_PIN);
 	Gpio * _write = output(WRITE_PIN);
@@ -83,7 +88,7 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	Gpio * bt = (Gpio *)device;
-	int32_t etat = bt->actionIn();
+	bt->actionIn();
 
 	switch(bt->pinNumber())
 	{
@@ -92,6 +97,7 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 			score_droit = 0;
 			score_gauche = 0;
 			break;
+
 		case DROITE_PIN:
 			Log::getLogger()->debug(__FILE__, __LINE__, "DROITE_PIN");
 			score_droit += 1;
@@ -100,6 +106,7 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 				score_droit = 0;
 			}
 			break;
+
 		case GAUCHE_PIN:
 			Log::getLogger()->debug(__FILE__, __LINE__, "GAUCHE_PIN");
 			score_gauche += 1;
@@ -108,6 +115,12 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 				score_gauche = 0;
 			}
 			break;
+			
+		default:
+			std::stringstream ss;
+			ss << "PIN " << bt->pinNumber() << " inconnue !!!";
+			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+			break;
 	}
 
 	return bt->pinNumber();
@@ -115,16 +128,17 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 
 int32_t BatmintonFactory::actionOut(PollDevice * device)
 {
-	return 0;
+	return device->actionOut();
 }
 
 int32_t BatmintonFactory::actionError(PollDevice * device)
 {
-	return 0;
+	return device->actionError();
 }
 
-int32_t BatmintonFactory::majAffichage()
+int32_t BatmintonFactory::majAffichage(int32_t pinNumber)
 {
+
 	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
 	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
 	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);

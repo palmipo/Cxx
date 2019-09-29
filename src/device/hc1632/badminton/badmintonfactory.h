@@ -12,7 +12,7 @@ class BatmintonFactory : public GpioFactory
 	public :
 		BatmintonFactory(const std::string &);
 		virtual ~BatmintonFactory();
-		virtual int32_t majAffichage();
+		virtual int32_t majAffichage(int32_t);
 		
 	protected:
 		virtual int32_t actionIn(PollDevice*);

@@ -40,6 +40,7 @@ Log::Log()
 	
 	ss_result << ss_file.str() << "-result.txt";
 	filename_result = ss_result.str();
+
 	t0 = std::chrono::high_resolution_clock::now();
 }
 
@@ -99,11 +100,11 @@ void Log::result(const std::string & fichier, const std::string & ligne, const s
 
 	std::cout << ss.str() << std::endl;
 
-	std::ofstream os(filename, std::ios::app);
-	os << ss.str() << std::endl;
+	//~ std::ofstream os(filename, std::ios::app);
+	//~ os << ss.str() << std::endl;
 
-	std::ofstream os_res(filename_result, std::ios::app);
-	os_res << ss.str() << std::endl;
+	//~ std::ofstream os_res(filename_result, std::ios::app);
+	//~ os_res << ss.str() << std::endl;
 }
 
 void Log::libre(const std::string & type, const std::string & fichier, const std::string & ligne, const std::string & txt)
@@ -125,6 +126,6 @@ void Log::libre(const std::string & type, const std::string & fichier, const std
 
 	std::cout << ss.str() << std::endl;
 
-	std::ofstream os(filename, std::ios::app);
-	os << ss.str() << std::endl;
+	//~ std::ofstream os(filename, std::ios::app);
+	//~ os << ss.str() << std::endl;
 }
