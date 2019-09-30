@@ -29,6 +29,8 @@ class GpioFactory : public PollFactory
 		virtual Gpio * input(int32_t);
 		virtual Gpio * output(int32_t);
 	
+		virtual void info();
+	
 	protected:
 		// GPIOEVENT_EVENT_RISING_EDGE
 		// GPIOEVENT_EVENT_FALLING_EDGE

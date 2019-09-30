@@ -12,13 +12,16 @@ class BatmintonFactory : public GpioFactory
 	public :
 		BatmintonFactory(const std::string &);
 		virtual ~BatmintonFactory();
-		virtual int32_t majAffichage(int32_t);
+
+		virtual int32_t status();
+		virtual void majAffichage();
 		
 	protected:
 		virtual int32_t actionIn(PollDevice*);
 		virtual int32_t actionOut(PollDevice*);
 		virtual int32_t actionError(PollDevice*);
 
+		int32_t _status;
 		HC1632 * _matrix;
 };
 

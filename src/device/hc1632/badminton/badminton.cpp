@@ -3,50 +3,51 @@
 #include "log.h"
 #include "gpioexception.h"
 #include <chrono>
+#include <thread>
+
+static void scrute(BatmintonFactory * factory, int32_t * fin)
+{
+	while(!fin)
+	{
+		factory->scrute(1000);
+	}
+}
 
 int main(int argc, char ** argv)
 {
+	int32_t fin = 0;
+
 	try
 	{
 		BatmintonFactory factory("/dev/gpiochip0");
+		std::thread t(scrute, &factory, &fin);
+		t.detach();
 
-		int32_t pin = 0;
-		int32_t majDemandee = 0;
-		//~ std::chrono::time_point<std::chrono::high_resolution_clock> t0 = std::chrono::high_resolution_clock::now();
 		while(1)
 		{
-			//~ if (majDemandee)
-			//~ {
-				//~ Log::getLogger()->error(__FILE__, __LINE__, "maj");
-				//~ std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - t0;
-				//~ if (elapsed.count() > 1)
-				//~ {
-					//~ factory.majAffichage(10);
-					//~ pin = 0;
-					//~ majDemandee = 0;
-					//~ Log::getLogger()->error(__FILE__, __LINE__, "affichage");
-				//~ }
-			//~ }
-			if (factory.scrute(1000) > 0)
-			//~ if (!majDemandee)
+			if (factory.status() > 0)
 			{
-				factory.majAffichage(10);
-				//~ majDemandee = 1;
-				//~ t0 = std::chrono::high_resolution_clock::now();
-				Log::getLogger()->error(__FILE__, __LINE__, "majDemandee");
+				factory.majAffichage();
+			}
+			else
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			}
 		}
 		
+		fin = 1;
 		return 0;
 	}
 	catch(GpioException e)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, e.what());
+		fin = 1;
 		return -1;
 	}
 	catch(...)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, "exception");
+		fin = 1;
 		return -1;
 	}
 }

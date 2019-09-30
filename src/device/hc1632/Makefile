@@ -26,7 +26,7 @@ bad: bin/badminton.o bin/badmintonfactory.o
 	$(MAKE) libpoll.so
 	$(MAKE) liblog.so
 	$(MAKE) libhc1632.so
-	$(CC) $^ -o $@ $(LDFLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS) -lpthread
 
 bin/badminton.o: badminton/badminton.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

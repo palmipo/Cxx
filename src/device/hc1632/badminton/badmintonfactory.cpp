@@ -33,9 +33,9 @@ uint8_t terrain[5][48] = {
 
 const int32_t NB_POINT = 48;
 const int32_t NB_MATRIX = 10;
-const int32_t RAZ_PIN = 24;
-const int32_t DROITE_PIN = 10;
-const int32_t GAUCHE_PIN = 23;
+const int32_t DROITE_PIN = 23;//24;//10;
+const int32_t RAZ_PIN = 10;//23;//24;
+const int32_t GAUCHE_PIN = 24;//10;//23;
 const int32_t DATA_PIN = 7;
 const int32_t WRITE_PIN = 11;
 const int32_t CS_PIN[NB_MATRIX] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
@@ -44,15 +44,16 @@ int32_t score_gauche = 0;
 
 BatmintonFactory::BatmintonFactory(const std::string & device)
 : GpioFactory(device)
+, _status(0)
 {
 // GPIOHANDLE_REQUEST_INPUT
 // GPIOHANDLE_REQUEST_OUTPUT
 // GPIOHANDLE_REQUEST_ACTIVE_LOW
 // GPIOHANDLE_REQUEST_OPEN_DRAIN
 // GPIOHANDLE_REQUEST_OPEN_SOURCE
-	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_INPUT);
-	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_INPUT|GPIOHANDLE_REQUEST_OPEN_DRAIN);
-	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_INPUT|GPIOHANDLE_REQUEST_ACTIVE_LOW);
+	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE);
+	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
 
 	Gpio * _data = output(DATA_PIN);
 	Gpio * _write = output(WRITE_PIN);
@@ -123,7 +124,13 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 			break;
 	}
 
+	_status = bt->pinNumber();
 	return bt->pinNumber();
+}
+
+int32_t BatmintonFactory::status()
+{
+	return _status;
 }
 
 int32_t BatmintonFactory::actionOut(PollDevice * device)
@@ -136,13 +143,11 @@ int32_t BatmintonFactory::actionError(PollDevice * device)
 	return device->actionError();
 }
 
-int32_t BatmintonFactory::majAffichage(int32_t pinNumber)
+void BatmintonFactory::majAffichage()
 {
-
 	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
 	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
 	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
 	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
-	
-	return 0;
+	_status = 0;
 }
