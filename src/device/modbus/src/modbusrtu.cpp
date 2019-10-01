@@ -64,7 +64,7 @@ Modbus::ModbusMsgDirect * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t tim
 
 int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	int32_t cpt = data_length-2;
 

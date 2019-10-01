@@ -7,6 +7,7 @@
 #include "socketexception.h"
 #include "rs232.h"
 #include "rs232exception.h"
+#include "log.h"
 #include <sstream>
 
 // MODBUS Driver 27700
@@ -132,26 +133,27 @@ void Modbus::ModbusFactory::close(const std::string & host)
 
 int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+
     if (device)
     {
-	device->actionIn();
+		device->actionIn();
 
-	uint8_t data[512];
-	int32_t len = device->read(data, 512);
+		uint8_t data[512];
+		int32_t len = device->read(data, 512);
 
-	std::map<std::string, TowerDevice *>::iterator it = _codec.begin();
-	while (it != _codec.end())
-	{
-		if (device->handler() == it->second->handler())
+		std::map<std::string, TowerDevice *>::iterator it = _codec.begin();
+		while (it != _codec.end())
 		{
-			it->second->actionIn(data, len);
-		}
-		else
-		{
+			if (device->handler() == it->second->handler())
+			{
+				it->second->actionIn(data, len);
+			}
 			it++;
 		}
-	}
     }
+	
+	return 0;
 }
 
 int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
