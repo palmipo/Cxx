@@ -18,6 +18,21 @@ all:
 clean:
 	rm -f bin/*.o *.so *.dll
 
+fwup : bin/fwup.o
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
+
+fwup.exe : bin/fwup.o
+	$(MAKE) liblog.dll
+	$(MAKE) libpoll.dll
+	$(MAKE) librs232.dll
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
+
+bin/fwup.o: test/fwup.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
 # LINUX
 liblog.so:
 	$(MAKE) -C ../log $@
