@@ -23,12 +23,13 @@ OBJECTS = \
 	bin/modbusrtu.o \
 	bin/modbustcp.o
 	
-POLL_PWD = ../factory
-SOCKET_PWD = ../socket
-RS232_PWD = ../rs232
+LOG_PWD = ../../ctrl/raspberry/log
+POLL_PWD = ../../ctrl/raspberry/factory
+SOCKET_PWD = ../../ctrl/raspberry/socket
+RS232_PWD = ../../ctrl/raspberry/rs232
 CC = g++
 MAKE = make
-INCLUDE = -I$(POLL_PWD)/src -I../log/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
+INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
 LIBS = -L. -llog -lpoll -lrs232 -lsocket
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
@@ -37,14 +38,29 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
+	$(MAKE) -C $(LOG_PWD) $@
+	$(MAKE) -C $(POLL_PWD) $@
+	$(MAKE) -C $(RS232_PWD) $@
+	$(MAKE) -C $(SOCKET_PWD) $@
 	rm -f bin/*.o *.so *.dll
+
+modbus_cmd: bin/modbus_cmd.o
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(MAKE) libsocket.so
+	$(MAKE) libmodbus.so
+	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+
+bin/modbus_cmd.o: test/modbus_cmd.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 # LINUX
 #
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
 
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
@@ -65,8 +81,8 @@ libmodbus.so: $(OBJECTS)
 # MINGW
 #
 liblog.dll:
-	$(MAKE) -C ../log $@
-	cp ../log/$@ .
+	$(MAKE) -C $(LOG_PWD) $@
+	cp $(LOG_PWD)/$@ .
 
 libpoll.dll:
 	$(MAKE) -C $(POLL_PWD) $@

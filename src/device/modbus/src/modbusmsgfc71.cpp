@@ -31,7 +31,7 @@ uint16_t Modbus::ModbusMsgFC71::value(uint64_t i)
 
 uint16_t Modbus::ModbusMsgFC71::encodeQuestion(uint8_t * data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
 	if (cpt < len)
 	{
@@ -79,7 +79,7 @@ uint16_t Modbus::ModbusMsgFC71::encodeQuestion(uint8_t * data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC71::decodeQuestion(uint8_t * data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
 	if (cpt < len)
 	{
@@ -133,7 +133,7 @@ uint16_t Modbus::ModbusMsgFC71::decodeQuestion(uint8_t * data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC71::decodeResponse(uint8_t * data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
 
 	{
 		uint8_t nb = 0;

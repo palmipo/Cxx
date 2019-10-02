@@ -27,15 +27,12 @@ namespace Modbus
 			virtual uint16_t sendFC(ModbusMsg *);
 			virtual uint16_t recvFC(ModbusMsg *, int32_t = 10, int32_t = 1000);
 
-			virtual uint16_t sendDirect(uint8_t *, uint16_t, int32_t);
-			virtual uint16_t receiveDirect(uint8_t *, uint16_t, int32_t = 10, int32_t = 1000);
-
 		protected:
 			virtual uint16_t send(ModbusMsg *)=0;
-			virtual ModbusMsgDirect * recv(int32_t = 10, int32_t = 1000)=0;
+			virtual ModbusMsg * recv(int32_t = 10, int32_t = 1000)=0;
 
 		protected:
-			std::queue < ModbusMsgDirect * > _fifo;
+			std::queue < ModbusMsg * > _fifo;
 			uint8_t _slave_address;
 	};
 }

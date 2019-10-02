@@ -6,7 +6,7 @@
 
 uint16_t Modbus::ModbusMsgFC43::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
 	data[cpt] = mei_type;
 	cpt += 1;
@@ -21,7 +21,7 @@ uint16_t Modbus::ModbusMsgFC43::encodeQuestion(uint8_t* data, uint16_t len)
 }
 uint16_t Modbus::ModbusMsgFC43::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
 	mei_type = data[cpt];
 	cpt += 1;
@@ -38,7 +38,7 @@ uint16_t Modbus::ModbusMsgFC43::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC43::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
 
 	{
 		mei_type = data[cpt];

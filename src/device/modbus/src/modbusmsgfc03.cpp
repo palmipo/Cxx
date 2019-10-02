@@ -1,6 +1,7 @@
 #include "modbusmsgfc03.h"
 #include "modbusmsgexception.h"
 #include "log.h"
+#include <sstream>
 
 Modbus::ModbusMsgFC03::ModbusMsgFC03()
 : ModbusMsgHeader(0x03)
@@ -30,7 +31,7 @@ uint16_t Modbus::ModbusMsgFC03::getRegister(uint16_t num)
 
 uint16_t Modbus::ModbusMsgFC03::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
     if (cpt < len)
 	{
@@ -58,7 +59,7 @@ uint16_t Modbus::ModbusMsgFC03::encodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC03::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
     if (cpt < len)
 	{
@@ -86,8 +87,18 @@ uint16_t Modbus::ModbusMsgFC03::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC03::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
-
+	{
+		std::stringstream ss;
+		ss << "decodeResponse => len " << len;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	}
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
+	{
+		std::stringstream ss;
+		ss << "cpt " << (int)cpt << " ; len " << len;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	}
+	
 	{
 		// number of data bytes to follow
 		uint8_t number_of_byte = 0;
@@ -98,6 +109,11 @@ uint16_t Modbus::ModbusMsgFC03::decodeResponse(uint8_t* data, uint16_t len)
 		}
 
 		uint16_t nb = number_of_byte >> 1;
+		{
+			std::stringstream ss;
+			ss << "nb " << (int)nb << " ; number_of_byte " << (int)number_of_byte;
+			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		}
 		if (nb != nb_registers)
 		{
 			throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception taille incorrect.");

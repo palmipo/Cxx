@@ -16,7 +16,7 @@
 class PollDevice;
 namespace Modbus
 {
-	class ModbusMsgDirect;
+	class ModbusMsg;
 	class MODBUS_DLL ModbusRtu : public ModbusChannel
 	{
 		public:
@@ -25,7 +25,7 @@ namespace Modbus
 
 		protected:
 			virtual uint16_t send(ModbusMsg *);
-			virtual ModbusMsgDirect * recv(int32_t = 10, int32_t = 1000);
+			virtual ModbusMsg * recv(int32_t = 10, int32_t = 1000);
 
 			virtual int32_t actionIn(uint8_t *, int32_t);
 			virtual int32_t actionOut(uint8_t *, int32_t);

@@ -6,20 +6,18 @@
 #include <iostream>
 
 // 115200 8N1
-SIM900::SIM900(RS232* serial)
-: _serial(serial)
-//~ , _stream_length(0)
+SIM900::SIM900(const std::string & device)
+: RS232Factory()
 {
+	_serial = add(device);
+	_serial->setConfig(B9600, 8, 'N', 1, 0);
+	_serial->setInterCharacterTimer(0xFF);
+	// _serial->setBlockingReadUntilCharacter(2);
+
 	std::stringstream ss;
 	ss << (int8_t)13 << (int8_t)10 << "ATE0" << (int8_t)13 << (int8_t)10;
 	std::string cmd1 = ss.str();
-	_serial->set((int8_t*)cmd1.c_str(), cmd1.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
+	_serial->write((int8_t*)cmd1.c_str(), cmd1.size());
 }
 
 SIM900::~SIM900()
@@ -27,13 +25,7 @@ SIM900::~SIM900()
 	std::stringstream ss;
 	ss << (int8_t)13 << (int8_t)10 << "ATE1" << (int8_t)13 << (int8_t)10;
 	std::string cmd1 = ss.str();
-	_serial->set((int8_t*)cmd1.c_str(), cmd1.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
+	_serial->write((int8_t*)cmd1.c_str(), cmd1.size());
 }
 
 void SIM900::atz()
@@ -46,18 +38,7 @@ void SIM900::atz()
 	std::stringstream ss;
 	ss << (int8_t)13 << (int8_t)10 << "ATZ" << (int8_t)13 << (int8_t)10;
 	std::string cmd1 = ss.str();
-	_serial->set((int8_t*)cmd1.c_str(), cmd1.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
-	
-
-	//~ int8_t reponse[256];
-	//~ _serial->get(reponse, 255);
-	//~ read_uart(reponse, 255);
+	_serial->write((int8_t*)cmd1.c_str(), cmd1.size());
 }
 
 void SIM900::init_sms()
@@ -66,17 +47,7 @@ void SIM900::init_sms()
 	std::stringstream ss2;
 	ss2 << (int8_t)0x0D << (int8_t)0x0A << "AT+CMGF=1" << (int8_t)0x22 << (int8_t)0x0D << (int8_t)0x0A;
 	std::string cmd2 = ss2.str();
-	_serial->set((int8_t*)cmd2.c_str(), cmd2.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
-
-	//~ int8_t reponse[256];
-	//~ _serial->get(reponse, 255);
-	//~ read_uart(reponse, 255);
+	_serial->write((int8_t*)cmd2.c_str(), cmd2.size());
 }
 
 void SIM900::get_clock()
@@ -84,17 +55,7 @@ void SIM900::get_clock()
 	std::stringstream ss;
 	ss << (int8_t)13 << (int8_t)10 << "AT+CCLK?" << (int8_t)13 << (int8_t)10;
 	std::string cmd = ss.str();
-	_serial->set((int8_t*)cmd.c_str(), cmd.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
-
-	//~ int8_t reponse[256];
-	//~ _serial->get(reponse, 255);
-	//~ read_uart(reponse, 255);
+	_serial->write((int8_t*)cmd.c_str(), cmd.size());
 }
 
 void SIM900::send_call(const std::string & num_tel)
@@ -102,17 +63,7 @@ void SIM900::send_call(const std::string & num_tel)
 	std::stringstream ss2;
 	ss2 << (int8_t)13 << (int8_t)10 << "ATDT " << num_tel << ";" << (int8_t)13 << (int8_t)10;
 	std::string cmd2 = ss2.str();
-	_serial->set((int8_t*)cmd2.c_str(), cmd2.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
-
-	//~ int8_t reponse[256];
-	//~ _serial->get(reponse, 255);
-	//~ read_uart(reponse, 255);
+	_serial->write((int8_t*)cmd2.c_str(), cmd2.size());
 }
 
 void SIM900::list_sms()
@@ -120,17 +71,7 @@ void SIM900::list_sms()
 	std::stringstream ss2;
 	ss2 << (int8_t)13 << (int8_t)10 << "AT+CMGL=\"ALL\"" << (int8_t)13 << (int8_t)10;
 	std::string cmd2 = ss2.str();
-	_serial->set((int8_t*)cmd2.c_str(), cmd2.size());
-	//~ if (_serial->scrute(1000) > 0)
-	{
-		int8_t reponse[256];
-		_serial->get(reponse, 255);
-		//~ read_uart(reponse, 255);
-	}
-
-	//~ int8_t reponse[256];
-	//~ _serial->get(reponse, 255);
-	//~ read_uart(reponse, 255);
+	_serial->write((int8_t*)cmd2.c_str(), cmd2.size());
 }
 
 void SIM900::send_sms(const std::string & num_tel, const std::string & texte)
@@ -139,9 +80,9 @@ void SIM900::send_sms(const std::string & num_tel, const std::string & texte)
 	std::stringstream ss;
 	ss << (int8_t)0x0D << (int8_t)0x0A << "AT+CMGS=" << (int8_t)0x22 << num_tel << (int8_t)0x22 << (int8_t)0x0D << (int8_t)0x0A;
 	std::string cmd = ss.str();
-	_serial->set((int8_t*)cmd.c_str(), cmd.size());
+	_serial->write((int8_t*)cmd.c_str(), cmd.size());
 
-
+/*
 	// attendre >_
 	int8_t reponse[256];
 	int32_t cpt = _serial->get(reponse, 255);
@@ -149,9 +90,9 @@ void SIM900::send_sms(const std::string & num_tel, const std::string & texte)
 
 	if ((cpt == 2) && (reponse[0] = '>') && (reponse[1] == 0x20))
 	{
-		_serial->set((int8_t*)texte.c_str(), texte.size());
+		_serial->write((int8_t*)texte.c_str(), texte.size());
 		int8_t ctrl_z = 0x1A;
-		_serial->set((int8_t*)&ctrl_z, 1);
+		_serial->write((int8_t*)&ctrl_z, 1);
 		//~ if (_serial->scrute(1000) > 0)
 		{
 			int8_t reponse[256];
@@ -163,6 +104,7 @@ void SIM900::send_sms(const std::string & num_tel, const std::string & texte)
 	// attendre +CMGS:
 	//~ _serial->get(reponse, 255);
 	//~ read_uart(reponse, 255);
+*/
 }
 
 void SIM900::recv_sms(int32_t num)
@@ -170,7 +112,7 @@ void SIM900::recv_sms(int32_t num)
 	std::stringstream ss;
 	ss << (int8_t)13 << (int8_t)10 << "AT+CMGR=" << num << (int8_t)13 << (int8_t)10;
 	std::string cmd2 = ss.str();
-	_serial->set((int8_t*)cmd2.c_str(), cmd2.size());
+	_serial->write((int8_t*)cmd2.c_str(), cmd2.size());
 
 	int32_t cpt = 0;
 	int32_t length = 0;
@@ -195,7 +137,7 @@ void SIM900::delete_sms(int32_t num)
 	std::stringstream ss;
 	ss << (int8_t)13 << (int8_t)10 << "AT+CMGD=" << num << (int8_t)13 << (int8_t)10;
 	std::string cmd2 = ss.str();
-	_serial->set((int8_t*)cmd2.c_str(), cmd2.size());
+	_serial->write((int8_t*)cmd2.c_str(), cmd2.size());
 }
 
 void SIM900::reception_message(void * data)
@@ -257,4 +199,22 @@ int32_t SIM900::read_uart(int8_t * buffer, int32_t buffer_length)
 		std::cout << buffer << std::endl;
 
 	return cpt;
+}
+
+int32_t SIM900::actionIn(PollDevice * device)
+{
+	int32_t len = device->actionIn();
+	return len;
+}
+
+int32_t SIM900::actionOut(PollDevice * device)
+{
+	int32_t len = device->actionOut();
+	return len;
+}
+
+int32_t SIM900::actionError(PollDevice * device)
+{
+	int32_t len = device->actionError();
+	return len;
 }

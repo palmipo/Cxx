@@ -1,6 +1,7 @@
 #ifndef MODBUS_MSG_H
 #define MODBUS_MSG_H
 
+#include "modbusbuffer.h"
 #include <cstdint>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
@@ -19,11 +20,22 @@ namespace Modbus
 	{
 		public:
 			ModbusMsg();            
-			virtual ~ModbusMsg();
 
-			virtual uint16_t encodeQuestion(uint8_t *, uint16_t) = 0;
-			virtual uint16_t decodeQuestion(uint8_t *, uint16_t) = 0;
-			virtual uint16_t decodeResponse(uint8_t *, uint16_t) = 0;
+			virtual uint16_t encodeQuestion(uint8_t *, uint16_t);
+			virtual uint16_t decodeQuestion(uint8_t *, uint16_t);
+			
+			virtual uint16_t encodeResponse(uint8_t *, uint16_t);
+			virtual uint16_t decodeResponse(uint8_t *, uint16_t);
+
+			uint16_t tailleQuestion();
+			uint16_t tailleResponse();
+			
+		protected:
+			ModbusBuffer _buffer_in;
+			ModbusBuffer _buffer_out;
+			uint16_t _taille_question;
+			uint16_t _taille_response;
+
 	};
 }
 

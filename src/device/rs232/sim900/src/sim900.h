@@ -1,15 +1,15 @@
 #ifndef SIM900_H_
 #define SIM900_H_
 
+#include "rs232factory.h"
 #include <sstream>
-#include "batratypes.h"
+#include <cstdint>
 
 //~ 115200-8-N-1
-class RS232;
-class SIM900
+class SIM900 : public RS232Factory
 {
 	public:
-		SIM900(RS232* serial);
+		SIM900(const std::string & device);
 		virtual ~SIM900();
 
 		virtual void atz();
@@ -28,7 +28,9 @@ class SIM900
 		virtual int32_t analyse_message(int8_t*, int32_t);
 
 	protected:
-		virtual int32_t read_uart(int8_t*, int32_t);
+		virtual int32_t actionIn(PollDevice*);
+		virtual int32_t actionOut(PollDevice*);
+		virtual int32_t actionError(PollDevice*);
 
 	protected:
 		RS232* _serial;

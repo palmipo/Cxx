@@ -1,6 +1,7 @@
 #include "modbusmsgheader.h"
 #include "modbusmsgexception.h"
 #include "log.h"
+#include <sstream>
 
 Modbus::ModbusMsgHeader::ModbusMsgHeader(uint8_t fct_code)
 : _error_code(0)
@@ -31,7 +32,7 @@ uint8_t Modbus::ModbusMsgHeader::slaveAddress() const
 	return _slave_address;
 }
 
-uint16_t Modbus::ModbusMsgHeader::decode(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgHeader::decodeHeader(uint8_t* data, uint16_t len)
 {
 	uint16_t cpt = 0;
 
@@ -101,7 +102,7 @@ uint16_t Modbus::ModbusMsgHeader::decode(uint8_t* data, uint16_t len)
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgHeader::encode(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgHeader::encodeHeader(uint8_t* data, uint16_t len)
 {
 	uint16_t cpt = 0;
 	data[cpt] = _slave_address;
@@ -114,17 +115,34 @@ uint16_t Modbus::ModbusMsgHeader::encode(uint8_t* data, uint16_t len)
 	return cpt;
 }
 
+/*
+ * return offset
+ */
 uint16_t Modbus::ModbusMsgHeader::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	return encode(data, len);
+	uint16_t length = Modbus::ModbusMsg::encodeQuestion(data, len);
+	return encodeHeader(data, length);
 }
 
 uint16_t Modbus::ModbusMsgHeader::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	return decode(data, len);
+	uint16_t length = Modbus::ModbusMsg::decodeQuestion(data, len);
+	return decodeHeader(data, length);
+}
+
+uint16_t Modbus::ModbusMsgHeader::encodeResponse(uint8_t* data, uint16_t len)
+{
+	uint16_t length = Modbus::ModbusMsg::encodeResponse(data, len);
+	return encodeHeader(data, length);
 }
 
 uint16_t Modbus::ModbusMsgHeader::decodeResponse(uint8_t* data, uint16_t len)
 {
-	return decode(data, len);
+	{
+		std::stringstream ss;
+		ss << "decodeResponse => len " << len;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	}
+	uint16_t length = Modbus::ModbusMsg::decodeResponse(data, len);
+	return decodeHeader(data, length);
 }

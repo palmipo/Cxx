@@ -19,21 +19,6 @@ namespace Modbus
 	{
 		public:
 			ModbusMsgDirect();
-			virtual ~ModbusMsgDirect();
-
-			virtual uint16_t msgSendLength() const;
-			virtual uint16_t msgReceiveLength() const;
-
-			virtual uint16_t encodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t encodeResponse(uint8_t*, uint16_t);
-			virtual uint16_t decodeResponse(uint8_t*, uint16_t);
-
-		protected:
-			uint8_t _msg_snd[512];
-			uint16_t _msg_snd_len;
-			uint8_t _msg_rcv[512];
-			uint16_t _msg_rcv_len;
 	};
 }
 
