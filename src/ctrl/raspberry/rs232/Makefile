@@ -16,7 +16,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f bin/*.o *.so *.dll fwup
 
 fwup : bin/fwup.o
 	$(MAKE) liblog.so
