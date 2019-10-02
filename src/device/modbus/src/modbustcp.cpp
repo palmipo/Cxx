@@ -38,7 +38,7 @@ uint16_t Modbus::ModbusTcp::send(ModbusMsg * msg)
 	return ((Socket::SocketTcp *)_device)->write(trame, cpt);
 }
 
-Modbus::ModbusMsgDirect * Modbus::ModbusTcp::recv(int32_t max_retry, int32_t timeout)
+Modbus::ModbusMsg * Modbus::ModbusTcp::recv(int32_t max_retry, int32_t timeout)
 {
 	int32_t retry = 0;
 	while (_fifo.empty() && (retry < max_retry))
@@ -52,7 +52,7 @@ Modbus::ModbusMsgDirect * Modbus::ModbusTcp::recv(int32_t max_retry, int32_t tim
 		throw Modbus::ModbusException(__FILE__, __LINE__, "fifo vide !");
 	}
 	
-	Modbus::ModbusMsgDirect * msg = _fifo.front();
+	Modbus::ModbusMsg * msg = _fifo.front();
 	_fifo.pop();
 
 	return msg;

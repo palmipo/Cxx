@@ -158,10 +158,16 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 {
-    if (device) device->actionOut();
+	if (device)
+		return device->actionOut();
+
+	return 0;
 }
 
 int32_t Modbus::ModbusFactory::actionError(PollDevice* device)
 {
-        if (device) device->actionError();
+        if (device)
+		return device->actionError();
+
+	return 0;
 }

@@ -22,8 +22,8 @@ namespace Modbus
 			ModbusMsgHeader(uint8_t = 0);
 			virtual ~ModbusMsgHeader();
 
-			virtual uint16_t encode(uint8_t *, uint16_t);
-			virtual uint16_t decode(uint8_t *, uint16_t);
+			virtual uint16_t encodeHeader(uint8_t *, uint16_t);
+			virtual uint16_t decodeHeader(uint8_t *, uint16_t);
 
 			virtual uint8_t  functionCode() const;
 			virtual uint8_t  errorCode() const;
@@ -33,6 +33,7 @@ namespace Modbus
 
 			virtual uint16_t encodeQuestion(uint8_t *, uint16_t);
 			virtual uint16_t decodeQuestion(uint8_t *, uint16_t);
+			virtual uint16_t encodeResponse(uint8_t *, uint16_t);
 			virtual uint16_t decodeResponse(uint8_t *, uint16_t);
 
 		protected:

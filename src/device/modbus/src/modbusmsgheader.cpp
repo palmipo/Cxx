@@ -31,7 +31,7 @@ uint8_t Modbus::ModbusMsgHeader::slaveAddress() const
 	return _slave_address;
 }
 
-uint16_t Modbus::ModbusMsgHeader::decode(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgHeader::decodeHeader(uint8_t* data, uint16_t len)
 {
 	uint16_t cpt = 0;
 
@@ -101,7 +101,7 @@ uint16_t Modbus::ModbusMsgHeader::decode(uint8_t* data, uint16_t len)
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgHeader::encode(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgHeader::encodeHeader(uint8_t* data, uint16_t len)
 {
 	uint16_t cpt = 0;
 	data[cpt] = _slave_address;
@@ -116,15 +116,24 @@ uint16_t Modbus::ModbusMsgHeader::encode(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgHeader::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	return encode(data, len);
+	Modbus::ModbusMsg::encodeQuestion(data, len);
+	return encodeHeader(data, len);
 }
 
 uint16_t Modbus::ModbusMsgHeader::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	return decode(data, len);
+	Modbus::ModbusMsg::decodeQuestion(data, len);
+	return decodeHeader(data, len);
+}
+
+uint16_t Modbus::ModbusMsgHeader::encodeResponse(uint8_t* data, uint16_t len)
+{
+	Modbus::ModbusMsg::encodeResponse(data, len);
+	return encodeHeader(data, len);
 }
 
 uint16_t Modbus::ModbusMsgHeader::decodeResponse(uint8_t* data, uint16_t len)
 {
-	return decode(data, len);
+	Modbus::ModbusMsg::decodeResponse(data, len);
+	return decodeHeader(data, len);
 }

@@ -16,7 +16,7 @@ void Modbus::ModbusMsgFC06::setRegister(uint16_t addr, uint16_t value)
 
 uint16_t Modbus::ModbusMsgFC06::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
 	if (cpt < len)
 	{
@@ -44,7 +44,7 @@ uint16_t Modbus::ModbusMsgFC06::encodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC06::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
 	if (cpt < len)
 	{
@@ -72,7 +72,7 @@ uint16_t Modbus::ModbusMsgFC06::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC06::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
 
 	{
 		uint16_t d = 0;

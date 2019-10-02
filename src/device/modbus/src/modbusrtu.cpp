@@ -42,7 +42,7 @@ uint16_t Modbus::ModbusRtu::send(ModbusMsg * msg)
 	return _device->write(data, cpt);
 }
 
-Modbus::ModbusMsgDirect * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t timeout)
+Modbus::ModbusMsg * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t timeout)
 {
 	int32_t retry = 0;
 	while (_fifo.empty() && (retry < max_retry))
@@ -56,7 +56,7 @@ Modbus::ModbusMsgDirect * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t tim
 		throw Modbus::ModbusException(__FILE__, __LINE__, "fifo vide !");
 	}
 	
-	ModbusMsgDirect * msg = _fifo.front();
+	ModbusMsg * msg = _fifo.front();
 	_fifo.pop();
 
 	return msg;
@@ -83,7 +83,7 @@ int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
 		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
 	}
 	
-	Modbus::ModbusMsgDirect * msg = new Modbus::ModbusMsgDirect();
+	Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
 	cpt = msg->decodeResponse(data, data_length-2);
 	if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
 	{

@@ -13,7 +13,7 @@ uint16_t Modbus::ModbusMsgFC05::getStatus()
 
 uint16_t Modbus::ModbusMsgFC05::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
     data[cpt] = (data_addr & 0xFF00) >> 8; ++cpt;
     data[cpt] = data_addr & 0x00FF; ++cpt;
@@ -25,7 +25,7 @@ uint16_t Modbus::ModbusMsgFC05::encodeQuestion(uint8_t* data, uint16_t len)
 }
 uint16_t Modbus::ModbusMsgFC05::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
     data_addr = data[cpt] << 8; ++cpt;
     data_addr |= data[cpt]; ++cpt;
@@ -38,7 +38,7 @@ uint16_t Modbus::ModbusMsgFC05::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC05::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
 
 	{
 		data_addr = data[cpt]; cpt += 1;

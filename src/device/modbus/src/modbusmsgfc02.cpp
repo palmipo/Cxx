@@ -23,7 +23,7 @@ uint16_t Modbus::ModbusMsgFC02::getDiscretInput(uint16_t addr_coils)
 
 uint16_t Modbus::ModbusMsgFC02::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
 	std::map < uint16_t, uint16_t >::iterator it = _bytes.begin();
 	if (it != _bytes.end())
@@ -39,7 +39,7 @@ uint16_t Modbus::ModbusMsgFC02::encodeQuestion(uint8_t* data, uint16_t len)
 }
 uint16_t Modbus::ModbusMsgFC02::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
 	uint16_t data_addr = data[cpt] << 8; ++cpt;
 	data_addr |= data[cpt]; ++cpt;
@@ -57,7 +57,7 @@ uint16_t Modbus::ModbusMsgFC02::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC02::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decode(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
 
 	{
 		// number of data bytes to follow

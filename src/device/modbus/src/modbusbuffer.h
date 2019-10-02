@@ -23,10 +23,8 @@ namespace Modbus
 			ModbusBuffer();
 			virtual ~ModbusBuffer();
 			
-			virtual void write(uint8_t * data, int32_t length);
+			virtual int32_t write(uint8_t * data, int32_t length);
 			virtual int32_t read(uint8_t * data, int32_t length);
-			
-			virtual int32_t decode(ModbusMsg * msg);
 
 		protected:
 			std::vector < uint8_t > _buffer;
