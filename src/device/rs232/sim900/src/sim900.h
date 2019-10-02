@@ -24,9 +24,6 @@ class SIM900 : public RS232Factory
 
 		virtual void get_clock();
 
-		static void reception_message(void *);
-		virtual int32_t analyse_message(int8_t*, int32_t);
-
 	protected:
 		virtual int32_t actionIn(PollDevice*);
 		virtual int32_t actionOut(PollDevice*);
@@ -34,9 +31,7 @@ class SIM900 : public RS232Factory
 
 	protected:
 		RS232* _serial;
-		//~ int8_t _stream[200];
-		//~ int32_t _stream_length;
-		//~ std::string _texte_sms;
+		std::string _texte_sms;
 };
 
 #endif /* SIM900_H_ */
