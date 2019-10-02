@@ -64,7 +64,9 @@ Modbus::ModbusMsg * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t timeout)
 
 int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	std::stringstream ss;
+	ss << "actionIn " << data_length;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
 	int32_t cpt = data_length-2;
 
@@ -84,7 +86,7 @@ int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
 	}
 	
 	Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
-	cpt = msg->decodeResponse(data, data_length-2);
+	msg->decodeResponse(data, cpt);
 	if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
 	{
 		_fifo.push(msg);

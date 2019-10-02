@@ -1,6 +1,8 @@
 #include "modbusbuffer.h"
 #include "modbusmsg.h"
 #include "modbusmsgheader.h"
+#include "log.h"
+#include <sstream>
 
 Modbus::ModbusBuffer::ModbusBuffer()
 {}

@@ -26,10 +26,16 @@ namespace Modbus
 			
 			virtual uint16_t encodeResponse(uint8_t *, uint16_t);
 			virtual uint16_t decodeResponse(uint8_t *, uint16_t);
-		
+
+			uint16_t tailleQuestion();
+			uint16_t tailleResponse();
+			
 		protected:
 			ModbusBuffer _buffer_in;
 			ModbusBuffer _buffer_out;
+			uint16_t _taille_question;
+			uint16_t _taille_response;
+
 	};
 }
 

@@ -140,16 +140,34 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 		device->actionIn();
 
 		uint8_t data[512];
-		int32_t len = device->read(data, 512);
-
-		std::map<std::string, TowerDevice *>::iterator it = _codec.begin();
-		while (it != _codec.end())
+		//int32_t len = device->read(data, 512);
+		int32_t retry = 0, nb, cpt = 0;
+		do
 		{
-			if (device->handler() == it->second->handler())
+			nb = device->read(data+cpt, 512-cpt);
+			cpt += nb;
+			retry += 1;
+		}
+		while (nb && (retry < 5));
+
+		{
+			std::stringstream ss;
+			ss << "cpt " << (int)cpt;
+			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		}
+		if (cpt)
+		{
+			int32_t fin = 0;
+			std::map<std::string, TowerDevice *>::iterator it = _codec.begin();
+			while (!fin && (it != _codec.end()))
 			{
-				it->second->actionIn(data, len);
+				if (device->handler() == it->second->handler())
+				{
+					it->second->actionIn(data, cpt);
+					fin = 1;
+				}
+				it++;
 			}
-			it++;
 		}
     }
 	

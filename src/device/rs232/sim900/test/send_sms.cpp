@@ -2,15 +2,20 @@
 #include "rs232factory.h"
 #include "rs232exception.h"
 #include "sim900.h"
-#include "raspii2c.h"
-#include "ada772.h"
-#include "hd44780.h"
 
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <poll.h>
 #include <cstdint>
+#include <thread>
+
+static void scrute(SIM900 * gprs, int32_t fin)
+{
+	while(!fin)
+	{
+		gprs->scrute(1000);
+	}
+}
 
 int main(int argc, char **argv)
 {
@@ -22,16 +27,10 @@ int main(int argc, char **argv)
 	
 	try
 	{
-		RS232Factory factory;
-		RS232 * serial = factory.addSerialConnection(argv[1]);
-		serial->setConfig(B9600, 8, 'N', 1, 0);
-		serial->setInterCharacterTimer(0xFF);
-		//~ serial->setBlockingReadUntilCharacter(2);
-		
-		SIM900 gprs(serial);
-		//~ gprs.atz();
-
-		//~ poll(0, 0, 60000);
+		int32_t fin = 0;
+		SIM900 gprs(argv[1]);
+		std::thread t(scrute, &gprs, &fin);
+		t.detach();
 
 		gprs.init_sms();
 		std::ifstream fic(argv[2], std::ios::in);
@@ -46,6 +45,11 @@ int main(int argc, char **argv)
 			
 			fic.close();
 		}
+
+		std::this_thread::sleep_for(std::chrono::seconds(600));
+
+		fin = 1;
+		t.join();
 	}
 	catch(RS232Exception & e)
 	{
@@ -57,6 +61,5 @@ int main(int argc, char **argv)
 		std::cerr << "erreur" << std::endl;
 		return -1;
 	}
-
 	return 0;
 }

@@ -52,7 +52,6 @@ int main(int argc, char **argv)
 		Modbus::ModbusFactory factory;
 		// Modbus::ModbusChannel * sock = (Modbus::ModbusChannel *)factory.tcp(argv[1]);
 		Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.rtu(argv[1], 19200, 1, 1);
-		//~ Modbus::ModbusChannel * sock2 = (Modbus::ModbusChannel *)factory.rtu(argv[2], 19200, 1, 1);
 
 		std::thread t1(thread_start, &factory, &fin);
 		t1.detach();
@@ -63,11 +62,6 @@ int main(int argc, char **argv)
 
 		uint16_t len = 0;
 		len = sock1->sendFC(&msg1);
-		//~ len = sock2->sendFC(&msg1);
-
-		// factory.scrute(1000);
-
-		// attente de la reponse
 
 		len = sock1->recvFC(&msg1);
 		if (len)
@@ -79,22 +73,10 @@ int main(int argc, char **argv)
 			//~ Log::getLogger()->debug(__FILE__, __LINE__, "TCC : " << (int)msg1.getRegister(11101));
 		}
 
-		//~ len = sock2->recvFC(&msg1);
-		//~ if (len)
-		{
-			//~ Log::getLogger()->debug(__FILE__, __LINE__, "sock->recvFC() : " << len);
-			//~ Log::getLogger()->debug(__FILE__, __LINE__, "slave addr : " << (int)msg1.slaveAddress());
-			//~ Log::getLogger()->debug(__FILE__, __LINE__, "fonction code : " << (int)msg1.functionCode());
-			//~ Log::getLogger()->debug(__FILE__, __LINE__, "error code : " << (int)msg1.errorCode());
-			//~ Log::getLogger()->debug(__FILE__, __LINE__, "TCC : " << (int)msg1.getRegister(11101));
-		}
-
-		// uint8_t data[512];
-		// len = sock->receiveDirect(data, 512);
+		std::this_thread::sleep_for(std::chrono::seconds(60));
 
 		// arret du thread secondaire
 		fin = 1;
-		// Log::getLogger()->debug(__FILE__, __LINE__, "thread::join()");
 		t1.join();
 	}
 	catch(Modbus::ModbusException e)
