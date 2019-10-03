@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 		gprs.init_sms();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		gprs.send_sms("+33695245395", "salut les lulus");
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		// std::this_thread::sleep_for(std::chrono::seconds(1));
 		/*
 		std::ifstream fic(argv[2], std::ios::in);
 		if (fic)
