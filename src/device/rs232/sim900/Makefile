@@ -1,4 +1,5 @@
 OBJECTS = \
+	bin/sim900buffer.o \
 	bin/sim900.o
 
 POLL_PWD = ../../../ctrl/raspberry/factory

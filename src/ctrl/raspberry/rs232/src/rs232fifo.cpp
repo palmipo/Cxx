@@ -26,11 +26,10 @@ int32_t RS232Fifo::read(uint8_t * msg, int32_t length, int32_t max_retry, int32_
 		throw RS232Exception(__FILE__, __LINE__, "fifo vide !");
 	}
 
-	int32_t len = 0;
 	RS232Buffer * buffer = _fifo.front();
 	_fifo.pop();
 
-	len = buffer->read(msg, length);
+	int32_t len = buffer->read(msg, length);
 	delete buffer;
 
 	return len;
