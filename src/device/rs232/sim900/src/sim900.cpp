@@ -12,9 +12,10 @@
 // 115200 8N1
 SIM900::SIM900(const std::string & device)
 : RS232Factory()
+, _buffer(0)
 {
 	_serial = add(device);
-	_serial->setConfig(B9600, 8, 'N', 1, 0);
+	_serial->setConfig(B115200, 8, 'N', 1, 0);
 	// _serial->setInterCharacterTimer(0xFF);
 	// _serial->setBlockingReadUntilCharacter(2);
 }
@@ -22,6 +23,7 @@ SIM900::SIM900(const std::string & device)
 SIM900::~SIM900()
 {
 	send_cmd("ATE1");
+	delete _buffer;
 }
 
 int32_t SIM900::send_cmd(const std::string & cmd)
@@ -210,35 +212,38 @@ int32_t SIM900::actionIn(PollDevice * device)
 		nb = device->read(data+cpt, 512-cpt);
 		cpt += nb;
 		retry += 1;
-	}
-	while (nb && (retry < max_retry) && (data[cpt-2] != 0xd) && (data[cpt-1] != 0xa));
-	
-	std::string cmd((const char *)data);
-	{
-		std::stringstream ss;
-		ss << "=> " << cmd << " <=";
-		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-	}
-	
-
-	if (cmd.find("+") != 0)
-	{
-		Sim900Buffer * buffer = new Sim900Buffer();
-		buffer->write(data, cpt);
-		_fifo.push(buffer);
-	}
-	else
-	{
-		if (cmd.find("+CMGR") != std::string::npos)
+		if ((cpt > 2) && (data[cpt-2] == 0xd) && (data[cpt-1] == 0xa))
 		{
-			/*
-			+CMGR: "REC READ","+33695245395","","19/10/03,07:42:21+08"
-			Hello
+			std::string cmd((const char *)data);
+			{
+				std::stringstream ss;
+				ss << "=> " << cmd << " <=";
+				Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+			}
+			
 
-			OK
-			*/
+			if (cmd.find("+") != 0)
+			{
+				Sim900Buffer * buffer = new Sim900Buffer();
+				buffer->write(data, cpt);
+				_fifo.push(buffer);
+			}
+			else
+			{
+				if (cmd.find("+CMGR") != std::string::npos)
+				{
+					/*
+					+CMGR: "REC READ","+33695245395","","19/10/03,07:42:21+08"
+					Hello
+
+					OK
+					*/
+				}
+			}
 		}
 	}
+	while (nb && (retry < max_retry));
+	
 
 	return cpt;
 }

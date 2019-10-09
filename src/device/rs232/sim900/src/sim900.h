@@ -46,7 +46,7 @@ class SIM900 : public RS232Factory
 
 	protected:
 		RS232* _serial;
-		std::string _texte_sms;
+		Sim900Buffer * _buffer;
 		std::queue < Sim900Buffer * > _fifo;
 };
 
