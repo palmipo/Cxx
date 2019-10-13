@@ -5,18 +5,29 @@ BMP280::BMP280(uint8_t addr, I2C * i2c_ctrl)
 : DeviceI2C(0x77 | (addr & 0x1), i2c_ctrl)
 {}
 
-void BMP280::init(uint8_t osrs_t, uint8_t osrs_p, uint8_t mode, uint8_t t_sb, uint8_t filter)
+void BMP280::setSampling(uint8_t osrs_t, uint8_t osrs_h, uint8_t osrs_p, uint8_t mode, uint8_t t_sb, uint8_t filter)
 {
 	uint8_t spi3w_en = 0;
 	uint8_t buffer[24];
 
+	/* register control => MODE_SLEEP */
 	buffer[0] = 0xF4;
-	buffer[1] = ((osrs_t & 0x7) << 5) | ((osrs_p & 0x7) << 2) | (mode & 0x3);
+	buffer[1] = 0x00;
+	_twi->set (_address, buffer, 2);
+
+	/* register himidity, config, control */
+	buffer[0] = 0xF3;
+	buffer[1] = osrs_h & 0x03;
 	buffer[2] = ((t_sb & 0x7) << 5) | ((filter & 0x7) << 2) | (spi3w_en ? 0x1 : 0x0);
-	_twi->set (_address, buffer, 3);
-	
-	uint8_t cmd2 = 0x88;
-	_twi->transfert (_address, &cmd2, 1, buffer, 24);
+	buffer[3] = ((osrs_t & 0x7) << 5) | ((osrs_p & 0x7) << 2) | (mode & 0x3);
+	_twi->set (_address, buffer, 4);
+}
+
+void BMP280::readCoefficients(uint8_t osrs_t, uint8_t osrs_p, uint8_t mode, uint8_t t_sb, uint8_t filter)
+{
+	/* register dig */
+	uint8_t cmd = 0x88;
+	_twi->transfert (_address, &cmd, 1, buffer, 24);
 	dig_T1 = buffer[0] | (buffer[1] << 8);
 	dig_T2 = buffer[2] | (buffer[3] << 8);
 	dig_T3 = buffer[4] | (buffer[5] << 8);
@@ -29,11 +40,45 @@ void BMP280::init(uint8_t osrs_t, uint8_t osrs_p, uint8_t mode, uint8_t t_sb, ui
 	dig_P7 = buffer[18] | (buffer[19] << 8);
 	dig_P8 = buffer[20] | (buffer[21] << 8);
 	dig_P9 = buffer[22] | (buffer[23] << 8);
+
+	/* register dig */
+	cmd = 0xA1;
+	_twi->transfert (_address, &cmd, 1, buffer, 1);
+	dig_H1 = buffer[0];
+	
+	cmd = 0xE1;
+	_twi->transfert (_address, &cmd, 1, buffer, 2);
+	dig_H2 = buffer[0] | (buffer[1] << 8);
+	
+	cmd = 0xE3;
+	_twi->transfert (_address, &cmd, 1, buffer, 1);
+	dig_H3 = buffer[0];
+	
+	cmd = 0xE4;
+	_twi->transfert (_address, &cmd, 1, buffer, 2);
+	dig_H4 = (buffer[0] << 4) | (buffer[1] & 0xF);
+	
+	cmd = 0xE5;
+	_twi->transfert (_address, &cmd, 1, buffer, 2);
+	dig_H5 = (buffer[0] << 4) | (buffer[1] >> 4);
+	
+	cmd = 0xE7;
+	_twi->transfert (_address, &cmd, 1, buffer, 1);
+	dig_H6 = buffer[0];
 }
 
 uint8_t BMP280::id()
 {
 	uint8_t cmd = 0xD0;
+	uint8_t buffer;
+	_twi->transfert (_address, &cmd, 1, &buffer, 1);
+	
+	return (buffer == 0x60);
+}
+
+uint8_t BMP280::version()
+{
+	uint8_t cmd = 0xD1;
 	uint8_t buffer;
 	_twi->transfert (_address, &cmd, 1, &buffer, 1);
 	
@@ -44,6 +89,16 @@ void BMP280::reset()
 {
 	uint8_t cmd[2] = { 0xE0, 0xB6 };
 	_twi->set (_address, cmd, 2);
+	
+	/* attendre 300 ms */
+	std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+	readCorfficients();
+	
+	setSampling();
+	
+	/* attendre 100 ms */
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 uint8_t BMP280::status()

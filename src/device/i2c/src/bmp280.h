@@ -31,6 +31,12 @@ class BMP280 : public DeviceI2C
 		int32_t dig_P7;
 		int32_t dig_P8;
 		int32_t dig_P9;
+		int32_t dig_H1;
+		int32_t dig_H2;
+		int32_t dig_H3;
+		int32_t dig_H4;
+		int32_t dig_H5;
+		int32_t dig_H6;
 		int32_t t_fine;
 		
 		double bmp280_compensate_T(int32_t adc_T);

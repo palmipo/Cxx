@@ -20,15 +20,12 @@ RS232 * RS232Factory::add(const std::string & device_p)
 		return get(device_p);
 	}
 	catch(...)
-    {
+	{
 		RS232 * serial = new RS232(device_p);
-		if (serial)
-		{
-			_port[device_p] = serial->handler();
-			PollFactory::add(serial);
-			return serial;
-		}
-    }
+		_port[device_p] = serial->handler();
+		PollFactory::add(serial);
+		return serial;
+	}
 }
 
 RS232Fifo * RS232Factory::addFifo(const std::string & device_p)
@@ -38,15 +35,12 @@ RS232Fifo * RS232Factory::addFifo(const std::string & device_p)
 		return (RS232Fifo *)get(device_p);
 	}
 	catch(...)
-    {
+	{
 		RS232Fifo * serial = new RS232Fifo(device_p);
-		if (serial)
-		{
-			_port[device_p] = serial->handler();
-			PollFactory::add(serial);
-			return serial;
-		}
-    }
+		_port[device_p] = serial->handler();
+		PollFactory::add(serial);
+		return serial;
+	}
 }
 
 RS232 * RS232Factory::get(const std::string & device_p)

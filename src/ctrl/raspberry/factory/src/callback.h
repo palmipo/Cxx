@@ -1,19 +1,6 @@
 #ifndef CALLBACK_H
 #define CALLBACK_H
 
-#include "batratypes.h"
-#include <map>
-
-class CallbackContext
-{
-	public:
-		CallbackContext()
-		{}
-
-		virtual ~CallbackContext()
-		{}
-}
-
 template <class T>
 class Callback
 {
@@ -26,7 +13,7 @@ class Callback
 		virtual ~Callback()
 		{}
 
-		void call(CallbackContext * ctx)
+		void call(void * ctx)
 		{
 			if (_callback)
 			{

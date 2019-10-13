@@ -22,7 +22,13 @@ SIM900::SIM900(const std::string & device)
 
 SIM900::~SIM900()
 {
-	send_cmd("ATE1");
+	try
+	{
+		send_cmd("ATE1");
+	}
+	catch(...)
+	{}
+
 	delete _buffer;
 }
 
@@ -45,7 +51,7 @@ int32_t SIM900::send_cmd(const std::string & cmd)
 	
 	if (_fifo.empty())
 	{
-		throw Sim900Exception(__FILE__, __LINE__, "fifo vide !");
+		return 1;
 	}
 
 	Sim900Buffer * buffer = _fifo.front();
@@ -56,7 +62,7 @@ int32_t SIM900::send_cmd(const std::string & cmd)
 	len = buffer->read((uint8_t*)recv.data(), 512);
 	delete buffer;
 	
-	if (recv.find("OK") != std::string::npos)
+	if (recv.find("OK") == std::string::npos)
 	{
 		return 1;
 	}
@@ -66,100 +72,85 @@ int32_t SIM900::send_cmd(const std::string & cmd)
 
 void SIM900::atz()
 {
-	send_cmd("ATZ");
+	try
+	{
+		send_cmd("ATZ");
+	}
+	catch(...)
+	{}
 }
 
 void SIM900::init_sms()
 {
-	send_cmd("AT");
+	try
+	{
+		send_cmd("AT");
+	}
+	catch(...)
+	{}
 
-	send_cmd("ATE0");
+	try
+	{
+		send_cmd("ATE0");
+	}
+	catch(...)
+	{}
 
-	send_cmd("AT+CMGF=1");
+	try
+	{
+		send_cmd("AT+CMGF=1");
+	}
+	catch(...)
+	{}
 }
 
 void SIM900::get_clock()
 {
+	try
+	{
 	send_cmd("AT+CCLK?");
+	}
+	catch(...)
+	{}
 }
 
 void SIM900::send_call(const std::string & num_tel)
 {
-	std::stringstream ss2;
-	ss2 << "ATDT " << num_tel << ";";
-	send_cmd(ss2.str());
+	try
+	{
+		std::stringstream ss2;
+		ss2 << "ATDT " << num_tel << ";";
+		send_cmd(ss2.str());
+	}
+	catch(...)
+	{}
 }
 
 void SIM900::list_sms()
 {
-	std::stringstream ss2;
-	ss2 << (int8_t)13 << (int8_t)10 << "AT+CMGL=\"ALL\"" << (int8_t)13 << (int8_t)10;
-	std::string cmd = ss2.str();
-	Log::getLogger()->debug(__FILE__, __LINE__, cmd);
-	_serial->write((uint8_t *)cmd.c_str(), cmd.size());
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	try
+	{
+		std::stringstream ss2;
+		ss2 << (int8_t)13 << (int8_t)10 << "AT+CMGL=" << (int8_t)0x22 << "ALL" << (int8_t)0x22 << (int8_t)13 << (int8_t)10;
+		std::string cmd = ss2.str();
+		Log::getLogger()->debug(__FILE__, __LINE__, cmd);
+		_serial->write((uint8_t *)cmd.c_str(), cmd.size());
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	catch(...)
+	{}
 }
 
 void SIM900::write_sms(const std::string & num_tel, const std::string & texte)
 {
+	_texte_sms = texte;
+
 	// envoi sms
 	std::stringstream ss;
 	ss << "AT+CMGS=" << (int8_t)0x22 << num_tel << (int8_t)0x22 << (int8_t)0x0D << (int8_t)0x0A;
 	std::string cmd = ss.str();
 	Log::getLogger()->debug(__FILE__, __LINE__, cmd);
 	_serial->write((uint8_t *)cmd.c_str(), cmd.size());
-	
-	int32_t max_retry = 10;
-	int32_t timeout = 1000;
-	int32_t retry = 0;
-	while (_fifo.empty() && (retry < max_retry))
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
-		retry += 1;
-	}
-	
-	if (_fifo.empty())
-	{
-		throw Sim900Exception(__FILE__, __LINE__, "fifo vide !");
-	}
-
-	Sim900Buffer * buffer = _fifo.front();
-	_fifo.pop();
-
-	int32_t len = 0;
-	std::string recv(512, 0);
-	len = buffer->read((uint8_t *)recv.data(), 512);
-	delete buffer;
-
-	// attendre >_
-	if (recv.find(">") != std::string::npos)
-	{
-		_serial->write((uint8_t *)_texte_sms.c_str(), _texte_sms.size());
-		int8_t ctrl_z = 0x1A;
-		_serial->write((uint8_t *)&ctrl_z, 1);
-	}
-
-	
-	max_retry = 10;
-	timeout = 1000;
-	retry = 0;
-	while (_fifo.empty() && (retry < max_retry))
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
-		retry += 1;
-	}
-	
-	if (_fifo.empty())
-	{
-		throw Sim900Exception(__FILE__, __LINE__, "fifo vide !");
-	}
-
-	buffer = _fifo.front();
-	_fifo.pop();
-
-	len = 0;
-	len = buffer->read((uint8_t *)recv.data(), 512);
-	delete buffer;
 }
 
 void SIM900::read_sms(int32_t num)
@@ -212,33 +203,36 @@ int32_t SIM900::actionIn(PollDevice * device)
 		nb = device->read(data+cpt, 512-cpt);
 		cpt += nb;
 		retry += 1;
-		if ((cpt > 2) && (data[cpt-2] == 0xd) && (data[cpt-1] == 0xa))
+
+		if (cpt > 1)
 		{
-			std::string cmd((const char *)data);
+			if ((data[cpt-2] == 0xd) && (data[cpt-1] == 0xa))
 			{
-				std::stringstream ss;
-				ss << "=> " << cmd << " <=";
-				Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-			}
-			
-
-			if (cmd.find("+") != 0)
-			{
-				Sim900Buffer * buffer = new Sim900Buffer();
-				buffer->write(data, cpt);
-				_fifo.push(buffer);
-			}
-			else
-			{
-				if (cmd.find("+CMGR") != std::string::npos)
+				if (data[0] == '+' )
 				{
-					/*
-					+CMGR: "REC READ","+33695245395","","19/10/03,07:42:21+08"
-					Hello
+					Log::getLogger()->info(__FILE__, __LINE__, (const char *)data);
+					// if (cmd.find("+CMGR") != std::string::npos)
+					{
+						/*
+						+CMGR: "REC READ","+33695245395","","19/10/03,07:42:21+08"
+						Hello
 
-					OK
-					*/
+						OK
+						*/
+					}
 				}
+				else
+				{
+					Sim900Buffer * buffer = new Sim900Buffer();
+					buffer->write(data, cpt);
+					_fifo.push(buffer);
+				}
+			}
+			else if ((data[cpt-2] == '>') && (data[cpt-1] == 0x20))
+			{
+				device->write((uint8_t *)_texte_sms.c_str(), _texte_sms.length());
+				uint8_t ctrl_z = 0x1A;
+				device->write(&ctrl_z, 1);
 			}
 		}
 	}

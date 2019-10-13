@@ -25,7 +25,7 @@ clean:
 	$(MAKE) -C $(I2C_PWD) $@
 	$(MAKE) -C $(I2C_DEVICE_PWD) $@
 	$(MAKE) -C $(HD44780_PWD) $@
-	rm bin/*.o *.dll *.so send_sms
+	rm -f bin/*.o *.dll *.so send_sms
 
 send_sms: bin/send_sms.o
 	$(MAKE) libpoll.so

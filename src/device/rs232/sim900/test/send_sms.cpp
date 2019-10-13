@@ -20,13 +20,11 @@ static void scrute(SIM900 * gprs, int32_t * fin)
 
 int main(int argc, char **argv)
 {
-	/*
 	if (argc != 4)
 	{
-		std::cerr << argc << argv[0] << " </dev/ttyAMA0> <numero_tel.txt> <message>" << std::endl;
+		std::cerr << argc << argv[0] << " </dev/ttyS0> <numero_tel.txt> <message>" << std::endl;
 		return -1;
 	}
-	*/
 	
 	try
 	{
@@ -36,12 +34,11 @@ int main(int argc, char **argv)
 		t.detach();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 
-		// gprs.send_call("0695245395");
 		gprs.init_sms();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-		gprs.write_sms("+33695245395", "salut les lulus");
-		// std::this_thread::sleep_for(std::chrono::seconds(1));
-		/*
+		
+		gprs.list_sms();
+		std::this_thread::sleep_for(std::chrono::seconds(10));
+
 		std::ifstream fic(argv[2], std::ios::in);
 		if (fic)
 		{
@@ -49,12 +46,11 @@ int main(int argc, char **argv)
 			while (getline(fic, ligne))
 			{
 				std::cout << ligne << std::endl;
-				gprs.send_sms(ligne, argv[3]);
+				gprs.write_sms(ligne, argv[3]);
 			}
 			
 			fic.close();
 		}
-		*/
 
 		std::this_thread::sleep_for(std::chrono::seconds(60));
 

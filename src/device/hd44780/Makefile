@@ -17,7 +17,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm bin/*.o *.so
+	rm -f bin/*.o *.so
 
 test_hd44780: bin/test_hd44780.o libada772.so libi2cdevice.so libraspii2c.so
 	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lada772
