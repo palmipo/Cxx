@@ -1,6 +1,4 @@
 OBJECTS = \
-	bin/towerdevice.o \
-	bin/genericdevice.o \
 	bin/pollfactory.o \
 	bin/polldevice.o \
 	bin/pollmutex.o \
