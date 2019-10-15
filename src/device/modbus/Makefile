@@ -44,6 +44,17 @@ clean:
 	$(MAKE) -C $(SOCKET_PWD) $@
 	rm -f bin/*.o *.so *.dll
 
+fwupd: bin/fwupd.o
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(MAKE) libsocket.so
+	$(MAKE) libmodbus.so
+	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+
+bin/fwupd.o: test/fwupd.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 modbus_cmd: bin/modbus_cmd.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so

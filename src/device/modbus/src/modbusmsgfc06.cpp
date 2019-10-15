@@ -1,5 +1,6 @@
 #include "modbusmsgfc06.h"
 #include "modbusmsgexception.h"
+#include "log.h"
 
 Modbus::ModbusMsgFC06::ModbusMsgFC06()
 : ModbusMsgHeader(0x06)
@@ -16,6 +17,8 @@ void Modbus::ModbusMsgFC06::setRegister(uint16_t addr, uint16_t value)
 
 uint16_t Modbus::ModbusMsgFC06::encodeQuestion(uint8_t* data, uint16_t len)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "encodeQuestion");
+
 	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
 	if (cpt < len)

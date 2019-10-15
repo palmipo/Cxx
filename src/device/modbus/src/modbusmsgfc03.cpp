@@ -31,6 +31,8 @@ uint16_t Modbus::ModbusMsgFC03::getRegister(uint16_t num)
 
 uint16_t Modbus::ModbusMsgFC03::encodeQuestion(uint8_t* data, uint16_t len)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "encodeQuestion");
+
 	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
 
     if (cpt < len)
@@ -59,6 +61,8 @@ uint16_t Modbus::ModbusMsgFC03::encodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC03::decodeQuestion(uint8_t* data, uint16_t len)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "decodeQuestion");
+
 	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
 
     if (cpt < len)
@@ -87,6 +91,8 @@ uint16_t Modbus::ModbusMsgFC03::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC03::decodeResponse(uint8_t* data, uint16_t len)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "decodeResponse");
+
 	{
 		std::stringstream ss;
 		ss << "decodeResponse => len " << len;

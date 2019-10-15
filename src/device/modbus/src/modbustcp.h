@@ -20,7 +20,7 @@ namespace Modbus
 	class MODBUS_DLL ModbusTcp : public ModbusChannel
 	{
         public:
-			ModbusTcp(uint8_t, PollDevice *);
+			ModbusTcp(PollDevice *);
 			virtual ~ModbusTcp();
 
 		protected:

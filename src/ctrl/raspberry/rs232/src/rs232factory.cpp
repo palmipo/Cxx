@@ -52,7 +52,7 @@ RS232 * RS232Factory::get(const std::string & device_p)
     }
 
 	std::stringstream ss;
-	ss << "device not find : " << device_p;
+	ss << "device not known : " << device_p;
 	throw RS232Exception(__FILE__, __LINE__, ss.str());
 }
 
@@ -69,18 +69,3 @@ void RS232Factory::del(const std::string & device_p)
 	ss << "device not find : " << device_p;
 	throw RS232Exception(__FILE__, __LINE__, ss.str());
 }
-
-//~ int32_t RS232Factory::actionIn(PollDevice* device)
-//~ {
-    //~ return device->actionIn();
-//~ }
-
-//~ int32_t RS232Factory::actionOut(PollDevice* device)
-//~ {
-    //~ return device->actionOut();
-//~ }
-
-//~ int32_t RS232Factory::actionError(PollDevice* device)
-//~ {
-    //~ return device->actionError();
-//~ }

@@ -57,7 +57,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host)
     add(tcp);
 
     // 
-    Modbus::ModbusTcp * modbus_tcp = new Modbus::ModbusTcp(0, tcp);
+    Modbus::ModbusTcp * modbus_tcp = new Modbus::ModbusTcp(tcp);
     if (modbus_tcp)
     {
 	_codec[host] = modbus_tcp;
@@ -112,7 +112,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
     serial->setInterCharacterTimer(1);
     add(serial);
 
-    Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(0, serial);
+    Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(serial);
     if (modbus_rtu)
     {
                 _codec[device] = modbus_rtu;
@@ -150,11 +150,12 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 		}
 		while (nb && (retry < 5));
 
-		{
-			std::stringstream ss;
-			ss << "cpt " << (int)cpt;
-			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		}
+		// {
+			// std::stringstream ss;
+			// ss << "cpt " << (int)cpt;
+			// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		// }
+
 		if (cpt)
 		{
 			int32_t fin = 0;
@@ -184,7 +185,7 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionError(PollDevice* device)
 {
-        if (device)
+	if (device)
 		return device->actionError();
 
 	return 0;

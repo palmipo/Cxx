@@ -120,20 +120,20 @@ uint16_t Modbus::ModbusMsgHeader::encodeHeader(uint8_t* data, uint16_t len)
  */
 uint16_t Modbus::ModbusMsgHeader::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t length = Modbus::ModbusMsg::encodeQuestion(data, len);
-	return encodeHeader(data, length);
+	// uint16_t length = Modbus::ModbusMsg::encodeQuestion(data, len);
+	return encodeHeader(data, len);
 }
 
 uint16_t Modbus::ModbusMsgHeader::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t length = Modbus::ModbusMsg::decodeQuestion(data, len);
-	return decodeHeader(data, length);
+	// uint16_t length = Modbus::ModbusMsg::decodeQuestion(data, len);
+	return decodeHeader(data, len);
 }
 
 uint16_t Modbus::ModbusMsgHeader::encodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t length = Modbus::ModbusMsg::encodeResponse(data, len);
-	return encodeHeader(data, length);
+	// uint16_t length = Modbus::ModbusMsg::encodeResponse(data, len);
+	return encodeHeader(data, len);
 }
 
 uint16_t Modbus::ModbusMsgHeader::decodeResponse(uint8_t* data, uint16_t len)
@@ -143,6 +143,6 @@ uint16_t Modbus::ModbusMsgHeader::decodeResponse(uint8_t* data, uint16_t len)
 		ss << "decodeResponse => len " << len;
 		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	}
-	uint16_t length = Modbus::ModbusMsg::decodeResponse(data, len);
-	return decodeHeader(data, length);
+	// uint16_t length = Modbus::ModbusMsg::decodeResponse(data, len);
+	return decodeHeader(data, len);
 }

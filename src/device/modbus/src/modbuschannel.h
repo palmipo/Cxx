@@ -22,7 +22,7 @@ namespace Modbus
 	class MODBUS_DLL ModbusChannel : public TowerDevice
 	{
 		public:
-			ModbusChannel(uint8_t, PollDevice *);
+			ModbusChannel(PollDevice *);
 
 			virtual uint16_t sendFC(ModbusMsg *);
 			virtual uint16_t recvFC(ModbusMsg *, int32_t = 10, int32_t = 1000);
@@ -33,7 +33,6 @@ namespace Modbus
 
 		protected:
 			std::queue < ModbusMsg * > _fifo;
-			uint8_t _slave_address;
 	};
 }
 #endif

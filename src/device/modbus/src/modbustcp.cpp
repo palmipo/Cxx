@@ -8,8 +8,8 @@
 #include <sstream>
 #include <thread>
 
-Modbus::ModbusTcp::ModbusTcp(uint8_t slv_addr, PollDevice * socket)
-: ModbusChannel(slv_addr, socket)
+Modbus::ModbusTcp::ModbusTcp(PollDevice * socket)
+: ModbusChannel(socket)
 , _transaction_id(1)
 , _protocol_id(0)
 {}
@@ -90,16 +90,16 @@ int32_t Modbus::ModbusTcp::actionIn(uint8_t * trame, int32_t len)
 
 		Modbus::ModbusMsgDirect * msg = new Modbus::ModbusMsgDirect();
 		len = msg->decodeResponse(trame+cpt, len-cpt);
-		if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
+		// if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
 		{
 			_fifo.push(msg);
 		}
-		else
+		// else
 		{
-			std::stringstream ss;
-			ss << "message poubelle id=" << (int)msg->slaveAddress() << " own id=" << (int)_slave_address;
-			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-			delete msg;
+			// std::stringstream ss;
+			// ss << "message poubelle id=" << (int)msg->slaveAddress() << " own id=" << (int)_slave_address;
+			// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+			// delete msg;
 		}
 	}
 

@@ -21,8 +21,8 @@
 #include <sstream>
 #include <thread>
 
-Modbus::ModbusRtu::ModbusRtu(uint8_t slv_addr, PollDevice * serial)
-: ModbusChannel(slv_addr, serial)
+Modbus::ModbusRtu::ModbusRtu(PollDevice * serial)
+: ModbusChannel(serial)
 {}
 
 
@@ -31,6 +31,8 @@ Modbus::ModbusRtu::~ModbusRtu()
 
 uint16_t Modbus::ModbusRtu::send(ModbusMsg * msg)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "send");
+
 	uint8_t data[512];
 	uint16_t cpt = msg->encodeQuestion(data, 512);
 
@@ -44,6 +46,8 @@ uint16_t Modbus::ModbusRtu::send(ModbusMsg * msg)
 
 Modbus::ModbusMsg * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t timeout)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "recv");
+
 	int32_t retry = 0;
 	while (_fifo.empty() && (retry < max_retry))
 	{
@@ -85,15 +89,15 @@ int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
 		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
 	}
 	
-	Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
+	Modbus::ModbusMsgDirect * msg = new Modbus::ModbusMsgDirect();
 	msg->decodeResponse(data, cpt);
-	if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
+	// if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
 	{
 		_fifo.push(msg);
 	}
-	else
+	// else
 	{
-		delete msg;
+		// delete msg;
 	}
 
 	return cpt;
@@ -167,8 +171,6 @@ static const uint8_t table_crc_lo[] = {
 
 uint16_t Modbus::ModbusRtu::calcul_crc(uint8_t * buffer, int32_t buffer_length)
 {
-	// log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("Modbus::ModbusRtu"));
-
 	uint8_t crc_hi = 0xFF; /* high CRC byte initialized */
 	uint8_t crc_lo = 0xFF; /* low CRC byte initialized */
 	uint32_t i; /* will index into CRC lookup */

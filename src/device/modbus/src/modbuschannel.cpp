@@ -6,9 +6,8 @@
 #include <thread>
 #include <sstream>
 
-Modbus::ModbusChannel::ModbusChannel(uint8_t slv_addr, PollDevice * device)
+Modbus::ModbusChannel::ModbusChannel(PollDevice * device)
 : TowerDevice(device)
-, _slave_address(slv_addr)
 {}
 
 uint16_t Modbus::ModbusChannel::sendFC(ModbusMsg * msg)
@@ -18,15 +17,18 @@ uint16_t Modbus::ModbusChannel::sendFC(ModbusMsg * msg)
 
 uint16_t Modbus::ModbusChannel::recvFC(ModbusMsg * msg, int32_t max_retry, int32_t timeout)
 {
-	ModbusMsg * direct = (ModbusMsg *)recv(max_retry, timeout);
-	
-	if (direct)
+	try
 	{
-		uint8_t data[512];
-		direct->encodeResponse(data, 512);
+		ModbusMsg * direct = (ModbusMsg *)recv(max_retry, timeout);
 
-		msg->decodeResponse(data, direct->tailleResponse());
+		uint8_t data[512];
+		direct->decodeResponse(data, 512);
+
+		msg->encodeResponse(data, direct->tailleResponse());
 		delete direct;
+	}
+	catch(Modbus::ModbusException)
+	{
 	}
 
 	return 0;
