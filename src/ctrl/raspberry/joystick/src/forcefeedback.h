@@ -11,29 +11,22 @@
  * Created on 20 janvier 2017, 19:26
  */
 
-#ifndef JOYSTICK_H
-#define JOYSTICK_H
-
-#if defined __MINGW32__ ||  defined __CYGWIN__
-#ifdef MAKE_JOYSTICK_DLL
-#define JOYSTICK_DLL __declspec(dllexport)
-#else
-#define JOYSTICK_DLL __declspec(dllimport)
-#endif
-#else
-#define JOYSTICK_DLL
-#endif
+#ifndef FORCE_FEEDBACK_H
+#define FORCE_FEEDBACK_H
 
 #include "polldevice.h"
 #include <linux/joystick.h>
 #include <poll.h>
 #include <string>
 
-class JOYSTICK_DLL Joystick : public PollDevice
+class ForceFeedback : public PollDevice
 {
 	public:
-		Joystick(const std::string & jsX);
-		virtual ~Joystick();
+		ForceFeedback(const std::string &);
+		virtual ~ForceFeedback();
+
+		virtual void doEffect();
+		virtual int32_t effectCount();
 
 		virtual int32_t actionIn();
 		virtual int32_t actionOut();
@@ -42,9 +35,9 @@ class JOYSTICK_DLL Joystick : public PollDevice
 		virtual int32_t write(uint8_t *, int32_t);
 		virtual int32_t read(uint8_t *, int32_t);
 
-		virtual uint32_t buttonCount();
-		virtual uint32_t axisCount();
+	private:
+		struct ff_effect effects;
 };
 
-#endif /* JOYSTICK_H */
+#endif /* FORCE_FEEDBACK_H */
 

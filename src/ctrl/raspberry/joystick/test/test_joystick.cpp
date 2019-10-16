@@ -1,38 +1,60 @@
 #include "joystick.h"
+#include "forcefeedback.h"
+#include "pollfactory.h"
 #include <time.h>
 #include <sstream>
 #include <iostream>
 #include <iomanip>
 
-void bouton(unsigned char id, short value, void * param)
+class Factory : public PollFactory
 {
-	std::cout << "bouton[" << (int)id << "] = " << value << std::endl;
-}
+	public:
+		Factory()
+		{}
+		
+		int32_t actionIn(PollDevice * device)
+		{
+			device->actionIn();
+			
+			uint8_t data[4];
+			int32_t len = device->read(data, 4);
+			
+			return len;
+		}
 
-void axe(unsigned char id, short value, void * param)
-{
-	std::cout << "axe[" << (int)id << "] = " << value << std::endl;
-}
+		int32_t actionOut(PollDevice*)
+		{
+			return 0;
+		}
+
+		int32_t actionError(PollDevice*)
+		{
+			return 0;
+		}
+};
 
 int main(int argc, char **argv)
 {
 	if (argc < 3)
 	{
-		std::cout << argv[0] << "</dev/input/jsX> </dev/input/eventXX>" << std::endl;
+		std::cout << argv[0] << " </dev/input/jsX> </dev/input/eventX>" << std::endl;
 		return -1;
 	}
 
 	try
 	{
-		Joystick manette(argv[1], argv[2]);
-		manette.setButtonCallback(bouton, 0);
-		manette.setAxisCallback(axe, 0);
+		Joystick manette(argv[1]);
 		manette.buttonCount();
 		manette.axisCount();
+		
+		ForceFeedback ff(argv[2]);
 
+		Factory factory;
+		factory.add(&manette);
+		factory.add(&ff);
 		while (1)
 		{
-			manette.scrute(30000);
+			factory.scrute(30000);
 		}
 	}
 	catch(...)
