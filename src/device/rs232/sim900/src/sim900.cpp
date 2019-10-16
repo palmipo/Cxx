@@ -22,12 +22,7 @@ SIM900::SIM900(const std::string & device)
 
 SIM900::~SIM900()
 {
-	try
-	{
-		send_cmd("ATE1");
-	}
-	catch(...)
-	{}
+	send_cmd("ATE1");
 
 	delete _buffer;
 }
@@ -82,48 +77,21 @@ void SIM900::atz()
 
 void SIM900::init_sms()
 {
-	try
-	{
-		send_cmd("AT");
-	}
-	catch(...)
-	{}
-
-	try
-	{
-		send_cmd("ATE0");
-	}
-	catch(...)
-	{}
-
-	try
-	{
-		send_cmd("AT+CMGF=1");
-	}
-	catch(...)
-	{}
+	send_cmd("AT");
+	send_cmd("ATE0");
+	send_cmd("AT+CMGF=1");
 }
 
 void SIM900::get_clock()
 {
-	try
-	{
 	send_cmd("AT+CCLK?");
-	}
-	catch(...)
-	{}
 }
 
 void SIM900::send_call(const std::string & num_tel)
 {
-	try
-	{
-		std::stringstream ss2;
-		ss2 << "ATDT " << num_tel << ";";
-		send_cmd(ss2.str());
-	}
-	catch(...)
-	{}
+	std::stringstream ss2;
+	ss2 << "ATDT " << num_tel << ";";
+	send_cmd(ss2.str());
 }
 
 void SIM900::list_sms()
@@ -135,7 +103,6 @@ void SIM900::list_sms()
 		std::string cmd = ss2.str();
 		Log::getLogger()->debug(__FILE__, __LINE__, cmd);
 		_serial->write((uint8_t *)cmd.c_str(), cmd.size());
-		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	catch(...)
 	{}
@@ -160,25 +127,6 @@ void SIM900::read_sms(int32_t num)
 	std::string cmd = ss.str();
 	Log::getLogger()->debug(__FILE__, __LINE__, cmd);
 	_serial->write((uint8_t *)cmd.c_str(), cmd.size());
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-
-/*	int32_t cpt = 0;
-	int32_t length = 0;
-	int8_t buffer[256];
-	length = read_uart(buffer, 256);
-
-	while ((cpt < 10) && (length <100) && (buffer[length-2] != 13) && (buffer[length-1] != 10))
-	{
-		// if (_serial->scrute(TEMPO) > 0)
-		{
-			length += _serial->read(buffer+length, 1);
-		}
-		// else
-		{
-			cpt += 1;
-		}
-	}
-*/
 }
 
 void SIM900::delete_sms(int32_t num)
