@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <time.h>
 
-Lunartec::Lunartec(s32 id, RS232 * serial)
+Lunartec::Lunartec(int32_t id, RS232 * serial)
 : _id(id), _usart(serial)
 {
 	_usart->setConfig(B9600, 8, 'N', 1, 1);
@@ -14,7 +14,7 @@ Lunartec::Lunartec(s32 id, RS232 * serial)
 	cmd << std::string("<ID><");
 	cmd << std::setw(2) << std::setfill('0') << std::setbase(10) << (_id & 0xFF);
 	cmd << std::string("><E>");
-	_usart->write(cmd.str().c_str(), cmd.str().length());
+	_usart->write((uint8_t *)cmd.str().c_str(), cmd.str().length());
 }
 
 Lunartec::~Lunartec()
@@ -38,7 +38,7 @@ void Lunartec::set_time ()
 	write(data.str());
 }
 
-void Lunartec::send (const std::string & text, s8 page, s8 speed)
+void Lunartec::send (const std::string & text, int8_t page, int8_t speed)
 {
 	std::stringstream data;
 	data << std::string("<L1><P");
@@ -57,7 +57,7 @@ void Lunartec::send (const std::string & text, s8 page, s8 speed)
 	}
 	else
 	{
-		throw RS232Exception("Lunartec::send()");
+		throw RS232Exception(__FILE__, __LINE__, "Lunartec::send()");
 	}
 
 	write(data.str());
@@ -72,14 +72,14 @@ void Lunartec::write(const std::string & data)
 	cmd << data;
 	cmd << std::setw(2) << std::setfill('0') << std::setbase(16) << (int)check_sum(data);
 	cmd << std::string("<E>");
-	_usart->write(cmd.str().c_str(), cmd.str().length());
+	_usart->write((uint8_t *)cmd.str().c_str(), cmd.str().length());
 }
 
-u8 Lunartec::check_sum(const std::string & text)
+uint8_t Lunartec::check_sum(const std::string & text)
 {
-	u8 cs = 0;
+	uint8_t cs = 0;
 
-	for (u32 i=0; i<text.length(); i++)
+	for (uint32_t i=0; i<text.length(); i++)
 	{
 		cs ^= text[i];
 	}

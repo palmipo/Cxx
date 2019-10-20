@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
 			#ifdef USB_I2C
 			factory.scrute(1000);
 			#else
-			poll(0, 0, 100);
+			poll(0, 0, 2000);
 			#endif
 			
 			wii.init();

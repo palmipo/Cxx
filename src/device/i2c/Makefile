@@ -1,6 +1,5 @@
 OBJECTS = \
 	bin/at24c32.o \
-	bin/bmp280.o \
 	bin/ds1307.o \
 	bin/ds1621.o \
 	bin/is31fl3731.o \
@@ -18,6 +17,8 @@ OBJECTS = \
 	bin/tca9548a.o \
 	bin/tcs34725.o \
 	bin/tda8440.o
+
+	#bin/bmp280.o \
 
 POLL_PWD = ../../ctrl/raspberry/factory
 I2C_PWD = ../../ctrl/raspberry/i2c

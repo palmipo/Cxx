@@ -2,25 +2,25 @@
 #define __LUNARTEC_H__
 
 #include <string>
-#include "batratypes.h"
+#include <cstdint>
 
 class RS232;
 class Lunartec
 {
 public:
-	Lunartec(s32, RS232 *);
+	Lunartec(int32_t, RS232 *);
 	~Lunartec();
 
 	void set_time();
-	void send(const std::string & texte, s8 page = 'B', s8 speed = 'C');
+	void send(const std::string & texte, int8_t page = 'B', int8_t speed = 'C');
 
 protected:
 	void write(const std::string &);
-	u8 check_sum(const std::string &);
+	uint8_t check_sum(const std::string &);
 
 private:
 	RS232 * _usart;
-	s32 _id;
+	int32_t _id;
 };
 
 #endif
