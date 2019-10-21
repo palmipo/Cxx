@@ -34,7 +34,7 @@ void affiche(uint8_t *pixels)
 	"        ldi  r20, 0"			"\n\t"
 
 	"        out %[port], r20"		"\n\t"
-	"        ldi  r18, 200"			"\n\t"
+	"        ldi  r18, 256"			"\n\t"
 	"RAZ:    dec  r18"				"\n\t"
 	"        brne RAZ"				"\n\t"
 
