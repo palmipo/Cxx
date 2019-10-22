@@ -1,29 +1,38 @@
 #ifndef CALLBACK_H
 #define CALLBACK_H
 
-template <class T>
+template <class T, class U, class V>
 class Callback
 {
 	public:
-		Callback(T cb, void * data)
+		Callback()
+		{}
+
+		Callback(T cb, U ctx)
 		: _callback(cb)
-		, _data(data)
+		, _ctx(ctx)
 		{}
 
 		virtual ~Callback()
 		{}
 
-		void call(void * ctx)
+		void set(T cb, U ctx)
+		{
+			_callback=cb;
+			_ctx=ctx;
+		}
+
+		void call(V data)
 		{
 			if (_callback)
 			{
-				_callback(ctx, _data);
+				_callback(_ctx, data);
 			}
 		}
 
 	protected:
 		T _callback;
-		void * _data;
+		U _ctx;
 };
 
 #endif /* CALLBACK_H */

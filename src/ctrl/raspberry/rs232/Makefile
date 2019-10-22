@@ -18,6 +18,15 @@ all:
 clean:
 	rm -f bin/*.o *.so *.dll fwup
 
+rsclb : bin/rsclb.o
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
+
+bin/rsclb.o: test/main.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
 fwup : bin/fwup.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so

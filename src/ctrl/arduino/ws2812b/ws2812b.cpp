@@ -30,27 +30,18 @@ void affiche(uint8_t *pixels)
 	cli();
 
 	asm (
-	"        ldi  r19, 0xFF"		"\n\t"
-	"        ldi  r20, 0"			"\n\t"
+	"        ldi  r19, 0xFF"			"\n\t"
+	"        ldi  r20, 0"				"\n\t"
 
-	"        out %[port], r20"		"\n\t"
-	"        ldi  r18, 256"			"\n\t"
+	"        out %[port], r20"			"\n\t"
+	"        ldi  r18, 255"				"\n\t"
 	"RAZ:    dec  r18"				"\n\t"
 	"        brne RAZ"				"\n\t"
 
-	"		ldi  r17, %[nbled]"		"\n\t"
-	"led:	ldi  r16, %[nbbit]"		"\n\t"
+	"	ldi  r17, %[nbled]"			"\n\t"
+	"led:	ldi  r16, %[nbbit]"			"\n\t"
 
-	"loop:	out %[port], r19"		"\n\t"
-	"       nop"					"\n\t"
-	"       nop"					"\n\t"
-	"       nop"					"\n\t"
-	"       nop"					"\n\t"
-	"       nop"					"\n\t"
-	"       nop"					"\n\t"
-	"       nop"					"\n\t"
-
-	"       out %[port], %[byte]"	"\n\t"
+	"loop:	out %[port], r19"			"\n\t"
 	"       nop"					"\n\t"
 	"       nop"					"\n\t"
 	"       nop"					"\n\t"
@@ -59,7 +50,7 @@ void affiche(uint8_t *pixels)
 	"       nop"					"\n\t"
 	"       nop"					"\n\t"
 
-	"       out %[port], r20"		"\n\t"
+	"       out %[port], %[byte]"			"\n\t"
 	"       nop"					"\n\t"
 	"       nop"					"\n\t"
 	"       nop"					"\n\t"
@@ -68,7 +59,16 @@ void affiche(uint8_t *pixels)
 	"       nop"					"\n\t"
 	"       nop"					"\n\t"
 
-    "		ld   %[byte] , %a[ptr]+""\n\t"
+	"       out %[port], r20"			"\n\t"
+	"       nop"					"\n\t"
+	"       nop"					"\n\t"
+	"       nop"					"\n\t"
+	"       nop"					"\n\t"
+	"       nop"					"\n\t"
+	"       nop"					"\n\t"
+	"       nop"					"\n\t"
+
+   	"	ld   %[byte] , %a[ptr]+"		"\n\t"
 	"       dec  r16"				"\n\t"
 	"       brne loop"				"\n\t"
 	"       dec  r17"				"\n\t"
@@ -139,7 +139,6 @@ int main(void)
 	DDRB = 0xFF;
 	PORTB = 0xFF;
 
-	//uint8_t buffer[9*NB_BIT];
 	uint8_t pixels[NB_LED*NB_BIT];
 	memset(pixels, 0, NB_LED*NB_BIT);
 
@@ -147,32 +146,9 @@ int main(void)
 	{
 		france(0, 2, pixels);
 		angleterre(16, 2, pixels);
-		//angleterre(32, 5, pixels);
-		//france(48, 5, pixels);
 
 		affiche(pixels);
 		_delay_ms(1000);
 	}
-	
-	//setPixel(0, 0x80, 0x80, 0x80, buffer);
-	//setPixel(1, 0x40, 0x40, 0x40, buffer);
-	//setPixel(2, 0x20, 0x20, 0x20, buffer);
-	//setPixel(3, 0x10, 0x10, 0x10, buffer);
-	//setPixel(4, 0x8, 0x8, 0x8, buffer);
-	//setPixel(5, 0x4, 0x4, 0x4, buffer);
-	//setPixel(6, 0x2, 0x2, 0x2, buffer);
-	//setPixel(7, 0x1, 0x1, 0x1, buffer);
-	//setPixel(8, 0, 0, 0, buffer);
-
-	//uint8_t i=6, j=0;
-	//while(1)
-	//{
-		////for (i=0; i<9; i++)
-		//{
-			//memcpy(pixels + (((i+j) % NB_LED) * NB_BIT), buffer + (i * NB_BIT), NB_BIT);
-		//}
-		//affiche(pixels);
-		//j = (j + 1) % NB_LED;
-		//_delay_ms(1000);
-	//}
 }
+

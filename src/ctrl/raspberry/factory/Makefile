@@ -17,6 +17,12 @@ all:
 clean:
 	rm -f bin/*.o *.so *.dll
 
+test_callback: bin/test_callback.o
+	$(CC) -o $@ $^ $(LIBS) -lpoll
+
+bin/test_callback.o: test/test_callback.cpp
+	$(CC) $(CFLAGS) -DMAKE_POLL_FACTORY_DLL -c $^ -o $@
+
 # LINUX
 liblog.so:
 	$(MAKE) -C ../log $@
