@@ -64,39 +64,45 @@ u8 EtherIO::getSchmitt(u8 port)
 	return buffer[2];
 }
 
-void EtherIO::setDirection(u8 port, u8 dir, u8 pullup, u8 threshold, u8 schmitt)
+void EtherIO::setDirection(u8 port, u8 dir)
 {
-	u8 buffer[2];
+	u8 buffer[3];
 
 	// direction
 	buffer[0] = 0x21;
 	buffer[1] = 0x41 + (port & 0x03);
 	buffer[2] = dir;
 	_socket->write(buffer, 3);
+}
 
-	// if (pullup)
-	{
-		buffer[0] = 0x40;
-		buffer[1] = 0x41 + (port & 0x03);
-		buffer[2] = pullup;
-		_socket->write(buffer, 3);
-	}
-	
-	// if (threshold)
-	{
-		buffer[0] = 0x23;
-		buffer[1] = 0x41 + (port & 0x03);
-		buffer[2] = threshold;
-		_socket->write(buffer, 3);
-	}
+void EtherIO::setPullup(u8 port, u8 pullup)
+{
+	u8 buffer[3];
 
-	// if (schmitt)
-	{
-		buffer[0] = 0x24;
-		buffer[1] = 0x41 + (port & 0x03);
-		buffer[2] = schmitt;
-		_socket->write(buffer, 3);
-	}
+	buffer[0] = 0x40;
+	buffer[1] = 0x41 + (port & 0x03);
+	buffer[2] = pullup;
+	_socket->write(buffer, 3);
+}
+
+void EtherIO::setThreshold(u8 port, u8 threshold)
+{
+	u8 buffer[3];
+
+	buffer[0] = 0x23;
+	buffer[1] = 0x41 + (port & 0x03);
+	buffer[2] = threshold;
+	_socket->write(buffer, 3);
+}
+
+void EtherIO::setSchmitt(u8 port, u8 schmitt)
+{
+	u8 buffer[3];
+
+	buffer[0] = 0x24;
+	buffer[1] = 0x41 + (port & 0x03);
+	buffer[2] = schmitt;
+	_socket->write(buffer, 3);
 }
 
 void EtherIO::set(u8 port, u8 value)
@@ -150,7 +156,8 @@ void EtherIO::setAutoScan(u8 port, u8 filterCount, u16 autoScanRate/*, u8 * mac_
 	// bit 0, which is used to enable the Fixed IP address
 	// Bit 1, which is used to enable the Preset Port function
 	// Bit 2, which is used to enable the AutoScan function
-	writeEEPROM(5, 0xFF, 0xF8);
+	uint8_t ctrl = ~(ip_fixe | (preset_port << 1) | (autoscan << 2));
+	writeEEPROM(5, ctrl, ctrl);
 
 	// 6 13 Fixed IP Address Byte 2			12 Fixed IP Address Byte 1 
 	writeEEPROM(6, 168, 192);
