@@ -1,5 +1,6 @@
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
+#include <gst/base/gstbasesink.h>
 #include <stdio.h>
 
 void eos_function(GstAppSink *appsink, gpointer user_data)
@@ -10,87 +11,127 @@ void eos_function(GstAppSink *appsink, gpointer user_data)
 GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 {
 	printf("new_sample_function\n");
+	
+	GstSample* sample = gst_base_sink_get_last_sample(GST_BASE_SINK(appsink));
+
+	// Will block until sample is ready. In our case "sample" is encoded picture.
+	//GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(appsink));
+
+	if(sample == NULL)
+	{
+		fprintf(stderr, "gst_app_sink_pull_sample returned null\n");
+		return FALSE;
+	}
+
+	// Actual compressed image is stored inside GstSample.
+	GstBuffer* buffer = gst_sample_get_buffer (sample);
+	GstMapInfo map;
+	gst_buffer_map (buffer, &map, GST_MAP_READ);
+
+	// Allocate appropriate buffer to store compressed image
+	//char* pRet = new char[map.size];
+
+	// Copy image
+	//memmove(pRet, map.data, map.size);
+
+	gst_buffer_unmap (buffer, &map);
+	gst_sample_unref (sample);
+
+	return TRUE;
 }
 
-int main(int argc, char *argv[]) {
-GstElement *pipeline, *source, *sink;
-GstBus *bus;
-GstMessage *msg;
-GstStateChangeReturn ret;
+int main(int argc, char *argv[])
+{
+	GstElement *pipeline, *source, *filter, *sink;
+	GstBus *bus;
+	GstMessage *msg;
+	GstStateChangeReturn ret;
 
-/* Initialize GStreamer */
-gst_init (&argc, &argv);
+	/* Initialize GStreamer */
+	gst_init (&argc, &argv);
 
-/* Create the elements */
-source = gst_element_factory_make ("v4l2src", "source");
-sink = gst_element_factory_make ("appsink", "sink");
+	/* Create the elements */
+	source = gst_element_factory_make ("v4l2src", "source");
+	filter = gst_element_factory_make ("videoconvert", "filter");
+	sink = gst_element_factory_make ("appsink", "sink");
 
-/* Create the empty pipeline */
-pipeline = gst_pipeline_new ("test-pipeline");
+	/* Create the empty pipeline */
+	pipeline = gst_pipeline_new ("test-pipeline");
 
-if (!pipeline || !source || !sink) {
-g_printerr ("Not all elements could be created.\n");
-return -1;
-}
+	if (!pipeline || !source || !sink)
+	{
+		g_printerr ("Not all elements could be created.\n");
+		return -1;
+	}
 
-/* Build the pipeline */
-gst_bin_add_many (GST_BIN (pipeline), source, sink, NULL);
-if (gst_element_link (source, sink) != TRUE) {
-g_printerr ("Elements could not be linked.\n");
-gst_object_unref (pipeline);
-return -1;
-}
+	/* Build the pipeline */
+	gst_bin_add_many (GST_BIN (pipeline), source, filter, sink, NULL);
+	if (gst_element_link (source, filter) != TRUE)
+	{
+		g_printerr ("Elements could not be linked.\n");
+		gst_object_unref (pipeline);
+		return -1;
+	}
+	if (gst_element_link (filter, sink) != TRUE)
+	{
+		g_printerr ("Elements could not be linked.\n");
+		gst_object_unref (pipeline);
+		return -1;
+	}
 
-/* Modify the source's properties */
-g_object_set (source, "device", "/dev/video0", NULL);
-GstAppSinkCallbacks callbacks;
-callbacks.eos = eos_function;
-callbacks.new_preroll = 0;
-callbacks.new_sample = new_sample_function ;
-gpointer user_data = 0;
-GDestroyNotify notify = FALSE;
-gst_app_sink_set_callbacks ((GstAppSink *)sink, &callbacks, user_data, notify); 
+	/* Modify the source's properties */
+	g_object_set (source, "device", "/dev/video0", NULL);
+	GstAppSinkCallbacks callbacks;
+	callbacks.eos = eos_function;
+	callbacks.new_preroll = 0;
+	callbacks.new_sample = new_sample_function ;
+	gpointer user_data = 0;
+	GDestroyNotify notify = FALSE;
+	gst_app_sink_set_callbacks ((GstAppSink *)sink, &callbacks, user_data, notify); 
 
-/* Start playing */
-ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
-if (ret == GST_STATE_CHANGE_FAILURE) {
-g_printerr ("Unable to set the pipeline to the playing state.\n");
-gst_object_unref (pipeline);
-return -1;
-}
+	/* Start playing */
+	ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	if (ret == GST_STATE_CHANGE_FAILURE)
+	{
+		g_printerr ("Unable to set the pipeline to the playing state.\n");
+		gst_object_unref (pipeline);
+		return -1;
+	}
 
-/* Wait until error or EOS */
-bus = gst_element_get_bus (pipeline);
-msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+	/* Wait until error or EOS */
+	bus = gst_element_get_bus (pipeline);
+	msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
 
-/* Parse message */
-if (msg != NULL) {
-GError *err;
-gchar *debug_info;
+	/* Parse message */
+	if (msg != NULL)
+	{
+		GError *err;
+		gchar *debug_info;
 
-switch (GST_MESSAGE_TYPE (msg)) {
-case GST_MESSAGE_ERROR:
-gst_message_parse_error (msg, &err, &debug_info);
-g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (msg->src), err->message);
-g_printerr ("Debugging information: %s\n", debug_info ? debug_info : "none");
-g_clear_error (&err);
-g_free (debug_info);
-break;
-case GST_MESSAGE_EOS:
-g_print ("End-Of-Stream reached.\n");
-break;
-default:
-/* We should not reach here because we only asked for ERRORs and EOS */
-g_printerr ("Unexpected message received.\n");
-break;
-}
-gst_message_unref (msg);
-}
+		switch (GST_MESSAGE_TYPE (msg))
+		{
+			case GST_MESSAGE_ERROR:
+				gst_message_parse_error (msg, &err, &debug_info);
+				g_printerr ("Error received from element %s: %s\n", GST_OBJECT_NAME (msg->src), err->message);
+				g_printerr ("Debugging information: %s\n", debug_info ? debug_info : "none");
+				g_clear_error (&err);
+				g_free (debug_info);
+			break;
+			case GST_MESSAGE_EOS:
+				g_print ("End-Of-Stream reached.\n");
+			break;
+			default:
+				/* We should not reach here because we only asked for ERRORs and EOS */
+				g_printerr ("Unexpected message received.\n");
+			break;
+		}
+		gst_message_unref (msg);
+	}
 
-/* Free resources */
-gst_object_unref (bus);
-gst_element_set_state (pipeline, GST_STATE_NULL);
-gst_object_unref (pipeline);
-return 0;
+	/* Free resources */
+	gst_object_unref (bus);
+	gst_element_set_state (pipeline, GST_STATE_NULL);
+	gst_object_unref (pipeline);
+	return 0;
 }
 
