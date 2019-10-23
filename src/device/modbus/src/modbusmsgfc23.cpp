@@ -5,7 +5,7 @@
 
 uint16_t Modbus::ModbusMsgFC23::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
 
 	read_starting_addr = data[cpt] << 8; ++cpt;
 	read_starting_addr |= data[cpt]; ++cpt;
@@ -31,7 +31,7 @@ uint16_t Modbus::ModbusMsgFC23::encodeQuestion(uint8_t* data, uint16_t len)
 }
 uint16_t Modbus::ModbusMsgFC23::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	data[cpt] = read_starting_addr >> 8; ++cpt;
 	data[cpt] = read_starting_addr & 0x00FF; ++cpt;
@@ -58,7 +58,7 @@ uint16_t Modbus::ModbusMsgFC23::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC23::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	{
 		byte_count = data[cpt]; ++cpt;

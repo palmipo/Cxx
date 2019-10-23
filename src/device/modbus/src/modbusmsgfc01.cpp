@@ -23,7 +23,7 @@ uint16_t Modbus::ModbusMsgFC01::getCoilStatus(uint16_t addr)
 
 uint16_t Modbus::ModbusMsgFC01::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
+	uint16_t cpt = encodeHeader();
 
 	std::map < uint16_t, uint16_t > ::iterator it = _bytes.begin();
 	if (it != _bytes.end())
@@ -40,7 +40,7 @@ uint16_t Modbus::ModbusMsgFC01::encodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC01::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
+	uint16_t cpt = decodeHeader();
 
 	uint16_t data_addr = data[cpt] << 8; ++cpt;
 	data_addr |= data[cpt]; ++cpt;
@@ -58,7 +58,7 @@ uint16_t Modbus::ModbusMsgFC01::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC01::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
+	uint16_t cpt = decodeHeader();
 
 	{
 		// number of data bytes to follow

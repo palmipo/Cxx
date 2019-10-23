@@ -17,51 +17,12 @@ Modbus::ModbusTcp::ModbusTcp(PollDevice * socket)
 Modbus::ModbusTcp::~ModbusTcp()
 {}
 
-uint16_t Modbus::ModbusTcp::send(ModbusMsg * msg)
-{
-	uint16_t cpt = 0;
-	uint8_t trame[256];
-
-	trame[cpt] = (_transaction_id >> 8) & 0xFF; ++cpt;
-	trame[cpt] = _transaction_id & 0xFF; ++cpt;
-
-	trame[cpt] = (_protocol_id >> 8) & 0xFF; ++cpt;
-	trame[cpt] = _protocol_id & 0xFF; ++cpt;
-
-	uint16_t len = msg->encodeQuestion(trame+cpt+2, 256-2-cpt);
-
-	trame[cpt] = (len >> 8) & 0xFF; ++cpt;
-	trame[cpt] = len & 0xFF; ++cpt;
-
-	cpt += len;
-
-	return ((Socket::SocketTcp *)_device)->write(trame, cpt);
-}
-
-Modbus::ModbusMsg * Modbus::ModbusTcp::recv(int32_t max_retry, int32_t timeout)
-{
-	int32_t retry = 0;
-	while (_fifo.empty() && (retry < max_retry))
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
-		retry += 1;
-	}
-
-	if (_fifo.empty())
-	{
-		throw Modbus::ModbusException(__FILE__, __LINE__, "fifo vide !");
-	}
-	
-	Modbus::ModbusMsg * msg = _fifo.front();
-	_fifo.pop();
-
-	return msg;
-}
-
-int32_t Modbus::ModbusTcp::actionIn(uint8_t * trame, int32_t len)
+int32_t Modbus::ModbusTcp::actionIn()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
+	uint8_t trame[512];
+	int32_t len = _device->read(trame, 512);
 	if (len > 6)
 	{
 		uint32_t cpt = 0;
@@ -88,27 +49,40 @@ int32_t Modbus::ModbusTcp::actionIn(uint8_t * trame, int32_t len)
 		uint16_t msg_length = trame[cpt] << 8; ++cpt;
 		msg_length |= trame[cpt]; ++cpt;
 
-		Modbus::ModbusMsgDirect * msg = new Modbus::ModbusMsgDirect();
-		len = msg->decodeResponse(trame+cpt, len-cpt);
-		// if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
-		{
-			_fifo.push(msg);
-		}
-		// else
-		{
-			// std::stringstream ss;
-			// ss << "message poubelle id=" << (int)msg->slaveAddress() << " own id=" << (int)_slave_address;
-			// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-			// delete msg;
-		}
+		Modbus::ModbusMsg * msg = new Modbus::ModbusMsg();
+		len = msg->in()->write(trame+cpt, len-cpt);
+		_fifo_in.push(msg);
 	}
 
 	_transaction_id += 1;
 	return len;
 }
 
-int32_t Modbus::ModbusTcp::actionOut(uint8_t *, int32_t)
-{}
+int32_t Modbus::ModbusTcp::actionOut()
+{
+	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
-int32_t Modbus::ModbusTcp::actionError(uint8_t *, int32_t)
+	ModbusMsg * msg = _fifo_out.front();
+	_fifo_out.pop();
+
+	uint16_t cpt = 0;
+	uint8_t trame[256];
+
+	trame[cpt] = (_transaction_id >> 8) & 0xFF; ++cpt;
+	trame[cpt] = _transaction_id & 0xFF; ++cpt;
+
+	trame[cpt] = (_protocol_id >> 8) & 0xFF; ++cpt;
+	trame[cpt] = _protocol_id & 0xFF; ++cpt;
+
+	uint16_t len = msg->out()->read(trame+cpt+2, 256-2-cpt);
+
+	trame[cpt] = (len >> 8) & 0xFF; ++cpt;
+	trame[cpt] = len & 0xFF; ++cpt;
+
+	cpt += len;
+
+	return ((Socket::SocketTcp *)_device)->write(trame, cpt);
+}
+
+int32_t Modbus::ModbusTcp::actionError()
 {}

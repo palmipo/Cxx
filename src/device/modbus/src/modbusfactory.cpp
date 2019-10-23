@@ -21,14 +21,23 @@ Modbus::ModbusFactory::ModbusFactory()
 {}
 
 Modbus::ModbusFactory::~ModbusFactory()
-{}
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "~ModbusFactory");
+
+	std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+	while (it != _codec.end())
+	{
+		delete it->second; it->second = 0;
+		it++;
+	}
+}
 
 Modbus::ModbusChannel * Modbus::ModbusFactory::get(const std::string & host)
 {
-    std::map<std::string, TowerDevice *>::iterator it = _codec.find(host);
+    std::map<std::string, ModbusChannel *>::iterator it = _codec.find(host);
     if (it != _codec.end())
     {
-        return (Modbus::ModbusChannel*)it->second;
+        return it->second;
     }
 
     throw Modbus::ModbusException(__FILE__, __LINE__, "i can't get enough");
@@ -60,7 +69,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host)
     Modbus::ModbusTcp * modbus_tcp = new Modbus::ModbusTcp(tcp);
     if (modbus_tcp)
     {
-	_codec[host] = modbus_tcp;
+		_codec[host] = modbus_tcp;
     }
 
     return modbus_tcp;
@@ -115,7 +124,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
     Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(serial);
     if (modbus_rtu)
     {
-                _codec[device] = modbus_rtu;
+		_codec[device] = modbus_rtu;
     }
 
     return modbus_rtu;
@@ -123,7 +132,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
 
 void Modbus::ModbusFactory::close(const std::string & host)
 {
-    std::map<std::string, TowerDevice *>::iterator it = _codec.find(host);
+    std::map<std::string, ModbusChannel *>::iterator it = _codec.find(host);
     if (it != _codec.end())
     {
         delete it->second;
@@ -137,38 +146,16 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 
     if (device)
     {
-		device->actionIn();
-
-		uint8_t data[512];
-		//int32_t len = device->read(data, 512);
-		int32_t retry = 0, nb, cpt = 0;
-		do
+		int32_t fin = 0;
+		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+		while (!fin && (it != _codec.end()))
 		{
-			nb = device->read(data+cpt, 512-cpt);
-			cpt += nb;
-			retry += 1;
-		}
-		while (nb && (retry < 5));
-
-		// {
-			// std::stringstream ss;
-			// ss << "cpt " << (int)cpt;
-			// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		// }
-
-		if (cpt)
-		{
-			int32_t fin = 0;
-			std::map<std::string, TowerDevice *>::iterator it = _codec.begin();
-			while (!fin && (it != _codec.end()))
+			if (device->handler() == it->second->handler())
 			{
-				if (device->handler() == it->second->handler())
-				{
-					it->second->actionIn(data, cpt);
-					fin = 1;
-				}
-				it++;
+				it->second->actionIn();
+				fin = 1;
 			}
+			it++;
 		}
     }
 	
@@ -177,8 +164,20 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 {
-	if (device)
-		return device->actionOut();
+    if (device)
+    {
+		int32_t fin = 0;
+		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+		while (!fin && (it != _codec.end()))
+		{
+			if (device->handler() == it->second->handler())
+			{
+				it->second->actionOut();
+				fin = 1;
+			}
+			it++;
+		}
+    }
 
 	return 0;
 }

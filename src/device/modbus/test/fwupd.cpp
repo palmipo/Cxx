@@ -2,6 +2,10 @@
 #include "modbuschannel.h"
 #include "modbusmsgfc03.h"
 #include "modbusmsgfc06.h"
+#include "modbusexception.h"
+#include "modbusmsgexception.h"
+#include "pollexception.h"
+#include "rs232exception.h"
 #include "log.h"
 #include <thread>
 
@@ -9,16 +13,18 @@ static void scrute(Modbus::ModbusFactory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
-		factory->scrute(1000);
+		factory->scrute(1000, 1, 1, 1);
 	}
 }
 
 int main(int argc, char ** argv)
 {
-	try{
-		int32_t fin = 0;
-		Modbus::ModbusFactory factory;
+	int32_t fin = 0;
+	Modbus::ModbusFactory factory;
+	try
+	{
 		std::thread t(scrute, &factory, &fin);
+		t.detach();
 
 		Modbus::ModbusChannel * channel = factory.rtu(argv[1], 19200, 1, 1);
 
@@ -27,82 +33,133 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC03 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegisterAddr(0xFFDB, 1);
+			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			channel->recvFC(&msg);
+			msg.decodeResponse();
+			if (msg.slaveAddress() != 2)
+			{
+				Log::getLogger()->debug(__FILE__, __LINE__, "erreur reception Modbus !");
+			}
 			if (0x3 != msg.getRegister(0xFFDB))
 			{
-				return -1;
+				Log::getLogger()->debug(__FILE__, __LINE__, "erreur reception Modbus !");
 			}
+			Log::getLogger()->debug(__FILE__, __LINE__, "reception Modbus !");
 		}
 	
 		{
 			/* MODE a TP */
-			Modbus::ModbusMsgFC06 msg;
-			msg.setSlaveAddress(2);
-			msg.setRegister(0x5DC, 0x5450);
-			channel->sendFC(&msg);
-			channel->recvFC(&msg);
+			// Modbus::ModbusMsgFC06 msg;
+			// msg.setSlaveAddress(2);
+			// msg.setRegister(0x5DC, 0x5450);
+			// channel->sendFC(&msg);
+			// channel->recvFC(&msg);
 		}
 		
 		{
 			/* FWCD a APPLY */
-			Modbus::ModbusMsgFC06 msg;
-			msg.setSlaveAddress(2);
-			msg.setRegister(0xFFDA, 0x2);
-			channel->sendFC(&msg);
-			channel->recvFC(&msg);
+			// Modbus::ModbusMsgFC06 msg;
+			// msg.setSlaveAddress(2);
+			// msg.setRegister(0xFFDA, 0x2);
+			// channel->sendFC(&msg);
+			// channel->recvFC(&msg);
 		}
 
 		{
 			/* FWST a SUCCED ? */
-			Modbus::ModbusMsgFC03 msg;
-			msg.setSlaveAddress(2);
-			msg.setRegisterAddr(0xFFDB, 1);
-			channel->sendFC(&msg);
-			channel->recvFC(&msg);
-			if (0x5 != msg.getRegister(0xFFDB))
-			{
-				return -1;
-			}
+			// Modbus::ModbusMsgFC03 msg;
+			// msg.setSlaveAddress(2);
+			// msg.setRegisterAddr(0xFFDB, 1);
+			// channel->sendFC(&msg);
+			// channel->recvFC(&msg);
+			// if (0x5 != msg.getRegister(0xFFDB))
+			// {
+				// return -1;
+			// }
 		}
 
 		{
 			/* MODE a TP */
-			Modbus::ModbusMsgFC06 msg;
-			msg.setSlaveAddress(2);
-			msg.setRegister(0x5DC, 0x5450);
-			channel->sendFC(&msg);
-			channel->recvFC(&msg);
+			// Modbus::ModbusMsgFC06 msg;
+			// msg.setSlaveAddress(2);
+			// msg.setRegister(0x5DC, 0x5450);
+			// channel->sendFC(&msg);
+			// channel->recvFC(&msg);
 		}
 	
 		{
 			/* FWCD a APPLY */
-			Modbus::ModbusMsgFC06 msg;
-			msg.setSlaveAddress(2);
-			msg.setRegister(0xFFDA, 0x3);
-			channel->sendFC(&msg);
-			channel->recvFC(&msg);
+			// Modbus::ModbusMsgFC06 msg;
+			// msg.setSlaveAddress(2);
+			// msg.setRegister(0xFFDA, 0x3);
+			// channel->sendFC(&msg);
+			// channel->recvFC(&msg);
 		}
 
 		{
 			/* FWST a SUCCED ? */
-			Modbus::ModbusMsgFC03 msg;
-			msg.setSlaveAddress(2);
-			msg.setRegisterAddr(0xFFDB, 1);
-			channel->sendFC(&msg);
-			channel->recvFC(&msg);
-			if (0x4 != msg.getRegister(0xFFDB))
-			{
-				return -1;
-			}
+			// Modbus::ModbusMsgFC03 msg;
+			// msg.setSlaveAddress(2);
+			// msg.setRegisterAddr(0xFFDB, 1);
+			// channel->sendFC(&msg);
+			// channel->recvFC(&msg);
+			// if (0x4 != msg.getRegister(0xFFDB))
+			// {
+				// return -1;
+			// }
 		}
-
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+    
+		Log::getLogger()->debug(__FILE__, __LINE__, "attendre fin thread");
 		fin = 1;
+		//~ t.join();
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
 		return 0;
+	}
+	catch(RS232Exception e)
+	{
+		Log::getLogger()->error(__FILE__, __LINE__, e.what());
+		fin = 1;
+		//~ t.join();
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
+		return -1;
+	}
+	catch(Modbus::ModbusMsgException e)
+	{
+		Log::getLogger()->error(__FILE__, __LINE__, e.what());
+		fin = 1;
+		//~ t.join();
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
+		return -1;
+	}
+	catch(Modbus::ModbusException e)
+	{
+		Log::getLogger()->error(__FILE__, __LINE__, e.what());
+		fin = 1;
+		//~ t.join();
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
+		return -1;
+	}
+	catch(PollException e)
+	{
+		Log::getLogger()->error(__FILE__, __LINE__, e.what());
+		fin = 1;
+		//~ t.join();
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
+		return -1;
 	}
 	catch(...)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, "exeption");
+		fin = 1;
+		//~ t.join();
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
 		return -1;
 	}
 }

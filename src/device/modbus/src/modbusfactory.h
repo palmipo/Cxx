@@ -15,7 +15,7 @@
 	#define MODBUS_DLL
 #endif
 
-class TowerDevice;
+class ModbusChannel;
 namespace Modbus
 {
 	class ModbusChannel;
@@ -36,7 +36,7 @@ namespace Modbus
 			virtual int32_t actionError(PollDevice*);
 
 		protected:
-			std::map<std::string, TowerDevice * > _codec;
+			std::map<std::string, ModbusChannel * > _codec;
 	};
 }
 

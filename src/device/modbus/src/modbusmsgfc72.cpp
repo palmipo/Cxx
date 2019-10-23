@@ -22,7 +22,7 @@ void Modbus::ModbusMsgFC72::writeIntern(uint8_t cpu, uint64_t addr, uint8_t * da
 
 uint16_t Modbus::ModbusMsgFC72::encodeQuestion(uint8_t * data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
 
 	if (cpt < len)
 	{
@@ -74,7 +74,7 @@ uint16_t Modbus::ModbusMsgFC72::encodeQuestion(uint8_t * data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC72::decodeQuestion(uint8_t * data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	if (cpt < len)
 	{
@@ -134,7 +134,7 @@ uint16_t Modbus::ModbusMsgFC72::decodeQuestion(uint8_t * data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC72::decodeResponse(uint8_t * data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	{
 		uint8_t cpu, length;

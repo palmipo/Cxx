@@ -29,48 +29,19 @@ Modbus::ModbusRtu::ModbusRtu(PollDevice * serial)
 Modbus::ModbusRtu::~ModbusRtu()
 {}
 
-uint16_t Modbus::ModbusRtu::send(ModbusMsg * msg)
+int32_t Modbus::ModbusRtu::actionIn()
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "send");
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t data[512];
-	uint16_t cpt = msg->encodeQuestion(data, 512);
-
-	uint16_t crc = calcul_crc(data, cpt);
-
-	data[cpt] = (crc & 0xFF00) >> 8; ++cpt;
-	data[cpt] = crc & 0x00FF; ++cpt;
-
-	return _device->write(data, cpt);
-}
-
-Modbus::ModbusMsg * Modbus::ModbusRtu::recv(int32_t max_retry, int32_t timeout)
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "recv");
-
-	int32_t retry = 0;
-	while (_fifo.empty() && (retry < max_retry))
+	int32_t retry = 0, nb, data_length = 0;
+	do
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+		nb = _device->read(data+data_length, 512-data_length);
+		data_length += nb;
 		retry += 1;
 	}
-
-	if (_fifo.empty())
-	{
-		throw Modbus::ModbusException(__FILE__, __LINE__, "fifo vide !");
-	}
-	
-	ModbusMsg * msg = _fifo.front();
-	_fifo.pop();
-
-	return msg;
-}
-
-int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
-{
-	std::stringstream ss;
-	ss << "actionIn " << data_length;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	while (nb && (retry < 5));
 
 	int32_t cpt = data_length-2;
 
@@ -89,25 +60,41 @@ int32_t Modbus::ModbusRtu::actionIn(uint8_t * data, int32_t data_length)
 		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
 	}
 	
-	Modbus::ModbusMsgDirect * msg = new Modbus::ModbusMsgDirect();
-	msg->decodeResponse(data, cpt);
-	// if ((msg->slaveAddress() == _slave_address) || (msg->slaveAddress() == 0xF8))
-	{
-		_fifo.push(msg);
-	}
-	// else
-	{
-		// delete msg;
-	}
+	Modbus::ModbusMsg * msg = new Modbus::ModbusMsg();
+	msg->in()->write(data, cpt);
+	_fifo_in.push(msg);
 
 	return cpt;
 }
 
-int32_t Modbus::ModbusRtu::actionOut(uint8_t *, int32_t)
-{}
+int32_t Modbus::ModbusRtu::actionOut()
+{
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
-int32_t Modbus::ModbusRtu::actionError(uint8_t *, int32_t)
-{}
+
+	if (!_fifo_out.empty())
+	{
+		ModbusMsg * msg = _fifo_out.front();
+		_fifo_out.pop();
+
+		uint8_t data[512];
+		uint16_t cpt = msg->out()->read(data, 512);
+
+		uint16_t crc = calcul_crc(data, cpt);
+
+		data[cpt] = (crc & 0xFF00) >> 8; ++cpt;
+		data[cpt] = crc & 0x00FF; ++cpt;
+
+		return _device->write(data, cpt);
+	}
+	
+	return 0;
+}
+
+int32_t Modbus::ModbusRtu::actionError()
+{
+	return 0;
+}
 
 /* Table of CRC values for high-order byte */
 static const uint8_t table_crc_hi[] = {

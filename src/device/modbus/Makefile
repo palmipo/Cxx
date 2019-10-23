@@ -42,7 +42,7 @@ clean:
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(SOCKET_PWD) $@
-	rm -f bin/*.o *.so *.dll
+	rm -f bin/*.o *.so *.dll fwupd modbus_cmd
 
 fwupd: bin/fwupd.o
 	$(MAKE) liblog.so

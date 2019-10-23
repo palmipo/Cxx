@@ -2,7 +2,7 @@
 #define MODBUS_BUFFER_H
 
 #include <cstdint>
-#include <queue>
+#include <vector>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
@@ -16,17 +16,17 @@
 
 namespace Modbus
 {
-	class ModbusMsg;
 	class MODBUS_DLL ModbusBuffer
 	{
 		public:
 			ModbusBuffer();
 			virtual ~ModbusBuffer();
 			
-			virtual int32_t write(uint8_t * data, int32_t length);
-			virtual int32_t read(uint8_t * data, int32_t length);
+			virtual int32_t write(uint8_t * data, int32_t length, int32_t offset=0);
+			virtual int32_t read(uint8_t * data, int32_t length, int32_t offset=0);
 
 		protected:
+			int32_t _buffer_length;
 			std::vector < uint8_t > _buffer;
 	};
 }

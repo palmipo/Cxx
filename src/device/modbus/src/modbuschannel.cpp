@@ -7,29 +7,39 @@
 #include <sstream>
 
 Modbus::ModbusChannel::ModbusChannel(PollDevice * device)
-: TowerDevice(device)
+: PollDevice(device->handler())
+, _device(device)
 {}
 
-uint16_t Modbus::ModbusChannel::sendFC(ModbusMsg * msg)
+void Modbus::ModbusChannel::sendFC(ModbusMsg * msg, int32_t max_retry, int32_t timeout)
 {
-	return send(msg);
-}
+	Log::getLogger()->debug(__FILE__, __LINE__, "sendFC");
 
-uint16_t Modbus::ModbusChannel::recvFC(ModbusMsg * msg, int32_t max_retry, int32_t timeout)
-{
-	try
+	// enregistrement fifo de sortie
+	_fifo_out.push(msg);
+
+	// attente presence element fifo entree
+	int32_t retry = 0;
+	while (_fifo_in.empty() && (retry < max_retry))
 	{
-		ModbusMsg * direct = (ModbusMsg *)recv(max_retry, timeout);
-
-		uint8_t data[512];
-		direct->decodeResponse(data, 512);
-
-		msg->encodeResponse(data, direct->tailleResponse());
-		delete direct;
-	}
-	catch(Modbus::ModbusException)
-	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+		retry += 1;
 	}
 
-	return 0;
+	if (_fifo_in.empty())
+	{
+		throw Modbus::ModbusException(__FILE__, __LINE__, "fifo vide !");
+	}
+	
+	// lecture du message fifo entree
+	ModbusMsg * msg_fifo = _fifo_in.front();
+	_fifo_in.pop();
+
+	// copie de la reponse dans la question
+	uint8_t data[512];
+	int32_t length = msg_fifo->in()->read(data, 512);
+	msg->in()->write(data, length);
+
+	// liberation message entree
+	delete msg_fifo;
 }

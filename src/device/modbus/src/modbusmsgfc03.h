@@ -31,9 +31,9 @@ namespace Modbus
 			virtual uint16_t getRegister(uint16_t);
 			
 			// codec
-			virtual uint16_t encodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeResponse(uint8_t*, uint16_t);
+			virtual uint16_t encodeQuestion();
+			virtual uint16_t decodeQuestion();
+			virtual uint16_t decodeResponse();
 
 		protected:
 			uint16_t data_addr;

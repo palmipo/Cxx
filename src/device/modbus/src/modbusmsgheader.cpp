@@ -32,20 +32,23 @@ uint8_t Modbus::ModbusMsgHeader::slaveAddress() const
 	return _slave_address;
 }
 
-uint16_t Modbus::ModbusMsgHeader::decodeHeader(uint8_t* data, uint16_t len)
+uint32_t Modbus::ModbusMsgHeader::decodeHeader()
 {
-	uint16_t cpt = 0;
+	uint32_t cpt = 0;
 
-	_slave_address = data[cpt];
+	_buffer_in.read(&_slave_address, 1, cpt);
 	cpt += 1;
 
-	_function_code = data[cpt] & 0x7F;
-	_error_code = data[cpt] & 0x80;
+	uint8_t t;
+	_buffer_in.read(&t, 1, cpt);
+	_function_code = t & 0x7F;
+	_error_code = t & 0x80;
 	cpt += 1;
 
 	if (_error_code)
 	{
-		uint8_t code_erreur = data[cpt];
+		uint8_t code_erreur;
+		_buffer_in.read(&code_erreur, 1, cpt);
 		cpt+=1;
 
 		std::string msg;
@@ -102,47 +105,16 @@ uint16_t Modbus::ModbusMsgHeader::decodeHeader(uint8_t* data, uint16_t len)
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgHeader::encodeHeader(uint8_t* data, uint16_t len)
+uint32_t Modbus::ModbusMsgHeader::encodeHeader()
 {
-	uint16_t cpt = 0;
-	data[cpt] = _slave_address;
+	uint32_t cpt = 0;
+
+	_buffer_out.write(&_slave_address, 1, cpt);
 	cpt += 1;
 
-	data[cpt] = _function_code & 0x7F;
-	data[cpt] |= (_error_code) ? 0x80 : 0;
+	uint8_t t = (_function_code & 0x7F) | ((_error_code) ? 0x80 : 0);
+	_buffer_out.write(&t, 1, cpt);
 	cpt += 1;
 
 	return cpt;
-}
-
-/*
- * return offset
- */
-uint16_t Modbus::ModbusMsgHeader::encodeQuestion(uint8_t* data, uint16_t len)
-{
-	// uint16_t length = Modbus::ModbusMsg::encodeQuestion(data, len);
-	return encodeHeader(data, len);
-}
-
-uint16_t Modbus::ModbusMsgHeader::decodeQuestion(uint8_t* data, uint16_t len)
-{
-	// uint16_t length = Modbus::ModbusMsg::decodeQuestion(data, len);
-	return decodeHeader(data, len);
-}
-
-uint16_t Modbus::ModbusMsgHeader::encodeResponse(uint8_t* data, uint16_t len)
-{
-	// uint16_t length = Modbus::ModbusMsg::encodeResponse(data, len);
-	return encodeHeader(data, len);
-}
-
-uint16_t Modbus::ModbusMsgHeader::decodeResponse(uint8_t* data, uint16_t len)
-{
-	{
-		std::stringstream ss;
-		ss << "decodeResponse => len " << len;
-		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-	}
-	// uint16_t length = Modbus::ModbusMsg::decodeResponse(data, len);
-	return decodeHeader(data, len);
 }

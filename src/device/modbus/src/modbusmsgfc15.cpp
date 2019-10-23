@@ -5,7 +5,7 @@
 
 uint16_t Modbus::ModbusMsgFC15::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
 
     data[cpt] = (data_addr & 0xFF00) >> 8; ++cpt;
     data[cpt] = data_addr & 0x00FF; ++cpt;
@@ -26,7 +26,7 @@ uint16_t Modbus::ModbusMsgFC15::encodeQuestion(uint8_t* data, uint16_t len)
 }
 uint16_t Modbus::ModbusMsgFC15::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
     data_addr = data[cpt] << 8; ++cpt;
     data_addr |= data[cpt]; ++cpt;
@@ -48,7 +48,7 @@ uint16_t Modbus::ModbusMsgFC15::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC15::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	{
 		// number of data bytes to follow

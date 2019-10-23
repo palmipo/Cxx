@@ -29,107 +29,85 @@ uint16_t Modbus::ModbusMsgFC03::getRegister(uint16_t num)
 	throw Modbus::ModbusMsgException(__FILE__, __LINE__, "register inconnu.");
 }
 
-uint16_t Modbus::ModbusMsgFC03::encodeQuestion(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgFC03::encodeQuestion()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "encodeQuestion");
 
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
+	uint32_t cpt = encodeHeader();
 
-    if (cpt < len)
-	{
-		data[cpt] = (data_addr & 0xFF00) >> 8;
-		++cpt;
-	}
-    if (cpt < len)
-	{
-		data[cpt] = data_addr & 0x00FF;
-		++cpt;
-	}
-    if (cpt < len)
-	{
-		data[cpt] = (nb_registers & 0xFF00) >> 8;
-		++cpt;
-	}
-    if (cpt < len)
-	{
-		data[cpt] = nb_registers & 0x00FF;
-		++cpt;
-	}
+	uint8_t d;
+	d = (data_addr & 0xFF00) >> 8;
+	cpt += _buffer_out.write(&d, 1, cpt);
+
+	d = data_addr & 0x00FF;
+	cpt += _buffer_out.write(&d, 1, cpt);
+
+	d = (nb_registers & 0xFF00) >> 8;
+	cpt += _buffer_out.write(&d, 1, cpt);
+
+	d = nb_registers & 0x00FF;
+	cpt += _buffer_out.write(&d, 1, cpt);
 
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgFC03::decodeQuestion(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgFC03::decodeQuestion()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "decodeQuestion");
 
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
+	uint16_t cpt = decodeHeader();
 
-    if (cpt < len)
-	{
-		data_addr = data[cpt] << 8;
-		++cpt;
-	}
-    if (cpt < len)
-	{
-		data_addr |= data[cpt];
-		++cpt;
-	}
-    if (cpt < len)
-	{
-		nb_registers = data[cpt] << 8;
-		++cpt;
-	}
-    if (cpt < len)
-	{
-		nb_registers |= data[cpt];
-		++cpt;
-	}
+    //~ // if (cpt < len)
+	//~ {
+		//~ data_addr = _buffer_out._buffer[cpt] << 8;
+		//~ ++cpt;
+	//~ }
+    //~ // if (cpt < len)
+	//~ {
+		//~ data_addr |= _buffer_out._buffer[cpt];
+		//~ ++cpt;
+	//~ }
+    //~ // if (cpt < len)
+	//~ {
+		//~ nb_registers = _buffer_out._buffer[cpt] << 8;
+		//~ ++cpt;
+	//~ }
+    //~ // if (cpt < len)
+	//~ {
+		//~ nb_registers |= _buffer_out._buffer[cpt];
+		//~ ++cpt;
+	//~ }
 
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgFC03::decodeResponse(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgFC03::decodeResponse()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "decodeResponse");
 
-	{
-		std::stringstream ss;
-		ss << "decodeResponse => len " << len;
-		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-	}
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
-	{
-		std::stringstream ss;
-		ss << "cpt " << (int)cpt << " ; len " << len;
-		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-	}
-	
-	{
-		// number of data bytes to follow
-		uint8_t number_of_byte = 0;
-		if (cpt < len)
-		{
-			number_of_byte = data[cpt];
-			cpt+=1;
-		}
+	uint32_t cpt = decodeHeader();
 
-		uint16_t nb = number_of_byte >> 1;
-		{
-			std::stringstream ss;
-			ss << "nb " << (int)nb << " ; number_of_byte " << (int)number_of_byte;
-			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		}
-		if (nb != nb_registers)
-		{
-			throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception taille incorrect.");
-		}
+	if (functionCode() != 0x03)
+	{
+		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception fonction code incorrect.");
+	}
 
-		for (uint16_t i=0; ((cpt<len) && (i<nb_registers)); ++i)
-		{
-			registers[data_addr + i] = data[cpt] << 8; cpt += 1;
-			registers[data_addr + i] |= data[cpt]; cpt += 1;
-		}
+	// number of data bytes to follow
+	uint8_t number_of_byte = 0;
+	cpt += _buffer_in.read(&number_of_byte, 1, cpt);
+
+	uint16_t nb = number_of_byte >> 1;
+	if (nb != nb_registers)
+	{
+		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception taille incorrect.");
+	}
+
+	for (uint16_t i=0; (i<nb_registers); ++i)
+	{
+		uint8_t d[2];
+		cpt += _buffer_in.read(d, 2, cpt);
+		registers[data_addr + i] = d[0] << 8;
+		registers[data_addr + i] |= d[1];
 	}
 
 	return cpt;

@@ -98,7 +98,7 @@ void Modbus::ModbusMsgFC08::ClearOverrunCounterAndFlag()
 
 uint16_t Modbus::ModbusMsgFC08::encodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
 
 	data[cpt] = (subfunction & 0xFF00) >> 8; ++cpt;
 	data[cpt] = subfunction & 0x00FF; ++cpt;
@@ -116,7 +116,7 @@ uint16_t Modbus::ModbusMsgFC08::encodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC08::decodeQuestion(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeQuestion(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	subfunction = data[cpt] << 8; ++cpt;
 	subfunction |= data[cpt]; ++cpt;
@@ -134,7 +134,7 @@ uint16_t Modbus::ModbusMsgFC08::decodeQuestion(uint8_t* data, uint16_t len)
 
 uint16_t Modbus::ModbusMsgFC08::decodeResponse(uint8_t* data, uint16_t len)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeResponse(data, len);
+	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
 
 	{
 		subfunction = data[cpt] << 8; cpt += 1;
