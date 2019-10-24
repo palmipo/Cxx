@@ -15,18 +15,12 @@ LDFLAGS = $(LIBS)
 all: test_apc220
 
 clean:
-	rm bin/*.o libapc220.so librs232.so libgpio.so test_apc220
+	rm -f bin/*.o libapc220.so librs232.so libgpio.so test_apc220
 
 test_apc220: bin/test_apc220.o libapc220.so librs232.so libgpio.so
 	$(CC) $< -o $@ $(LDFLAGS)
 	
 bin/test_apc220.o: test/test_apc220.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-libapc220.so: $(OBJECTS)
-	$(CC) -shared $^ -o $@
-
-bin/apc220.o: src/apc220.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 librs232.so:
@@ -36,3 +30,9 @@ librs232.so:
 libgpio.so:
 	$(MAKE) -C $(GPIO_PWD) $@
 	ln -s $(GPIO_PWD)/$@
+
+libapc220.so: $(OBJECTS)
+	$(CC) -shared $^ -o $@
+
+bin/%.o: src/%.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
