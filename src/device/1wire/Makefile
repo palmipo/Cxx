@@ -16,7 +16,7 @@ LDFLAGS = $(LIBS)
 all: libonewiredevice.so test_ds2482
 
 clean:
-	rm bin/*.o libonewiredevice.so libonewire.so libraspii2c.so test_ds2482
+	rm -f bin/*.o libonewiredevice.so libonewire.so libraspii2c.so test_ds2482
 
 test_ds2482: bin/test_ds2482.o libonewiredevice.so libonewire.so libraspii2c.so
 	$(CC) $< -o $@ $(LDFLAGS)
@@ -35,11 +35,5 @@ libonewire.so:
 libonewiredevice.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/ds18b20.o: src/ds18b20.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-bin/ds2482.o: src/ds2482.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-bin/ds2482rom.o: src/ds2482rom.cpp
+bin/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

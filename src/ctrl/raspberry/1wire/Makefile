@@ -12,17 +12,14 @@ LDFLAGS = $(LIBS)
 all: libonewire.so
 
 clean:
-	rm bin/*.o libonewire.so libi2c.so
+	rm -f bin/*.o libonewire.so libi2c.so
 
 libonewire.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 libi2c.so:
-	$(MAKE) -C ../i2c/
+	$(MAKE) -C ../i2c/ $@
 	ln -s ../i2c/$@
 
-bin/onewire.o: src/onewire.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-bin/onewirerom.o: src/onewirerom.cpp
+bin/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
