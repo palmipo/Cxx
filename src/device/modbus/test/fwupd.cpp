@@ -27,6 +27,7 @@ int main(int argc, char ** argv)
 		t.detach();
 
 		Modbus::ModbusChannel * channel = factory.rtu(argv[1], 19200, 1, 1);
+		//~ Modbus::ModbusChannel * channel = factory.tcp(argv[1]);
 
 		{
 			/* FWST a RDY ? */

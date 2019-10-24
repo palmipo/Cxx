@@ -51,7 +51,13 @@ int32_t Modbus::ModbusTcp::actionIn()
 
 		Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
 		len = msg->in()->write(trame+cpt, len-cpt);
-		_fifo_in.add(msg->slaveAddress(), msg->functionCode(), msg);
+		msg->decodeHeader();
+		uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();
+		uint8_t function_code = ((Modbus::ModbusMsgHeader *)msg)->functionCode();
+		//~ std::stringstream ss;
+		//~ ss << (int32_t)slave_address << " " << (int32_t)function_code;
+		//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		_fifo_in.add(slave_address, function_code, msg);
 	}
 
 	_transaction_id += 1;
@@ -62,26 +68,29 @@ int32_t Modbus::ModbusTcp::actionOut()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
-	ModbusMsg * msg = _fifo_out.front();
-	_fifo_out.pop();
+	if (!_fifo_out.empty())
+	{
+		ModbusMsg * msg = _fifo_out.front();
+		_fifo_out.pop();
 
-	uint16_t cpt = 0;
-	uint8_t trame[256];
+		uint16_t cpt = 0;
+		uint8_t trame[256];
 
-	trame[cpt] = (_transaction_id >> 8) & 0xFF; ++cpt;
-	trame[cpt] = _transaction_id & 0xFF; ++cpt;
+		trame[cpt] = (_transaction_id >> 8) & 0xFF; ++cpt;
+		trame[cpt] = _transaction_id & 0xFF; ++cpt;
 
-	trame[cpt] = (_protocol_id >> 8) & 0xFF; ++cpt;
-	trame[cpt] = _protocol_id & 0xFF; ++cpt;
+		trame[cpt] = (_protocol_id >> 8) & 0xFF; ++cpt;
+		trame[cpt] = _protocol_id & 0xFF; ++cpt;
 
-	uint16_t len = msg->out()->read(trame+cpt+2, 256-2-cpt);
+		uint16_t len = msg->out()->read(trame+cpt+2, 256-2-cpt);
 
-	trame[cpt] = (len >> 8) & 0xFF; ++cpt;
-	trame[cpt] = len & 0xFF; ++cpt;
+		trame[cpt] = (len >> 8) & 0xFF; ++cpt;
+		trame[cpt] = len & 0xFF; ++cpt;
 
-	cpt += len;
+		cpt += len;
 
-	return ((Socket::SocketTcp *)_device)->write(trame, cpt);
+		return ((Socket::SocketTcp *)_device)->write(trame, cpt);
+	}
 }
 
 int32_t Modbus::ModbusTcp::actionError()
