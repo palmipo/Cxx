@@ -60,9 +60,15 @@ int32_t Modbus::ModbusRtu::actionIn()
 		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
 	}
 	
-	Modbus::ModbusMsg * msg = new Modbus::ModbusMsg();
+	Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
 	msg->in()->write(data, cpt);
-	_fifo_in.push(msg);
+	msg->decodeHeader();
+	uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();
+	uint8_t function_code = ((Modbus::ModbusMsgHeader *)msg)->functionCode();
+	//~ std::stringstream ss;
+	//~ ss << (int32_t)slave_address << " " << (int32_t)function_code;
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	_fifo_in.add(slave_address, function_code, msg);
 
 	return cpt;
 }

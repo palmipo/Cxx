@@ -20,6 +20,7 @@ OBJECTS = \
 	bin/modbusmsgfc72.o \
 	bin/modbusmsgfc90.o \
 	bin/modbusmsgheader.o \
+	bin/modbusqueue.o \
 	bin/modbusrtu.o \
 	bin/modbustcp.o
 	

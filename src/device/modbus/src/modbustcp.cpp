@@ -49,9 +49,9 @@ int32_t Modbus::ModbusTcp::actionIn()
 		uint16_t msg_length = trame[cpt] << 8; ++cpt;
 		msg_length |= trame[cpt]; ++cpt;
 
-		Modbus::ModbusMsg * msg = new Modbus::ModbusMsg();
+		Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
 		len = msg->in()->write(trame+cpt, len-cpt);
-		_fifo_in.push(msg);
+		_fifo_in.add(msg->slaveAddress(), msg->functionCode(), msg);
 	}
 
 	_transaction_id += 1;

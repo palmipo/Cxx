@@ -12,6 +12,7 @@
 #endif
 
 #include "polldevice.h"
+#include "modbusqueue.h"
 #include <queue>
 
 // class PollDevice;
@@ -24,9 +25,7 @@ namespace Modbus
 		public:
 			ModbusChannel(PollDevice *);
 
-			//~ virtual uint16_t sendFC(ModbusMsg *);
-			//~ virtual ModbusMsg * recvFC(int32_t = 10, int32_t = 1000);
-			virtual ModbusMsg * sendFC(ModbusMsg *, int32_t = 10, int32_t = 1000);
+			virtual void sendFC(ModbusMsg *, int32_t = 10, int32_t = 1000);
 
 		// virtual pur dans PollDevice
 		protected:
@@ -37,7 +36,7 @@ namespace Modbus
 			{}
 
 		protected:
-			std::queue < ModbusMsg * > _fifo_in;
+			ModbusQueue _fifo_in;
 			std::queue < ModbusMsg * > _fifo_out;
 			PollDevice * _device;
 	};

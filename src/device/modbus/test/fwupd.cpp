@@ -42,71 +42,77 @@ int main(int argc, char ** argv)
 			}
 			if (0x3 != msg.getRegister(0xFFDB))
 			{
-				Log::getLogger()->debug(__FILE__, __LINE__, "erreur reception Modbus !");
+				Log::getLogger()->debug(__FILE__, __LINE__, "erreur drive mauvais mode !");
 			}
 			Log::getLogger()->debug(__FILE__, __LINE__, "reception Modbus !");
 		}
 	
 		{
 			/* MODE a TP */
-			// Modbus::ModbusMsgFC06 msg;
-			// msg.setSlaveAddress(2);
-			// msg.setRegister(0x5DC, 0x5450);
-			// channel->sendFC(&msg);
-			// channel->recvFC(&msg);
+			Modbus::ModbusMsgFC06 msg;
+			msg.setSlaveAddress(2);
+			msg.setRegister(0x5DC, 0x5450);
+			msg.encodeQuestion();
+			channel->sendFC(&msg);
+			msg.decodeResponse();
 		}
 		
 		{
 			/* FWCD a APPLY */
-			// Modbus::ModbusMsgFC06 msg;
-			// msg.setSlaveAddress(2);
-			// msg.setRegister(0xFFDA, 0x2);
-			// channel->sendFC(&msg);
-			// channel->recvFC(&msg);
+			Modbus::ModbusMsgFC06 msg;
+			msg.setSlaveAddress(2);
+			msg.setRegister(0xFFDA, 0x2);
+			msg.encodeQuestion();
+			channel->sendFC(&msg);
+			msg.decodeResponse();
 		}
 
 		{
 			/* FWST a SUCCED ? */
-			// Modbus::ModbusMsgFC03 msg;
-			// msg.setSlaveAddress(2);
-			// msg.setRegisterAddr(0xFFDB, 1);
-			// channel->sendFC(&msg);
-			// channel->recvFC(&msg);
-			// if (0x5 != msg.getRegister(0xFFDB))
-			// {
-				// return -1;
-			// }
+			Modbus::ModbusMsgFC03 msg;
+			msg.setSlaveAddress(2);
+			msg.setRegisterAddr(0xFFDB, 1);
+			msg.encodeQuestion();
+			channel->sendFC(&msg);
+			msg.decodeResponse();
+			if (0x5 != msg.getRegister(0xFFDB))
+			{
+				Log::getLogger()->debug(__FILE__, __LINE__, "erreur drive mauvais mode !");
+			}
 		}
 
 		{
 			/* MODE a TP */
-			// Modbus::ModbusMsgFC06 msg;
-			// msg.setSlaveAddress(2);
-			// msg.setRegister(0x5DC, 0x5450);
-			// channel->sendFC(&msg);
-			// channel->recvFC(&msg);
+			Modbus::ModbusMsgFC06 msg;
+			msg.setSlaveAddress(2);
+			msg.setRegister(0x5DC, 0x5450);
+			msg.encodeQuestion();
+			channel->sendFC(&msg);
+			msg.decodeResponse();
 		}
 	
 		{
 			/* FWCD a APPLY */
-			// Modbus::ModbusMsgFC06 msg;
-			// msg.setSlaveAddress(2);
-			// msg.setRegister(0xFFDA, 0x3);
-			// channel->sendFC(&msg);
-			// channel->recvFC(&msg);
+			Modbus::ModbusMsgFC06 msg;
+			msg.setSlaveAddress(2);
+			msg.setRegister(0xFFDA, 0x3);
+			msg.encodeQuestion();
+			channel->sendFC(&msg);
+			msg.decodeResponse();
 		}
 
 		{
 			/* FWST a SUCCED ? */
-			// Modbus::ModbusMsgFC03 msg;
-			// msg.setSlaveAddress(2);
-			// msg.setRegisterAddr(0xFFDB, 1);
-			// channel->sendFC(&msg);
-			// channel->recvFC(&msg);
-			// if (0x4 != msg.getRegister(0xFFDB))
-			// {
-				// return -1;
-			// }
+			Modbus::ModbusMsgFC03 msg;
+			msg.setSlaveAddress(2);
+			msg.setRegisterAddr(0xFFDB, 1);
+			msg.encodeQuestion();
+			channel->sendFC(&msg);
+			msg.decodeResponse();
+			if (0x4 != msg.getRegister(0xFFDB))
+			{
+				Log::getLogger()->debug(__FILE__, __LINE__, "erreur drive mauvais mode !");
+			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(2));
     
