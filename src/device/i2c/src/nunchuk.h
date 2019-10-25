@@ -7,7 +7,7 @@ class I2C;
 class Nunchuk : public DeviceI2C
 {
 public:
-	Nunchuk(uint8_t, I2C *);
+	Nunchuk(I2C *);
 
 	void init();
 

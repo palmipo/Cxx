@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
 		PCA9685 pwm(0, &i2c);
 		SG90 servo(&pwm);
 
-		Nunchuk wii(0x52, &i2c);
+		Nunchuk wii(&i2c);
 
 		s16 angle = 0;
 		while (1)

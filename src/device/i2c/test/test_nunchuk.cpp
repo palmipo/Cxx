@@ -4,7 +4,7 @@
 #include "usb_i2c.h"
 #else
 #include "raspii2c.h"
-#include <poll.h>
+#include <thread>
 #endif
 #include "i2cexception.h"
 #include "nunchuk.h"
@@ -24,7 +24,7 @@ int main(int argc, char ** argv)
 		RaspiI2C i2c(argv[1]);
 		#endif
 
-		Nunchuk wii(0x52, &i2c);
+		Nunchuk wii(&i2c);
 		wii.init();
 
 		while (1)
@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
 			#ifdef USB_I2C
 			factory.scrute(1000);
 			#else
-			poll(0, 0, 2000);
+			std::this_thread::sleep_for(std::chrono::seconds(2));
 			#endif
 			
 			wii.init();

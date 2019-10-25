@@ -13,7 +13,7 @@
  * SCK   -- yellow -- A5
  */
 
-Nunchuk::Nunchuk(uint8_t addr, I2C *i2c)
+Nunchuk::Nunchuk(I2C *i2c)
 :DeviceI2C(0x52, i2c)
 {}
 
