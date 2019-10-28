@@ -27,6 +27,22 @@ LogMutex::~LogMutex()
 
 Log::Log()
 {
+	t0 = std::chrono::high_resolution_clock::now();
+}
+
+Log * Log::getLogger()
+{
+	if (!_instance)
+	{
+		_instance = new Log();
+	}
+
+	return _instance;
+}
+
+void Log::setFileName(const std::string & fic1, const std::string & fic2)
+{
+	/*
 	char nom_machine[256];
 	if (::gethostname(nom_machine, 256))
 	{
@@ -40,18 +56,10 @@ Log::Log()
 	
 	ss_result << ss_file.str() << "-result.txt";
 	filename_result = ss_result.str();
+	*/
 
-	t0 = std::chrono::high_resolution_clock::now();
-}
-
-Log * Log::getLogger()
-{
-	if (!_instance)
-	{
-		_instance = new Log();
-	}
-
-	return _instance;
+	filename = fic1;
+	filename_result = fic2;
 }
 
 void Log::debug(const std::string & fichier, int32_t ligne, const std::string & txt)
@@ -81,30 +89,18 @@ void Log::fatal(const std::string & fichier, int32_t ligne, const std::string & 
 
 void Log::result(const std::string & fichier, const std::string & ligne, const std::string & OK_KO, const std::string & txt)
 {
-	LogMutex mutex(m_);
-
-	std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - t0;
-
 	std::stringstream ss;
-	ss << std::setfill(' ') << std::setw(10) << std::uppercase << "RESULT";
-	ss << " : ";
-	ss << std::setfill('0') << std::setw(15) << std::fixed << elapsed.count();
-	ss << " s ; ";
-	ss << std::setfill(' ') << std::setw(30) << std::string(fichier, 0, 30);
-	ss << " ; ";
-	ss << std::setfill(' ') << std::setw(10) << std::string(ligne, 0, 10);
-	ss << " -> ";
 	ss << OK_KO;
 	ss << " ";
 	ss << txt;
 
-	std::cout << ss.str() << std::endl;
+	libre("RESULT", fichier, ligne, ss.str());
 
-	//~ std::ofstream os(filename, std::ios::app);
-	//~ os << ss.str() << std::endl;
-
-	//~ std::ofstream os_res(filename_result, std::ios::app);
-	//~ os_res << ss.str() << std::endl;
+	if (!filename_result.empty())
+	{
+		std::ofstream os_res(filename_result, std::ios::app);
+		os_res << ss.str() << std::endl;
+	}
 }
 
 void Log::libre(const std::string & type, const std::string & fichier, const std::string & ligne, const std::string & txt)
@@ -126,6 +122,9 @@ void Log::libre(const std::string & type, const std::string & fichier, const std
 
 	std::cout << ss.str() << std::endl;
 
-	//~ std::ofstream os(filename, std::ios::app);
-	//~ os << ss.str() << std::endl;
+	if (!filename.empty())
+	{
+		std::ofstream os(filename, std::ios::app);
+		os << ss.str() << std::endl;
+	}
 }

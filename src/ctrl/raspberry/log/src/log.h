@@ -30,6 +30,8 @@ class LOG_DLL Log
 	public:
 		static Log * getLogger();
 
+		void setFileName(const std::string & fic1, const std::string & fic2);
+
 		void debug(const std::string & fichier, int32_t ligne, const std::string &);
 		void info(const std::string & fichier, int32_t ligne, const std::string &);
 		void warn(const std::string & fichier, int32_t ligne, const std::string &);
