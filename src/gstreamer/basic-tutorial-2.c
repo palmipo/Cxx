@@ -2,42 +2,53 @@
 #include <gst/app/gstappsink.h>
 #include <gst/base/gstbasesink.h>
 #include <stdio.h>
+#include <unistd.h>
 
 void eos_function(GstAppSink *appsink, gpointer user_data)
 {
 	printf("eos_function\n");
 }
 
+GstFlowReturn new_preroll(GstAppSink *appsink, gpointer user_data)
+{
+	printf("new_preroll\n");
+	return GST_FLOW_OK;
+}
+
+static int cpt=0;
 GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 {
 	printf("new_sample_function\n");
-	
-	GstSample* sample = gst_base_sink_get_last_sample(GST_BASE_SINK(appsink));
 
-	// Will block until sample is ready. In our case "sample" is encoded picture.
-	//GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(appsink));
-
-	if(sample == NULL)
+	if (!gst_app_sink_is_eos(appsink))
 	{
-		fprintf(stderr, "gst_app_sink_pull_sample returned null\n");
-		return FALSE;
+		GstSample* sample = gst_app_sink_pull_sample(appsink);
+
+		if(sample == NULL)
+		{
+			fprintf(stderr, "gst_app_sink_pull_sample returned null\n");
+			return FALSE;
+		}
+
+		// Actual compressed image is stored inside GstSample.
+		GstBuffer* buffer = gst_sample_get_buffer (sample);
+		GstMapInfo map;
+		gst_buffer_map (buffer, &map, GST_MAP_READ);
+
+		/* map.data, map.size */
+		if (cpt == 0)
+		{
+			FILE * fic = fopen("img.raw", "wb");
+			fwrite((const void *)map.data, 1, map.size, fic);
+			fclose(fic);
+			cpt += 1;
+		}
+
+		gst_buffer_unmap (buffer, &map);
+		gst_sample_unref (sample);
 	}
-
-	// Actual compressed image is stored inside GstSample.
-	GstBuffer* buffer = gst_sample_get_buffer (sample);
-	GstMapInfo map;
-	gst_buffer_map (buffer, &map, GST_MAP_READ);
-
-	// Allocate appropriate buffer to store compressed image
-	//char* pRet = new char[map.size];
-
-	// Copy image
-	//memmove(pRet, map.data, map.size);
-
-	gst_buffer_unmap (buffer, &map);
-	gst_sample_unref (sample);
-
-	return TRUE;
+	//~ return TRUE;
+	return GST_FLOW_OK;
 }
 
 int main(int argc, char *argv[])
@@ -66,6 +77,13 @@ int main(int argc, char *argv[])
 
 	/* Build the pipeline */
 	gst_bin_add_many (GST_BIN (pipeline), source, filter, sink, NULL);
+	//~ gst_bin_add_many (GST_BIN (pipeline), source, sink, NULL);
+	//~ if (gst_element_link (source, sink) != TRUE)
+	//~ {
+		//~ g_printerr ("Elements could not be linked.\n");
+		//~ gst_object_unref (pipeline);
+		//~ return -1;
+	//~ }
 	if (gst_element_link (source, filter) != TRUE)
 	{
 		g_printerr ("Elements could not be linked.\n");
@@ -81,10 +99,11 @@ int main(int argc, char *argv[])
 
 	/* Modify the source's properties */
 	g_object_set (source, "device", "/dev/video0", NULL);
+	//~ int width = 0; g_object_get (source, "width", &width, NULL); g_printerr ("width : %d.\n", width);
 	GstAppSinkCallbacks callbacks;
 	callbacks.eos = eos_function;
-	callbacks.new_preroll = 0;
-	callbacks.new_sample = new_sample_function ;
+	callbacks.new_preroll = new_preroll;
+	callbacks.new_sample = new_sample_function;
 	gpointer user_data = 0;
 	GDestroyNotify notify = FALSE;
 	gst_app_sink_set_callbacks ((GstAppSink *)sink, &callbacks, user_data, notify); 
