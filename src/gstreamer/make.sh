@@ -1,1 +1,1 @@
-gcc basic-tutorial-2.c -o basic-tutorial-2 -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/glib-2.0 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0 -L/usr/lib/arm-linux-gnueabihf/gstreamer-1.0 -lgstapp-1.0 -lgstbase-1.0
+gcc -g  basic-tutorial-2.c -o basic-tutorial-1 -pthread -I/usr/include/gstreamer-1.0 -I/usr/include/glib-2.0 -I/usr/lib/arm-linux-gnueabihf/glib-2.0/include -lgstreamer-1.0 -lgobject-2.0 -lglib-2.0 -L/usr/lib/arm-linux-gnueabihf/gstreamer-1.0 -lgstapp-1.0 -lgstbase-1.0

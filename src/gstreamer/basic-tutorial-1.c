@@ -71,7 +71,7 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 			*nb_plan = 1;
 			cpt2+=2;
 			int16_t *bit_couleur = &entete_image[cpt2];
-			*bit_couleur = 24;
+			*bit_couleur = 32;
 			cpt2+=2;
 			int32_t *compression = &entete_image[cpt2];
 			*compression = 0;
@@ -116,47 +116,23 @@ int main(int argc, char *argv[])
 	/* Initialize GStreamer */
 	gst_init (&argc, &argv);
 
-	/* Create the elements */
-	source = gst_element_factory_make ("v4l2src", "source");
-	//~ filter = gst_element_factory_make ("videoconvert", "filter");
-	filter = gst_element_factory_make ("videoflip", "filter");
-	sink = gst_element_factory_make ("appsink", "sink");
-
 	/* Create the empty pipeline */
-	pipeline = gst_pipeline_new ("test-pipeline");
+	pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! video/x-raw,width=640,heigth=480 ! videoconvert ! appsink", 0);
 
-	if (!pipeline || !source || !filter || !sink)
-	{
-		g_printerr ("Not all elements could be created.\n");
-		return -1;
-	}
+	/* Create the elements */
+	//~ source = gst_element_factory_make ("v4l2src", "source");
+	//~ filter = gst_element_factory_make ("videoconvert", "filter");
+	sink = gst_element_factory_make ("appsink", "appsink0");
 
-	/* Build the pipeline */
-	gst_bin_add_many (GST_BIN (pipeline), source, filter, sink, NULL);
-	if (gst_element_link (source, filter) != TRUE)
-	{
-		g_printerr ("Elements could not be linked.\n");
-		gst_object_unref (pipeline);
-		return -1;
-	}
-	if (gst_element_link (filter, sink) != TRUE)
-	{
-		g_printerr ("Elements could not be linked.\n");
-		gst_object_unref (pipeline);
-		return -1;
-	}
-
+	//~ if (!pipeline || !source || !sink)
+	//~ {
+		//~ g_printerr ("Not all elements could be created.\n");
+		//~ return -1;
+	//~ }
 	/* Modify the source's properties */
-	g_object_set (source, "device", "/dev/video0", NULL);
-	g_object_set (filter, "video-direction", "vertical-flip", NULL);
-	
-	//~ GstCaps * videosrc_caps = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "RGB", "width", G_TYPE_INT, 1440, "heigth", G_TYPE_INT, 720);
-	//~ GstCaps * videosrc_caps = gst_caps_from_string("video/x-raw, format=ARGB, width=1440, heigth=720");
-	//~ gst_element_link_filtered(source, filter, videosrc_caps);
-
-	//~ GstCaps * vid_caps = gst_caps_from_string("video/x-raw, format=RGB");
-	//~ gst_element_link_filtered(filter, sink, vid_caps);
-	
+	//~ g_object_set (source, "device", "/dev/video0", NULL);
+	//~ int width = 640; g_object_set (source, "video/x-raw-yuv,width", &width, NULL); g_printerr ("width : %d.\n", width);
+	//~ int heigth = 480; g_object_set (source, "video/x-raw-yuv,heigth", &heigth, NULL); g_printerr ("width : %d.\n", width);
 	GstAppSinkCallbacks callbacks;
 	callbacks.eos = eos_function;
 	callbacks.new_preroll = new_preroll;
