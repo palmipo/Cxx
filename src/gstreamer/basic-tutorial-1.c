@@ -13,6 +13,7 @@ void eos_function(GstAppSink *appsink, gpointer user_data)
 GstFlowReturn new_preroll(GstAppSink *appsink, gpointer user_data)
 {
 	printf("new_preroll\n");
+
 	return GST_FLOW_OK;
 }
 
@@ -25,77 +26,133 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 	{
 		GstSample* sample = gst_app_sink_pull_sample(appsink);
 
-		if(sample == NULL)
+		if(!sample)
 		{
 			fprintf(stderr, "gst_app_sink_pull_sample returned null\n");
 			return FALSE;
 		}
 
 		// Actual compressed image is stored inside GstSample.
+		GstCaps * caps = gst_sample_get_caps (sample);
+		if (!caps)
+		{
+			fprintf(stderr, "gst_sample_get_caps returned null\n");
+			return FALSE;
+		}
+
+		GstStructure * st = gst_caps_get_structure(caps, 0);
+		if (!st)
+		{
+			fprintf(stderr, "gst_caps_get_structure returned null\n");
+			return FALSE;
+		}
+
+		int32_t width = 1920;
+		gst_structure_get_int(st, "width", &width);
+
+		int32_t height = 1080;
+		gst_structure_get_int(st, "height", &height);
+
+		int32_t nb_couleur = 24;
+		fprintf(stderr, "%d %d\n", width, height);
+
+		//~ gst_structure_free(st);
+		//~ gst_caps_unref(caps);
+
 		GstBuffer* buffer = gst_sample_get_buffer (sample);
+		if (!buffer)
+		{
+			fprintf(stderr, "gst_sample_get_buffer returned null\n");
+			return FALSE;
+		}
+
 		GstMapInfo map;
 		gst_buffer_map (buffer, &map, GST_MAP_READ);
 
 		/* map.data, map.size */
-		if (cpt0 == 10)
+		//~ if (cpt0 == 2)
 		{
-			FILE * fic = fopen("img.bmp", "wb");
-			
-			int32_t cpt1;
-			uint8_t entete[14];cpt1=0;
-			entete[cpt1] = 0x42;cpt1+=1;
-			entete[cpt1] = 0x4D;cpt1+=1;
-			int32_t *taille_fichier = entete + cpt1;
-			*taille_fichier = 4147254;
-			cpt1+=4;
-			int32_t *reserve = &entete[cpt1];
-			*reserve = 0;
-			cpt1+=4;
-			int32_t *offset_img = &entete[cpt1];
-			*offset_img = 54;
-			cpt1+=4;
-			fwrite((const void *)entete, 1, cpt1, fic);
-			
-			int32_t cpt2;
-			uint8_t entete_image[33];cpt2=0;
-			int32_t *taille_entete = &entete_image[cpt2];
-			*taille_entete = 0x28;
-			cpt2+=4;
-			int32_t *largeur = &entete_image[cpt2];
-			*largeur = 1440;
-			cpt2+=4;
-			int32_t *hauteur = &entete_image[cpt2];
-			*hauteur = 720;
-			cpt2+=4;
-			int16_t *nb_plan = &entete_image[cpt2];
-			*nb_plan = 1;
-			cpt2+=2;
-			int16_t *bit_couleur = &entete_image[cpt2];
-			*bit_couleur = 32;
-			cpt2+=2;
-			int32_t *compression = &entete_image[cpt2];
-			*compression = 0;
-			cpt2+=4;
-			int32_t *taille_img = &entete_image[cpt2];
-			*taille_img = map.size;
-			cpt2+=4;
-			int32_t *resolution_horizontale= &entete_image[cpt2];
-			*resolution_horizontale = 72;
-			cpt2+=4;
-			int32_t *resolution_verticale = &entete_image[cpt2];
-			*resolution_verticale = 72;
-			cpt2+=4;
-			int32_t *couleur_palette = &entete_image[cpt2];
-			*couleur_palette = 0;
-			cpt2+=4;
-			int32_t *couleur_importante = &entete_image[cpt2];
-			*couleur_importante = 0;
-			cpt2+=4;
-			fwrite((const void *)entete_image, 1, cpt2, fic);
+			char nom[100];
+			sprintf(nom, "img%d.bmp", cpt0);
+			FILE * fic = fopen(nom, "wb");
+			if (fic)
+			{
+				int32_t cpt1;
+				uint8_t entete[14];cpt1=0;
+				
+				entete[cpt1] = 0x42;
+				cpt1+=1;
+				
+				entete[cpt1] = 0x4D;
+				cpt1+=1;
+				
+				int32_t *taille_fichier = entete + cpt1;
+				*taille_fichier = map.size + 54;
+				cpt1+=4;
+				
+				int32_t *reserve = &entete[cpt1];
+				*reserve = 0;
+				cpt1+=4;
+				
+				int32_t *offset_img = &entete[cpt1];
+				*offset_img = 54;
+				cpt1+=4;
+				
+				fwrite((const void *)entete, 1, cpt1, fic);
+				
+				int32_t cpt2;
+				uint8_t entete_image[33];cpt2=0;
+				
+				int32_t *taille_entete = &entete_image[cpt2];
+				*taille_entete = 0x28;
+				cpt2+=4;
+				
+				int32_t *largeur = &entete_image[cpt2];
+				*largeur = width;
+				cpt2+=4;
+				
+				int32_t *hauteur = &entete_image[cpt2];
+				*hauteur = height;
+				cpt2+=4;
+				
+				int16_t *nb_plan = &entete_image[cpt2];
+				*nb_plan = 1;
+				cpt2+=2;
+				
+				int16_t *bit_couleur = &entete_image[cpt2];
+				*bit_couleur = nb_couleur;
+				cpt2+=2;
+				
+				int32_t *compression = &entete_image[cpt2];
+				*compression = 0;
+				cpt2+=4;
+				
+				int32_t *taille_img = &entete_image[cpt2];
+				*taille_img = map.size;
+				cpt2+=4;
+				
+				int32_t *resolution_horizontale= &entete_image[cpt2];
+				*resolution_horizontale = 72;
+				cpt2+=4;
+				
+				int32_t *resolution_verticale = &entete_image[cpt2];
+				*resolution_verticale = 72;
+				cpt2+=4;
+				
+				int32_t *couleur_palette = &entete_image[cpt2];
+				*couleur_palette = 0;
+				cpt2+=4;
+				
+				int32_t *couleur_importante = &entete_image[cpt2];
+				*couleur_importante = 0;
+				cpt2+=4;
+				
+				fwrite((const void *)entete_image, 1, cpt2, fic);
 
-			fwrite((const void *)map.data, 1, map.size, fic);
+				fwrite((const void *)map.data, 1, map.size, fic);
 
-			fclose(fic);
+				fclose(fic);
+			}
 		}
 		cpt0 += 1;
 
@@ -105,6 +162,7 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 	//~ return TRUE;
 	return GST_FLOW_OK;
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -117,22 +175,17 @@ int main(int argc, char *argv[])
 	gst_init (&argc, &argv);
 
 	/* Create the empty pipeline */
-	pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! video/x-raw,width=640,heigth=480 ! videoconvert ! appsink", 0);
+	//~ pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! video/x-raw,format=I420 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink0", 0);
+	pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink0", 0);
+	sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink0");
+	if (!pipeline || !sink)
+	{
+		g_printerr ("Not all elements could be created.\n");
+		return -1;
+	}
+
 
 	/* Create the elements */
-	//~ source = gst_element_factory_make ("v4l2src", "source");
-	//~ filter = gst_element_factory_make ("videoconvert", "filter");
-	sink = gst_element_factory_make ("appsink", "appsink0");
-
-	//~ if (!pipeline || !source || !sink)
-	//~ {
-		//~ g_printerr ("Not all elements could be created.\n");
-		//~ return -1;
-	//~ }
-	/* Modify the source's properties */
-	//~ g_object_set (source, "device", "/dev/video0", NULL);
-	//~ int width = 640; g_object_set (source, "video/x-raw-yuv,width", &width, NULL); g_printerr ("width : %d.\n", width);
-	//~ int heigth = 480; g_object_set (source, "video/x-raw-yuv,heigth", &heigth, NULL); g_printerr ("width : %d.\n", width);
 	GstAppSinkCallbacks callbacks;
 	callbacks.eos = eos_function;
 	callbacks.new_preroll = new_preroll;
