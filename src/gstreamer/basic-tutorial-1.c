@@ -166,24 +166,18 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 
 int main(int argc, char *argv[])
 {
-	GstElement *pipeline, *source, *filter, *sink;
-	GstBus *bus;
-	GstMessage *msg;
-	GstStateChangeReturn ret;
-
 	/* Initialize GStreamer */
 	gst_init (&argc, &argv);
 
 	/* Create the empty pipeline */
-	//~ pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! video/x-raw,format=I420 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink0", 0);
-	pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink0", 0);
-	sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink0");
+	GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=10 ! appsink name=sink0", 0);
+	//~ GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videocrop top=450 left=900 bottom=550 right=1200 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=1 ! appsink name=sink0", 0);
+	GstElement *sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink0");
 	if (!pipeline || !sink)
 	{
 		g_printerr ("Not all elements could be created.\n");
 		return -1;
 	}
-
 
 	/* Create the elements */
 	GstAppSinkCallbacks callbacks;
@@ -195,7 +189,7 @@ int main(int argc, char *argv[])
 	gst_app_sink_set_callbacks ((GstAppSink *)sink, &callbacks, user_data, notify); 
 
 	/* Start playing */
-	ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	GstStateChangeReturn ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
 	if (ret == GST_STATE_CHANGE_FAILURE)
 	{
 		g_printerr ("Unable to set the pipeline to the playing state.\n");
@@ -204,8 +198,8 @@ int main(int argc, char *argv[])
 	}
 
 	/* Wait until error or EOS */
-	bus = gst_element_get_bus (pipeline);
-	msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
+	GstBus *bus = gst_element_get_bus (pipeline);
+	GstMessage *msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
 
 	/* Parse message */
 	if (msg != NULL)
@@ -239,4 +233,3 @@ int main(int argc, char *argv[])
 	gst_object_unref (pipeline);
 	return 0;
 }
-
