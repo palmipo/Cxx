@@ -101,7 +101,7 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 				fwrite((const void *)entete, 1, cpt1, fic);
 				
 				int32_t cpt2;
-				uint8_t entete_image[33];cpt2=0;
+				uint8_t entete_image[40];cpt2=0;
 				
 				int32_t *taille_entete = &entete_image[cpt2];
 				*taille_entete = 0x28;
