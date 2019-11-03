@@ -2,7 +2,6 @@
 #define ENDIANNESS_H
 
 #include <cstdint>
-#include <iostream>
 
 template <class T>
 class Endianness
@@ -16,7 +15,6 @@ class Endianness
 			if (c[0] == i)
 			{
 				_little_endian = true;
-				//~ std::cout << "little endian" << std::endl;
 			}
 		}
 
@@ -28,15 +26,7 @@ class Endianness
 			}
 			else
 			{
-				uint8_t * c = (uint8_t*)&i;
-				T k;
-				uint8_t * d = (uint8_t*)	&k;
-				int32_t l = sizeof(i);
-				for (int32_t j=0; j<l; ++j)
-				{
-					d[j] = c[l-j-1];
-				}
-				return k;
+				return inversion(i);
 			}
 		}
 
@@ -44,23 +34,28 @@ class Endianness
 		{
 			if (_little_endian)
 			{
-				uint8_t * c = (uint8_t*)&i;
-				T k;
-				uint8_t * d = (uint8_t*)&k;
-				int32_t l = sizeof(i);
-				//~ std::cout << "size : " << l << std::endl;
-				for (int32_t j=0; j<l; ++j)
-				{
-					d[j] = c[l-j-1];
-				}
-				return k;
+				return inversion(i);
 			}
 			else
 			{
 				return i;
 			}
 		}
-		
+
+	protected:
+		T inversion(T i)
+		{
+			T k;
+			uint8_t * c = (uint8_t*)&i;
+			uint8_t * d = (uint8_t*)&k;
+			int32_t l = sizeof(i);
+			for (int32_t j=0; j<l; ++j)
+			{
+				d[j] = c[l-j-1];
+			}
+			return k;
+		}
+
 	protected:
 		uint8_t _little_endian;
 };
