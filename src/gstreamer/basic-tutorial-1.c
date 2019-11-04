@@ -54,7 +54,6 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 		gst_structure_get_int(st, "height", &height);
 
 		int32_t nb_couleur = 24;
-		fprintf(stderr, "%d %d\n", width, height);
 
 		//~ gst_structure_free(st);
 		//~ gst_caps_unref(caps);
@@ -68,6 +67,8 @@ GstFlowReturn new_sample_function(GstAppSink *appsink, gpointer user_data)
 
 		GstMapInfo map;
 		gst_buffer_map (buffer, &map, GST_MAP_READ);
+		fprintf(stderr, "%d %d %d\n", width, height, map.size);
+		nb_couleur = ((map.size / width) / height) * 8;
 
 		/* map.data, map.size */
 		//~ if (cpt0 == 2)
@@ -171,6 +172,7 @@ int main(int argc, char *argv[])
 
 	/* Create the empty pipeline */
 	GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=10 ! appsink name=sink0", 0);
+	//~ GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB,width=640,height=480 ! cverode iterations=10 ! appsink name=sink0", 0);
 	//~ GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videocrop top=450 left=900 bottom=550 right=1200 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=1 ! appsink name=sink0", 0);
 	GstElement *sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink0");
 	if (!pipeline || !sink)
