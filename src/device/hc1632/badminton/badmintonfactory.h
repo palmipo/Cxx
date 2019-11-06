@@ -4,7 +4,6 @@
 #include "gpiofactory.h"
 #include <termios.h>
 #include <string>
-#include <chrono>
 
 class HC1632;
 class Gpio;
@@ -24,7 +23,6 @@ class BatmintonFactory : public GpioFactory
 
 		int32_t _status;
 		HC1632 * _matrix;
-		std::chrono::time_point<std::chrono::high_resolution_clock> _last_valid_irq;
 };
 
 #endif /* GPIO_FACTORY_H */

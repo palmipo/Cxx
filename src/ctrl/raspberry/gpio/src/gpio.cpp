@@ -15,7 +15,7 @@ Gpio::Gpio(int32_t pin_number, int32_t handler)
 
 Gpio::~Gpio()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "~Gpio");
+	Log::getLogger()->debug(__FILE__, __LINE__, "~Gpio");
 
 	delete _evnt;
 
@@ -33,7 +33,7 @@ int32_t Gpio::pinNumber() const
 
 int32_t Gpio::write(uint8_t * data, int32_t length)
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "write");
+	Log::getLogger()->debug(__FILE__, __LINE__, "write");
 
 	struct gpiohandle_data output_values;
 	for (int32_t i=0; i<length; ++i)
@@ -50,7 +50,7 @@ int32_t Gpio::write(uint8_t * data, int32_t length)
 
 int32_t Gpio::read(uint8_t * data, int32_t length)
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "read");
+	Log::getLogger()->debug(__FILE__, __LINE__, "read");
 
 	struct gpiohandle_data input_values;
 	if (ioctl(_handler, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &input_values) < 0)
@@ -68,14 +68,14 @@ GpioEvent * Gpio::getEvent()
 
 int32_t Gpio::actionError()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
 
 	return 0;
 }
 
 int32_t Gpio::actionIn()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	struct gpioevent_data input_event_data;
 	if (::read(_handler, &input_event_data, sizeof(struct gpioevent_data)) <= 0)
@@ -89,7 +89,7 @@ int32_t Gpio::actionIn()
 
 int32_t Gpio::actionOut()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
 	return 0;
 }

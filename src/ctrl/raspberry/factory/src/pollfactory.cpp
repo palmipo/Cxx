@@ -62,7 +62,7 @@ PollDevice* PollFactory::get(int32_t id)
 
 int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut, int32_t scruteError)
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
+	Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
 
 	int32_t cpt = 0;
 	int32_t nb = _liste.size();
