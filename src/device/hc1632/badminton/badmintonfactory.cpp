@@ -46,11 +46,11 @@ BatmintonFactory::BatmintonFactory(const std::string & device)
 : GpioFactory(device)
 , _status(0)
 {
-// GPIOHANDLE_REQUEST_INPUT
-// GPIOHANDLE_REQUEST_OUTPUT
-// GPIOHANDLE_REQUEST_ACTIVE_LOW
-// GPIOHANDLE_REQUEST_OPEN_DRAIN
-// GPIOHANDLE_REQUEST_OPEN_SOURCE
+	// GPIOHANDLE_REQUEST_INPUT
+	// GPIOHANDLE_REQUEST_OUTPUT
+	// GPIOHANDLE_REQUEST_ACTIVE_LOW
+	// GPIOHANDLE_REQUEST_OPEN_DRAIN
+	// GPIOHANDLE_REQUEST_OPEN_SOURCE
 	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE);
 	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
 	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
@@ -77,6 +77,8 @@ BatmintonFactory::BatmintonFactory(const std::string & device)
 	_matrix->write_led_buffer(5, terrain[2], NB_POINT);
 	_matrix->write_led_buffer(7, terrain[3], NB_POINT);
 	_matrix->write_led_buffer(9, terrain[4], NB_POINT);
+
+	_last_valid_irq = std::chrono::high_resolution_clock::now();
 }
 
 BatmintonFactory::~BatmintonFactory()
@@ -91,41 +93,48 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 	Gpio * bt = (Gpio *)device;
 	bt->actionIn();
 
-	switch(bt->pinNumber())
+	std::chrono::time_point<std::chrono::high_resolution_clock> new_irq;
+	std::chrono::duration<double, std::milli> elapsed = new_irq - _last_valid_irq;
+	if (elapsed.count() > 20.)
 	{
-		case RAZ_PIN:
-			Log::getLogger()->debug(__FILE__, __LINE__, "RAZ");
-			score_droit = 0;
-			score_gauche = 0;
-			break;
-
-		case DROITE_PIN:
-			Log::getLogger()->debug(__FILE__, __LINE__, "DROITE_PIN");
-			score_droit += 1;
-			if (score_droit > 99)
-			{
+		switch(bt->pinNumber())
+		{
+			case RAZ_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "RAZ");
 				score_droit = 0;
-			}
-			break;
-
-		case GAUCHE_PIN:
-			Log::getLogger()->debug(__FILE__, __LINE__, "GAUCHE_PIN");
-			score_gauche += 1;
-			if (score_gauche > 99)
-			{
 				score_gauche = 0;
-			}
-			break;
-			
-		default:
-			std::stringstream ss;
-			ss << "PIN " << bt->pinNumber() << " inconnue !!!";
-			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-			break;
+				break;
+
+			case DROITE_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "DROITE_PIN");
+				score_droit += 1;
+				if (score_droit > 99)
+				{
+					score_droit = 0;
+				}
+				break;
+
+			case GAUCHE_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "GAUCHE_PIN");
+				score_gauche += 1;
+				if (score_gauche > 99)
+				{
+					score_gauche = 0;
+				}
+				break;
+				
+			default:
+				std::stringstream ss;
+				ss << "PIN " << bt->pinNumber() << " inconnue !!!";
+				Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+				break;
+		}
+
+		_status = bt->pinNumber();
+		return bt->pinNumber();
 	}
 
-	_status = bt->pinNumber();
-	return bt->pinNumber();
+	return 0;
 }
 
 int32_t BatmintonFactory::status()
