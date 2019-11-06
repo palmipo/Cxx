@@ -33,7 +33,7 @@ int32_t Gpio::pinNumber() const
 
 int32_t Gpio::write(uint8_t * data, int32_t length)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "write");
+//	Log::getLogger()->debug(__FILE__, __LINE__, "write");
 
 	struct gpiohandle_data output_values;
 	for (int32_t i=0; i<length; ++i)

@@ -8,7 +8,7 @@ AR = ar
 CC = g++
 MAKE = make
 INCLUDE = -I$(LOG_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc -Ibadminton
-LIBS = -L. -lgpio -lpoll -llog -lhc1632
+LIBS = -L. -lgpio -lpoll -llog -lhc1632 -lm
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)

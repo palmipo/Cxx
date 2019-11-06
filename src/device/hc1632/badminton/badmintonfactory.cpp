@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 #include <thread>
+#include <cmath>
 
 /* 01/02/04/08/10/20/40/80 */
 uint8_t chiffre[10][48] ={
@@ -78,6 +79,9 @@ BatmintonFactory::BatmintonFactory(const std::string & device)
 	_matrix->write_led_buffer(5, terrain[2], NB_POINT);
 	_matrix->write_led_buffer(7, terrain[3], NB_POINT);
 	_matrix->write_led_buffer(9, terrain[4], NB_POINT);
+
+	_last_valid_irq = std::chrono::high_resolution_clock::now();
+
 }
 
 BatmintonFactory::~BatmintonFactory()
@@ -92,6 +96,12 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 	Gpio * bt = (Gpio *)device;
 	bt->actionIn();
 
+	std::chrono::time_point<std::chrono::high_resolution_clock> new_irq = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = new_irq - _last_valid_irq;
+	Log::getLogger()->debug(__FILE__, __LINE__, std::to_string(elapsed.count()));
+	if (fabs(elapsed.count()) > 1.)
+	{
+	_last_valid_irq = new_irq;
 	switch(bt->pinNumber())
 	{
 		case RAZ_PIN:
@@ -127,6 +137,9 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 
 	_status = bt->pinNumber();
 	return bt->pinNumber();
+	}
+
+	return 0;
 }
 
 int32_t BatmintonFactory::status()
