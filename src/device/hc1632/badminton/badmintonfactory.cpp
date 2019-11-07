@@ -33,14 +33,6 @@ uint8_t terrain[5][48] = {
 };
 
 const int32_t NB_POINT = 48;
-const int32_t NB_MATRIX = 10;
-const int32_t DROITE_PIN = 23;
-const int32_t RAZ_PIN = 10;
-const int32_t GAUCHE_PIN = 24;
-const int32_t FIN_PIN = 9;
-const int32_t DATA_PIN = 7;
-const int32_t WRITE_PIN = 11;
-const int32_t CS_PIN[NB_MATRIX] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
 int32_t score_droit = 0;
 int32_t score_gauche = 0;
 
@@ -56,6 +48,7 @@ BatmintonFactory::BatmintonFactory(const std::string & device)
 	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE);
 	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
 	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+	Gpio * _bt_fin = event(FIN_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
 
 	Gpio * _data = output(DATA_PIN);
 	Gpio * _write = output(WRITE_PIN);
@@ -101,42 +94,48 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 	Log::getLogger()->debug(__FILE__, __LINE__, std::to_string(elapsed.count()));
 	if (fabs(elapsed.count()) > 1.)
 	{
-	_last_valid_irq = new_irq;
-	switch(bt->pinNumber())
-	{
-		case RAZ_PIN:
-			Log::getLogger()->debug(__FILE__, __LINE__, "RAZ");
-			score_droit = 0;
-			score_gauche = 0;
-			break;
-
-		case DROITE_PIN:
-			Log::getLogger()->debug(__FILE__, __LINE__, "DROITE_PIN");
-			score_droit += 1;
-			if (score_droit > 99)
-			{
+		_last_valid_irq = new_irq;
+		switch(bt->pinNumber())
+		{
+			case FIN_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "FIN");
 				score_droit = 0;
-			}
-			break;
-
-		case GAUCHE_PIN:
-			Log::getLogger()->debug(__FILE__, __LINE__, "GAUCHE_PIN");
-			score_gauche += 1;
-			if (score_gauche > 99)
-			{
 				score_gauche = 0;
-			}
-			break;
-			
-		default:
-			std::stringstream ss;
-			ss << "PIN " << bt->pinNumber() << " inconnue !!!";
-			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-			break;
-	}
+				break;
 
-	_status = bt->pinNumber();
-	return bt->pinNumber();
+			case RAZ_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "RAZ");
+				score_droit = 0;
+				score_gauche = 0;
+				break;
+
+			case DROITE_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "DROITE_PIN");
+				score_droit += 1;
+				if (score_droit > 99)
+				{
+					score_droit = 0;
+				}
+				break;
+
+			case GAUCHE_PIN:
+				Log::getLogger()->debug(__FILE__, __LINE__, "GAUCHE_PIN");
+				score_gauche += 1;
+				if (score_gauche > 99)
+				{
+					score_gauche = 0;
+				}
+				break;
+				
+			default:
+				std::stringstream ss;
+				ss << "PIN " << bt->pinNumber() << " inconnue !!!";
+				Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+				break;
+		}
+
+		_status = bt->pinNumber();
+		return bt->pinNumber();
 	}
 
 	return 0;

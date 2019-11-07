@@ -171,7 +171,8 @@ int main(int argc, char *argv[])
 	gst_init (&argc, &argv);
 
 	/* Create the empty pipeline */
-	GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=10 ! appsink name=sink0", 0);
+	GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink0", 0);
+	//~ GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=10 ! appsink name=sink0", 0);
 	//~ GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,format=RGB,width=640,height=480 ! cverode iterations=10 ! appsink name=sink0", 0);
 	//~ GstElement *pipeline = gst_parse_launch ("v4l2src device=/dev/video0 ! videocrop top=450 left=900 bottom=550 right=1200 ! videoconvert ! video/x-raw,format=RGB ! cverode iterations=1 ! appsink name=sink0", 0);
 	GstElement *sink = gst_bin_get_by_name(GST_BIN(pipeline), "sink0");

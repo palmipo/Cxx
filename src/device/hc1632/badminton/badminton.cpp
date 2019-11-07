@@ -26,7 +26,7 @@ int main(int argc, char ** argv)
 		std::thread t(fct_scrute, &factory, &fin);
 		t.detach();
 
-		while(1)
+		while(fin)
 		{
 			if (factory.status() > 0)
 			{
@@ -34,7 +34,7 @@ int main(int argc, char ** argv)
 			}
 			else
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
 		}
 		
