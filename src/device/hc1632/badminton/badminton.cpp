@@ -8,7 +8,7 @@
 void fct_scrute(BatmintonFactory * factory, int32_t * fin)
 {
 //	Log::getLogger()->debug(__FILE__, __LINE__, "scrute 1");
-	while(fin)
+	while(! *fin)
 	{
 //		Log::getLogger()->debug(__FILE__, __LINE__, "scrute 2");
 		factory->scrute(1000);
