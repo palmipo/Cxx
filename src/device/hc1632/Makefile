@@ -2,7 +2,7 @@ OBJECTS = \
 	bin/hc1632.o
 
 LOG_REP = ../../ctrl/raspberry/log
-POLL_REP = ../../ctrl/raspberry/factory
+POLL_REP = ../../ctrl/raspberry/poll
 GPIO_REP = ../../ctrl/raspberry/gpio
 AR = ar
 CC = g++

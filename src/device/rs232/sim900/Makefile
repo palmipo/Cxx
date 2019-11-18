@@ -2,7 +2,7 @@ OBJECTS = \
 	bin/sim900buffer.o \
 	bin/sim900.o
 
-POLL_PWD = ../../../ctrl/raspberry/factory
+POLL_PWD = ../../../ctrl/raspberry/poll
 LOG_PWD = ../../../ctrl/raspberry/log
 RS232_PWD = ../../../ctrl/raspberry/rs232
 I2C_PWD = ../../../ctrl/raspberry/i2c

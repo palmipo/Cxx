@@ -12,11 +12,13 @@ OBJECTS = \
 	bin/canopensdo.o \
 	bin/canopen.o
 
-POLL_PWD = ../factory
-SOCKET_PWD = ../socket
-CAN_PWD = ../can
+RASPI_CTRL = ../ctrl/raspberry
+LOG_PWD = $(RASPI_CTRL)/log
+POLL_PWD = $(RASPI_CTRL)/poll
+SOCKET_PWD = $(RASPI_CTRL)/socket
+CAN_PWD = $(RASPI_CTRL)/can
 CC = g++
-INCLUDE = -I../log/src -I$(SOCKET_PWD)/src -I$(CAN_PWD)/src -I$(POLL_PWD)/src -Isrc
+INCLUDE = -I$(LOG_PWD)/src -I$(SOCKET_PWD)/src -I$(CAN_PWD)/src -I$(POLL_PWD)/src -Isrc
 LIBS = -L. -lcan -lsocket -lpoll -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
@@ -29,8 +31,8 @@ clean:
 
 # LINUX
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
 
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
@@ -53,8 +55,8 @@ libcanopen.so: $(OBJECTS)
 
 # WINDOWS
 liblog.dll:
-	$(MAKE) -C ../log $@
-	cp ../log/$@ .
+	$(MAKE) -C $(LOG_PWD) $@
+	cp $(LOG_PWD)/$@ .
 
 libpoll.dll:
 	$(MAKE) -C $(POLL_PWD) $@

@@ -24,10 +24,11 @@ OBJECTS = \
 	bin/modbusrtu.o \
 	bin/modbustcp.o
 	
-LOG_PWD = ../../ctrl/raspberry/log
-POLL_PWD = ../../ctrl/raspberry/factory
-SOCKET_PWD = ../../ctrl/raspberry/socket
-RS232_PWD = ../../ctrl/raspberry/rs232
+RASPI_CTRL = ../ctrl/raspberry
+LOG_PWD = $(RASPI_CTRL)/log
+POLL_PWD = $(RASPI_CTRL)/poll
+SOCKET_PWD = $(RASPI_CTRL)/socket
+RS232_PWD = $(RASPI_CTRL)/rs232
 CC = g++
 MAKE = make
 INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
