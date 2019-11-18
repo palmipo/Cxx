@@ -6,7 +6,7 @@ OBJECTS = \
 
 MAKE = make
 CC = g++
-POLL_PWD = ../factory
+POLL_PWD = ../poll
 INCLUDE = -I$(POLL_PWD)/src -I../log/src -Isrc
 LIBS = -L. -lpoll -llog
 
