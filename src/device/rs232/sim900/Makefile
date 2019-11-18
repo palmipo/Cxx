@@ -5,9 +5,6 @@ OBJECTS = \
 POLL_PWD = ../../../ctrl/raspberry/poll
 LOG_PWD = ../../../ctrl/raspberry/log
 RS232_PWD = ../../../ctrl/raspberry/rs232
-I2C_PWD = ../../../ctrl/raspberry/i2c
-I2C_DEVICE_PWD = ../../i2c
-HD44780_PWD = ../../hd44780
 CC = g++
 MAKE = make
 INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(RS232_PWD)/src/ -I$(I2C_PWD)/src/ -I$(I2C_DEVICE_PWD)/src/ -I$(HD44780_PWD)/src/
@@ -19,19 +16,23 @@ LDFLAGS = $(LIBS)
 all: send_sms
 
 clean:
-	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(LOG_PWD) $@
+	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
-	$(MAKE) -C $(I2C_PWD) $@
-	$(MAKE) -C $(I2C_DEVICE_PWD) $@
-	$(MAKE) -C $(HD44780_PWD) $@
 	rm -f bin/*.o *.dll *.so send_sms
 
 send_sms: bin/send_sms.o
-	$(MAKE) libpoll.so
 	$(MAKE) liblog.so
-	$(MAKE) libsim900.so
+	$(MAKE) libpoll.so
 	$(MAKE)	librs232.so
+	$(MAKE) libsim900.so
+	$(CC) $< -o $@ $(LDFLAGS) -lsim900 -lpthread
+
+send_sms.exe: bin/send_sms.o
+	$(MAKE) liblog.dll
+	$(MAKE) libpoll.dll
+	$(MAKE)	librs232.dll
+	$(MAKE) libsim900.dll
 	$(CC) $< -o $@ $(LDFLAGS) -lsim900 -lpthread
 
 bin/send_sms.o: test/send_sms.cpp
@@ -52,17 +53,20 @@ librs232.so:
 	$(MAKE) -C $(RS232_PWD) $@
 	ln -s $(RS232_PWD)/$@
 
-libraspii2c.so:
-	$(MAKE) -C $(I2C_PWD) $@
-	ln -s $(I2C_PWD)/$@
+libsim900.dll: $(OBJECTS)
+	$(CC) -shared $^ -o $@
 
-libi2cdevice.so:
-	$(MAKE) -C $(I2C_DEVICE_PWD) $@
-	ln -s $(I2C_DEVICE_PWD)/$@
+libpoll.dll:
+	$(MAKE) -C $(POLL_PWD) $@
+	ln -s $(POLL_PWD)/$@
 
-libada772.so:
-	$(MAKE) -C $(HD44780_PWD) $@
-	ln -s $(HD44780_PWD)/$@
+liblog.dll:
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
+
+librs232.dll:
+	$(MAKE) -C $(RS232_PWD) $@
+	ln -s $(RS232_PWD)/$@
 
 bin/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

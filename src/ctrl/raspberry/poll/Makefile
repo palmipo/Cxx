@@ -4,9 +4,10 @@ OBJECTS = \
 	bin/pollmutex.o \
 	bin/pollbuffer.o
 
+LOG_PWD = ../log
 MAKE = make
 CC = g++
-INCLUDE = -Isrc -I../log/src
+INCLUDE = -Isrc -I$(LOG_PWD)/src
 LIBS = -L. -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
@@ -19,16 +20,16 @@ clean:
 
 # LINUX
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
 
 libpoll.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # WINDOWS
 liblog.dll:
-	$(MAKE) -C ../log $@
-	cp ../log/$@ .
+	$(MAKE) -C $(LOG_PWD) $@
+	cp $(LOG_PWD)/$@ .
 
 libpoll.dll: $(OBJECTS)
 	$(MAKE) liblog.dll
