@@ -24,7 +24,7 @@ OBJECTS = \
 	bin/modbusrtu.o \
 	bin/modbustcp.o
 	
-RASPI_CTRL = ../ctrl/raspberry
+RASPI_CTRL = ../../ctrl/raspberry
 LOG_PWD = $(RASPI_CTRL)/log
 POLL_PWD = $(RASPI_CTRL)/poll
 SOCKET_PWD = $(RASPI_CTRL)/socket
