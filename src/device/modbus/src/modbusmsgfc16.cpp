@@ -23,18 +23,18 @@ uint16_t Modbus::ModbusMsgFC16::encodeQuestion()
 
 	uint16_t cpt = encodeHeader();
 
-	if (cpt < len)
+	//if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(data_addr);
 		cpt += _buffer_out.write((uint8_t*)&d, 2, cpt);
 	}
-	if (cpt < len)
+	//if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(nb_registers);
 		cpt += _buffer_out.write((uint8_t*)&d, 2, cpt);
 	}
 
-	for (std::map<uint16_t, uint16_t>::iterator it = registers.begin(); ((cpt<len) && (it != registers.end())); ++it)
+	for (std::map<uint16_t, uint16_t>::iterator it = registers.begin(); (/*(cpt<len) &&*/ (it != registers.end())); ++it)
 	{
 		uint16_t d = endian.toBigEndian(it->second);
 		cpt += _buffer_out.write((uint8_t*)&d, 2, cpt);
@@ -104,7 +104,7 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception fonction code incorrect.");
 	}
 
-	if (cpt < len)
+	//if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(data_addr);
 		cpt += _buffer_in.read((uint8_t*)&d, 2, cpt);
@@ -113,7 +113,7 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 	{
 		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "erreur de registre dans la reponse");
 	}
-	if (cpt < len)
+	//if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(nb_registers);
 		cpt += _buffer_in.read((uint8_t*)&d, 2, cpt);
