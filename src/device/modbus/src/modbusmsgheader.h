@@ -30,6 +30,10 @@ namespace Modbus
 
 			virtual void setSlaveAddress(uint8_t );
 			virtual uint8_t slaveAddress() const;
+			
+			virtual uint16_t encodeQuestion() = 0;
+			virtual uint16_t decodeQuestion() = 0;
+			virtual uint16_t decodeResponse() = 0;
 
 		protected:
 			uint8_t  _slave_address;
