@@ -105,6 +105,7 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception fonction code incorrect.");
 	}
 
+	uint16_t data_addr;
 	//if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(data_addr);
@@ -114,6 +115,8 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 	{
 		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "erreur de registre dans la reponse");
 	}
+	
+	uint16_t nb_registers;
 	//if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(nb_registers);
