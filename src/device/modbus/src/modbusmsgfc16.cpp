@@ -97,6 +97,7 @@ return 0;
 
 uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 {
+	Endianness<uint16_t> endian;
 	uint16_t cpt = decodeHeader();
 
 	if (functionCode() != 0x10)
