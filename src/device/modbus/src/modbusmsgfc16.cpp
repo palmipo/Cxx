@@ -26,18 +26,18 @@ uint16_t Modbus::ModbusMsgFC16::encodeQuestion()
 	if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(data_addr);
-		cpt += _buffer_out.write(&d, 2, cpt);
+		cpt += _buffer_out.write((uint8_t*)&d, 2, cpt);
 	}
 	if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(nb_registers);
-		cpt += _buffer_out.write(&d, 2, cpt);
+		cpt += _buffer_out.write((uint8_t*)&d, 2, cpt);
 	}
 
 	for (std::map<uint16_t, uint16_t>::iterator it = registers.begin(); ((cpt<len) && (it != registers.end())); ++it)
 	{
 		uint16_t d = endian.toBigEndian(it->second);
-		cpt += _buffer_out.write(&d, 2, cpt);
+		cpt += _buffer_out.write((uint8_t*)&d, 2, cpt);
 	}
 
 	return cpt;
@@ -107,7 +107,7 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 	if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(data_addr);
-		cpt += _buffer_in.read(&d, 2, cpt);
+		cpt += _buffer_in.read((uint8_t*)&d, 2, cpt);
 	}
 	if (data_addr != registers.begin()->first)
 	{
@@ -116,7 +116,7 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 	if (cpt < len)
 	{
 		uint16_t d = endian.toBigEndian(nb_registers);
-		cpt += _buffer_in.read(&d, 2, cpt);
+		cpt += _buffer_in.read((uint8_t*)&d, 2, cpt);
 	}
 	if (nb_registers != registers.size())
 	{
