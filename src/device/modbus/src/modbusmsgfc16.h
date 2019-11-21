@@ -26,9 +26,9 @@ namespace Modbus
 			virtual void setRegister(uint16_t, uint16_t);
 
 			// constitution message
-			virtual uint16_t encodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeResponse(uint8_t*, uint16_t);
+			virtual uint16_t encodeQuestion();
+			virtual uint16_t decodeQuestion();
+			virtual uint16_t decodeResponse();
 
 		protected:
 			std::map < uint16_t, uint16_t > registers;
