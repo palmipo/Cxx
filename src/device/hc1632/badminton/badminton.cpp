@@ -23,11 +23,12 @@ int main(int argc, char ** argv)
 	try
 	{
 		BatmintonFactory factory("/dev/gpiochip0");
-		std::thread t(fct_scrute, &factory, &fin);
-		t.detach();
+//		std::thread t(fct_scrute, &factory, &fin);
+//		t.detach();
 
-		while(fin)
+		while(!fin)
 		{
+			factory.scrute(1000);
 			if (factory.status() > 0)
 			{
 				factory.majAffichage();
