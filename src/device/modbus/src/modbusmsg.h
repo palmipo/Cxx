@@ -24,6 +24,10 @@ namespace Modbus
 			virtual ModbusBuffer * in();
 			virtual ModbusBuffer * out();
 			
+			virtual uint16_t encodeQuestion() = 0;
+			virtual uint16_t decodeQuestion() = 0;
+			virtual uint16_t decodeResponse() = 0;
+
 		protected:
 			ModbusBuffer _buffer_in;
 			ModbusBuffer _buffer_out;
