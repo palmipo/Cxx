@@ -1,5 +1,6 @@
 #include "modbusmsgfc16.h"
 #include "modbusmsgexception.h"
+#include "endianness.h"
 #include <cstring>
 
 Modbus::ModbusMsgFC16::ModbusMsgFC16()
@@ -14,50 +15,38 @@ void Modbus::ModbusMsgFC16::setRegister(uint16_t num, uint16_t value)
 	registers[num] = value;
 }
 
-uint16_t Modbus::ModbusMsgFC16::encodeQuestion(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgFC16::encodeQuestion()
 {
+	Endianness<uint16_t> endian;
 	uint16_t data_addr = registers.begin()->first;
 	uint16_t nb_registers = registers.size();
 
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
+	uint16_t cpt = encodeHeader();
 
 	if (cpt < len)
 	{
-		data[cpt] = (data_addr & 0xFF00) >> 8;
-		++cpt;
+		uint16_t d = endian.toBigEndian(data_addr);
+		cpt += _buffer_out.write(&d, 2, cpt);
 	}
 	if (cpt < len)
 	{
-		data[cpt] = data_addr & 0x00FF;
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		data[cpt] = (nb_registers & 0xFF00) >> 8;
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		data[cpt] = nb_registers & 0x00FF;
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		data[cpt] = nb_registers << 1;
-		++cpt;
+		uint16_t d = endian.toBigEndian(nb_registers);
+		cpt += _buffer_out.write(&d, 2, cpt);
 	}
 
-    for (std::map<uint16_t, uint16_t>::iterator it = registers.begin(); ((cpt<len) && (it != registers.end())); ++it)
-    {
-        data[cpt] = (it->second & 0xFF00) >> 8; ++cpt;
-        data[cpt] = it->second & 0x00FF; ++cpt;
-    }
+	for (std::map<uint16_t, uint16_t>::iterator it = registers.begin(); ((cpt<len) && (it != registers.end())); ++it)
+	{
+		uint16_t d = endian.toBigEndian(it->second);
+		cpt += _buffer_out.write(&d, 2, cpt);
+	}
 
 	return cpt;
 }
-uint16_t Modbus::ModbusMsgFC16::decodeQuestion(uint8_t* data, uint16_t len)
+
+uint16_t Modbus::ModbusMsgFC16::decodeQuestion()
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
+/*
+	uint16_t cpt = decodeHeader();
 
 	uint16_t data_addr;
 	uint16_t nb_registers;
@@ -102,23 +91,23 @@ uint16_t Modbus::ModbusMsgFC16::decodeQuestion(uint8_t* data, uint16_t len)
     }
 
 	return cpt;
+*/
+return 0;
 }
 
-uint16_t Modbus::ModbusMsgFC16::decodeResponse(uint8_t* data, uint16_t len)
+uint16_t Modbus::ModbusMsgFC16::decodeResponse()
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
+	uint16_t cpt = decodeHeader();
 
-	uint16_t data_addr;
-	uint16_t nb_registers;
-	if (cpt < len)
+	if (functionCode() != 0x10)
 	{
-		data_addr = data[cpt] << 8;
-		++cpt;
+		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception fonction code incorrect.");
 	}
+
 	if (cpt < len)
 	{
-		data_addr |= data[cpt];
-		++cpt;
+		uint16_t d = endian.toBigEndian(data_addr);
+		cpt += _buffer_in.read(&d, 2, cpt);
 	}
 	if (data_addr != registers.begin()->first)
 	{
@@ -126,13 +115,8 @@ uint16_t Modbus::ModbusMsgFC16::decodeResponse(uint8_t* data, uint16_t len)
 	}
 	if (cpt < len)
 	{
-		nb_registers = data[cpt] << 8;
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		nb_registers |= data[cpt];
-		++cpt;
+		uint16_t d = endian.toBigEndian(nb_registers);
+		cpt += _buffer_in.read(&d, 2, cpt);
 	}
 	if (nb_registers != registers.size())
 	{
