@@ -21,11 +21,10 @@ int main(int argc, char ** argv)
 {
 	int32_t fin = 0;
 	Modbus::ModbusFactory factory;
+	std::thread t(scrute, &factory, &fin);
+
 	try
 	{
-		std::thread t(scrute, &factory, &fin);
-		t.detach();
-
 		Modbus::ModbusChannel * channel = factory.rtu(argv[1], 19200, 1, 1);
 		//~ Modbus::ModbusChannel * channel = factory.tcp(argv[1]);
 
@@ -115,58 +114,28 @@ int main(int argc, char ** argv)
 				Log::getLogger()->debug(__FILE__, __LINE__, "erreur drive mauvais mode !");
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-    
-		Log::getLogger()->debug(__FILE__, __LINE__, "attendre fin thread");
-		fin = 1;
-		//~ t.join();
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
-		return 0;
 	}
 	catch(RS232Exception e)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, e.what());
-		fin = 1;
-		//~ t.join();
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
-		return -1;
 	}
 	catch(Modbus::ModbusMsgException e)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, e.what());
-		fin = 1;
-		//~ t.join();
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
-		return -1;
 	}
 	catch(Modbus::ModbusException e)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, e.what());
-		fin = 1;
-		//~ t.join();
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
-		return -1;
 	}
 	catch(PollException e)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, e.what());
-		fin = 1;
-		//~ t.join();
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
-		return -1;
 	}
 	catch(...)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, "exeption");
-		fin = 1;
-		//~ t.join();
-		std::this_thread::sleep_for(std::chrono::seconds(2));
-		Log::getLogger()->debug(__FILE__, __LINE__, "fin");
-		return -1;
 	}
+
+	t.join();
+	return 0;
 }

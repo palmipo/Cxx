@@ -53,7 +53,6 @@ int main(int argc, char **argv)
 	Modbus::ModbusFactory factory;
 
 	std::thread t1(thread_start, &factory, &fin);
-	t1.detach();
 
 	try
 	{
@@ -92,9 +91,7 @@ int main(int argc, char **argv)
 
 	// arret du thread secondaire
 	fin = 1;
-
-	std::this_thread::sleep_for(std::chrono::seconds(60));
-	//~ t1.join();
+	t1.join();
 
 	return 0;
 }
