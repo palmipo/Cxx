@@ -136,6 +136,7 @@ int main(int argc, char ** argv)
 		Log::getLogger()->error(__FILE__, __LINE__, "exeption");
 	}
 
+	fin = 1;
 	t.join();
 	return 0;
 }
