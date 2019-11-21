@@ -1,7 +1,7 @@
 OBJECTS = \
 	bin/hc_sr04.o
 
-POLL_PWD = ../../../ctrl/raspberry/factory
+POLL_PWD = ../../../ctrl/raspberry/poll
 LOG_PWD = ../../../ctrl/raspberry/log
 GPIO_PWD = ../../../ctrl/raspberry/gpio
 CC = g++

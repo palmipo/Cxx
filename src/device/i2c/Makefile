@@ -20,15 +20,17 @@ OBJECTS = \
 
 	#bin/bmp280.o \
 
-POLL_PWD = ../../ctrl/raspberry/factory
-I2C_PWD = ../../ctrl/raspberry/i2c
-USBI2C_PWD = ../../ctrl/usb_i2c
-RS232_PWD = ../../ctrl/raspberry/rs232
-LOG_PWD = ../../ctrl/raspberry/log
-GPIO_PWD = ../../ctrl/raspberry/gpio
+CTRL_PWD = ../../ctrl
+RASPI_PWD = $(CTRL_PWD)/raspberry
+POLL_PWD = $(RASPI_PWD)/poll
+I2C_PWD = $(RASPI_PWD)/i2c
+USBI2C_PWD = $(CTRL_PWD)/usb_i2c
+RS232_PWD = $(RASPI_PWD)/rs232
+LOG_PWD = $(RASPI_PWD)/log
+GPIO_PWD = $(RASPI_PWD)/gpio
 CC = g++
 MAKE = make
-INCLUDE = -I../../ctrl/interface -I../../ctrl/raspberry/factory/src -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
+INCLUDE = -I$(CTRL_PWD)/interface -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
 LIBS = -L. -llog -li2cdevice -lgpio -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)

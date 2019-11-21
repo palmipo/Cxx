@@ -3,18 +3,6 @@
 #include "log.h"
 #include "gpioexception.h"
 #include <chrono>
-#include <thread>
-
-void fct_scrute(BatmintonFactory * factory, int32_t * fin)
-{
-//	Log::getLogger()->debug(__FILE__, __LINE__, "scrute 1");
-	while(! *fin)
-	{
-//		Log::getLogger()->debug(__FILE__, __LINE__, "scrute 2");
-		factory->scrute(1000);
-	}
-//	Log::getLogger()->debug(__FILE__, __LINE__, "scrute 3");
-}
 
 int main(int argc, char ** argv)
 {
@@ -23,8 +11,6 @@ int main(int argc, char ** argv)
 	try
 	{
 		BatmintonFactory factory("/dev/gpiochip0");
-//		std::thread t(fct_scrute, &factory, &fin);
-//		t.detach();
 
 		while(!fin)
 		{

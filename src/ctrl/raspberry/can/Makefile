@@ -9,7 +9,7 @@ OBJECTS_LINUX = \
 	$(OBJECTS) \
 	bin/ixxatusbcan.o
 
-POLL_PWD = ../factory
+POLL_PWD = ../poll
 SOCKET_PWD = ../socket
 CANOPEN_PWD = ../canopen
 CC = g++

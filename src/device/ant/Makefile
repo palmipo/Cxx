@@ -13,7 +13,7 @@ OBJECTS = \
 #	bin/antctrl.o \
 
 LOG_REP = ../../ctrl/raspberry/log
-POLL_REP = ../../ctrl/raspberry/factory
+POLL_REP = ../../ctrl/raspberry/poll
 RS232_REP = ../../ctrl/raspberry/rs232
 CC = g++
 MAKE = make

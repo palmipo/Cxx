@@ -19,6 +19,10 @@ namespace Modbus
 	{
 		public:
 			ModbusMsgDirect();
+			
+			virtual uint16_t encodeQuestion();
+			virtual uint16_t decodeQuestion();
+			virtual uint16_t decodeResponse();
 	};
 }
 

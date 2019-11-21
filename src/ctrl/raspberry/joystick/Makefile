@@ -3,7 +3,7 @@ OBJECTS = \
 	bin/forcefeedback.o
 
 LOG_PWD = ../log
-POLL_PWD = ../factory
+POLL_PWD = ../poll
 CC = g++
 MAKE = make
 INCLUDE = -I$(LOG_PWD)/src -I$(POLL_PWD)/src -Isrc
