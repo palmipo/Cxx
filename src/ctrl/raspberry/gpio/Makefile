@@ -1,8 +1,10 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/gpio.o \
-	bin/gpiofifo.o \
-	bin/gpioevent.o \
-	bin/gpiofactory.o
+	$(BIN_PWD)/gpio.o \
+	$(BIN_PWD)/gpiofifo.o \
+	$(BIN_PWD)/gpioevent.o \
+	$(BIN_PWD)/gpiofactory.o
 
 MAKE = make
 CC = g++
@@ -18,15 +20,15 @@ all:
 clean:
 	$(MAKE) -C ../log $@
 	$(MAKE) -C $(POLL_PWD) $@
-	rm -f bin/*.o *.so *.dll out
+	rm -f $(BIN_PWD)/*.o *.so *.dll out
 
-out: bin/out.o
+out: $(BIN_PWD)/out.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libgpio.so
 	$(CC) -o $@ $< -L. $(LDFLAGS) -lgpio
 
-bin/out.o: test/out.cpp
+$(BIN_PWD)/out.o: test/out.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 # LINUX
@@ -44,5 +46,5 @@ libgpio.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # GLOBAL
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

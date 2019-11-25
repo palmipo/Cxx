@@ -1,7 +1,9 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/ds2482rom.o \
-	bin/ds2482.o \
-	bin/ds18b20.o
+	$(BIN_PWD)/ds2482rom.o \
+	$(BIN_PWD)/ds2482.o \
+	$(BIN_PWD)/ds18b20.o
 
 ONEWIRE_REP = ../../ctrl/raspberry/1wire
 I2C_REP = ../../ctrl/raspberry/i2c
@@ -16,12 +18,12 @@ LDFLAGS = $(LIBS)
 all: libonewiredevice.so test_ds2482
 
 clean:
-	rm -f bin/*.o libonewiredevice.so libonewire.so libraspii2c.so test_ds2482
+	rm -f $(BIN_PWD)/*.o libonewiredevice.so libonewire.so libraspii2c.so test_ds2482
 
-test_ds2482: bin/test_ds2482.o libonewiredevice.so libonewire.so libraspii2c.so
+test_ds2482: $(BIN_PWD)/test_ds2482.o libonewiredevice.so libonewire.so libraspii2c.so
 	$(CC) $< -o $@ $(LDFLAGS)
 
-bin/test_ds2482.o: test/test_ds2482.cpp
+$(BIN_PWD)/test_ds2482.o: test/test_ds2482.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 libraspii2c.so:
@@ -35,5 +37,5 @@ libonewire.so:
 libonewiredevice.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

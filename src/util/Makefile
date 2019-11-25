@@ -1,3 +1,5 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 LOG_PWD = ../src/ctrl/raspberry/log
 MAKE = make
 CC = g++
@@ -10,17 +12,17 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
-test_callback: bin/test_callback.o
+test_callback: $(BIN_PWD)/test_callback.o
 	$(MAKE) liblog.so
 	$(CC) -o $@ $^ $(LIBS)
 
-test_callback.exe: bin/test_callback.o
+test_callback.exe: $(BIN_PWD)/test_callback.o
 	$(MAKE) liblog.dll
 	$(CC) -o $@ $^ $(LIBS)
 
-bin/test_callback.o: test/test_callback.cpp
+$(BIN_PWD)/test_callback.o: test/test_callback.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 # LINUX

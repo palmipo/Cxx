@@ -1,16 +1,18 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/canopenfactory.o \
-	bin/canopenbuffer.o \
-	bin/canopensdobuffer.o \
-	bin/canopenstatemachine.o \
-	bin/canopenfifo.o \
-	bin/canopennmt.o \
-	bin/canopensync.o \
-	bin/canopenemcy.o \
-	bin/canopenguard.o \
-	bin/canopenpdo.o \
-	bin/canopensdo.o \
-	bin/canopen.o
+	$(BIN_PWD)/canopenfactory.o \
+	$(BIN_PWD)/canopenbuffer.o \
+	$(BIN_PWD)/canopensdobuffer.o \
+	$(BIN_PWD)/canopenstatemachine.o \
+	$(BIN_PWD)/canopenfifo.o \
+	$(BIN_PWD)/canopennmt.o \
+	$(BIN_PWD)/canopensync.o \
+	$(BIN_PWD)/canopenemcy.o \
+	$(BIN_PWD)/canopenguard.o \
+	$(BIN_PWD)/canopenpdo.o \
+	$(BIN_PWD)/canopensdo.o \
+	$(BIN_PWD)/canopen.o
 
 RASPI_CTRL = ../ctrl/raspberry
 LOG_PWD = $(RASPI_CTRL)/log
@@ -27,7 +29,7 @@ LDFLAGS = $(LIBS)
 all: libcanopen.dll
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 # LINUX
 liblog.so:
@@ -77,5 +79,5 @@ libcanopen.dll: $(OBJECTS)
 	$(MAKE) liblog.dll
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

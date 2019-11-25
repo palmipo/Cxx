@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/apc220.o
+	$(BIN_PWD)/apc220.o
 
 RS232_PWD = ../../../ctrl/raspberry/rs232
 GPIO_PWD = ../../../ctrl/raspberry/gpio_irq
@@ -15,12 +17,12 @@ LDFLAGS = $(LIBS)
 all: test_apc220
 
 clean:
-	rm -f bin/*.o libapc220.so librs232.so libgpio.so test_apc220
+	rm -f $(BIN_PWD)/*.o libapc220.so librs232.so libgpio.so test_apc220
 
-test_apc220: bin/test_apc220.o libapc220.so librs232.so libgpio.so
+test_apc220: $(BIN_PWD)/test_apc220.o libapc220.so librs232.so libgpio.so
 	$(CC) $< -o $@ $(LDFLAGS)
 	
-bin/test_apc220.o: test/test_apc220.cpp
+$(BIN_PWD)/test_apc220.o: test/test_apc220.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 librs232.so:
@@ -34,5 +36,5 @@ libgpio.so:
 libapc220.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

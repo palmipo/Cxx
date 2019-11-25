@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/usb_i2c.o
+	$(BIN_PWD)/usb_i2c.o
 
 LOG_PWD = ../raspberry/log
 POLL_PWD = ../raspberry/poll
@@ -14,7 +16,7 @@ LDFLAGS = $(LIBS)
 all: libusbi2c.so
 
 clean:
-	rm -f bin/*.o *.so usbi2c
+	rm -f $(BIN_PWD)/*.o *.so usbi2c
 
 libusbi2c.so: $(OBJECTS)
 	$(MAKE) librs232.so
@@ -39,13 +41,13 @@ librs232.so:
 	$(MAKE) -C $(RS232_PWD) $@
 	ln -s $(RS232_PWD)/$@
 
-usbi2c: bin/main.o
+usbi2c: $(BIN_PWD)/main.o
 	$(MAKE) librs232.so
 	$(MAKE) libusbi2c.so
 	$(CC) $< -o $@ $(LDFLAGS)
 
-bin/main.o: test/main.cpp
+$(BIN_PWD)/main.o: test/main.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

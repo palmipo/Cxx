@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/raspii2c.o
+	$(BIN_PWD)/raspii2c.o
 
 CC = g++
 INCLUDE = -I../../interface -Isrc -I../log/src
@@ -11,10 +13,10 @@ LDFLAGS = $(LIBS)
 all: libraspii2c.so
 
 clean:
-	rm -f bin/*.o libraspii2c.so
+	rm -f $(BIN_PWD)/*.o libraspii2c.so
 
 libraspii2c.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

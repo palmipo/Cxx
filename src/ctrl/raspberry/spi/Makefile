@@ -1,6 +1,8 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/spi.o \
-	bin/spiexception.o
+	$(BIN_PWD)/spi.o \
+	$(BIN_PWD)/spiexception.o
 
 CC = g++
 INCLUDE = -I../../interface -Isrc
@@ -12,13 +14,13 @@ LDFLAGS = $(LIBS)
 all: libspi.so
 
 clean:
-	rm bin/*.o libspi.so
+	rm $(BIN_PWD)/*.o libspi.so
 
 libspi.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/spi.o: src/spi.cpp
+$(BIN_PWD)/spi.o: src/spi.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-bin/spiexception.o: src/spiexception.cpp
+$(BIN_PWD)/spiexception.o: src/spiexception.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

@@ -1,9 +1,11 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/onewire.o \
-	bin/onewirerom.o
+	$(BIN_PWD)/onewire.o \
+	$(BIN_PWD)/onewirerom.o
 
 CC = g++
-INCLUDE = -I../../.. -I../../interface -I../i2c/src -Isrc
+INCLUDE = -I../../interface -I../i2c/src -Isrc
 LIBS =
 
 CFLAGS = -g $(INCLUDE)
@@ -12,7 +14,7 @@ LDFLAGS = $(LIBS)
 all: libonewire.so
 
 clean:
-	rm -f bin/*.o libonewire.so libi2c.so
+	rm -f $(BIN_PWD)/*.o libonewire.so libi2c.so
 
 libonewire.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
@@ -21,5 +23,5 @@ libi2c.so:
 	$(MAKE) -C ../i2c/ $@
 	ln -s ../i2c/$@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

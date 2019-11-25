@@ -1,24 +1,26 @@
-OBJECTS = \
-	bin/at24c32.o \
-	bin/ds1307.o \
-	bin/ds1621.o \
-	bin/is31fl3731.o \
-	bin/mcp23017.o \
-	bin/mpu9255.o \
-	bin/mpu9255magneto.o \
-	bin/nunchuk.o \
-	bin/pca9685.o \
-	bin/pca9685led.o \
-	bin/pcf8574a.o \
-	bin/pcf8574at.o \
-	bin/pcf8583.o \
-	bin/pcf8593.o \
-	bin/saa1064.o \
-	bin/tca9548a.o \
-	bin/tcs34725.o \
-	bin/tda8440.o
+BIN_PWD = bin/$(HOSTNAME)
 
-	#bin/bmp280.o \
+OBJECTS = \
+	$(BIN_PWD)/at24c32.o \
+	$(BIN_PWD)/ds1307.o \
+	$(BIN_PWD)/ds1621.o \
+	$(BIN_PWD)/is31fl3731.o \
+	$(BIN_PWD)/mcp23017.o \
+	$(BIN_PWD)/mpu9255.o \
+	$(BIN_PWD)/mpu9255magneto.o \
+	$(BIN_PWD)/nunchuk.o \
+	$(BIN_PWD)/pca9685.o \
+	$(BIN_PWD)/pca9685led.o \
+	$(BIN_PWD)/pcf8574a.o \
+	$(BIN_PWD)/pcf8574at.o \
+	$(BIN_PWD)/pcf8583.o \
+	$(BIN_PWD)/pcf8593.o \
+	$(BIN_PWD)/saa1064.o \
+	$(BIN_PWD)/tca9548a.o \
+	$(BIN_PWD)/tcs34725.o \
+	$(BIN_PWD)/tda8440.o
+
+	#$(BIN_PWD)/bmp280.o \
 
 CTRL_PWD = ../../ctrl
 RASPI_PWD = $(CTRL_PWD)/raspberry
@@ -47,11 +49,11 @@ clean:
 	$(MAKE) -C $(USBI2C_PWD) $@
 	$(MAKE) -C $(I2C_PWD) $@
 	$(MAKE) -C $(GPIO_PWD) $@
-	rm -f bin/*.o *.so test_mcp23017 raspi_nunchuk test_nunchuk test_ds1621 test_ds1307 raspi_mcp23017 test_pca9685 test_saa1064 ph_hd
+	rm -f $(BIN_PWD)/*.o *.so test_mcp23017 raspi_nunchuk test_nunchuk test_ds1621 test_ds1307 raspi_mcp23017 test_pca9685 test_saa1064 ph_hd
 
 #
 #
-ph_hd: bin/ph_hd.o
+ph_hd: $(BIN_PWD)/ph_hd.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
@@ -59,12 +61,12 @@ ph_hd: bin/ph_hd.o
 	$(MAKE) libgpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
-bin/ph_hd.o: test/ph_hd.cpp
+$(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
-test_saa1064: bin/test_saa1064.o
+test_saa1064: $(BIN_PWD)/test_saa1064.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
@@ -72,67 +74,67 @@ test_saa1064: bin/test_saa1064.o
 	$(MAKE) librs232.so
 	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS) -lusbi2c -lrs232
 
-bin/test_saa1064.o: test/test_saa1064.cpp
+$(BIN_PWD)/test_saa1064.o: test/test_saa1064.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
-test_nunchuk: bin/test_nunchuk.o
+test_nunchuk: $(BIN_PWD)/test_nunchuk.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS) -lraspii2c
 
-bin/test_nunchuk.o: test/test_nunchuk.cpp
+$(BIN_PWD)/test_nunchuk.o: test/test_nunchuk.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
-test_mcp23017: bin/test_mcp23017.o
+test_mcp23017: $(BIN_PWD)/test_mcp23017.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
-bin/test_mcp23017.o: test/test_mcp23017.cpp
+$(BIN_PWD)/test_mcp23017.o: test/test_mcp23017.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
-test_pca9685: bin/test_pca9685.o
+test_pca9685: $(BIN_PWD)/test_pca9685.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
-bin/test_pca9685.o: test/test_pca9685.cpp
+$(BIN_PWD)/test_pca9685.o: test/test_pca9685.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
-test_ds1307: bin/test_ds1307.o
+test_ds1307: $(BIN_PWD)/test_ds1307.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
-bin/test_ds1307.o: test/test_ds1307.cpp
+$(BIN_PWD)/test_ds1307.o: test/test_ds1307.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
-test_ds1621: bin/test_ds1621.o
+test_ds1621: $(BIN_PWD)/test_ds1621.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
-bin/test_ds1621.o: test/test_ds1621.cpp
+$(BIN_PWD)/test_ds1621.o: test/test_ds1621.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
@@ -178,5 +180,5 @@ libi2cdevice.so: $(OBJECTS)
 
 #
 #
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

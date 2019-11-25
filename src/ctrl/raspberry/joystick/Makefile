@@ -1,6 +1,8 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/joystick.o \
-	bin/forcefeedback.o
+	$(BIN_PWD)/joystick.o \
+	$(BIN_PWD)/forcefeedback.o
 
 LOG_PWD = ../log
 POLL_PWD = ../poll
@@ -13,12 +15,12 @@ CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
 clean:
-	rm bin/*.o *.so test_joystick
+	rm $(BIN_PWD)/*.o *.so test_joystick
 
-test_joystick: bin/test_joystick.o libjoystick.so
+test_joystick: $(BIN_PWD)/test_joystick.o libjoystick.so
 	$(CC) -o $@ $< $(LDFLAGS)
 
-bin/test_joystick.o: test/test_joystick.cpp
+$(BIN_PWD)/test_joystick.o: test/test_joystick.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 liblog.so:
@@ -34,5 +36,5 @@ libjoystick.so: $(OBJECTS)
 	$(MAKE) libpoll.so
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

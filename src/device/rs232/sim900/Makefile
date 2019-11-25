@@ -1,6 +1,8 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/sim900buffer.o \
-	bin/sim900.o
+	$(BIN_PWD)/sim900buffer.o \
+	$(BIN_PWD)/sim900.o
 
 POLL_PWD = ../../../ctrl/raspberry/poll
 LOG_PWD = ../../../ctrl/raspberry/log
@@ -19,23 +21,23 @@ clean:
 	$(MAKE) -C $(LOG_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
-	rm -f bin/*.o *.dll *.so send_sms
+	rm -f $(BIN_PWD)/*.o *.dll *.so send_sms
 
-send_sms: bin/send_sms.o
+send_sms: $(BIN_PWD)/send_sms.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE)	librs232.so
 	$(MAKE) libsim900.so
 	$(CC) $< -o $@ $(LDFLAGS) -lsim900 -lpthread
 
-send_sms.exe: bin/send_sms.o
+send_sms.exe: $(BIN_PWD)/send_sms.o
 	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE)	librs232.dll
 	$(MAKE) libsim900.dll
 	$(CC) $< -o $@ $(LDFLAGS) -lsim900 -lpthread
 
-bin/send_sms.o: test/send_sms.cpp
+$(BIN_PWD)/send_sms.o: test/send_sms.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 libsim900.so: $(OBJECTS)
@@ -68,5 +70,5 @@ librs232.dll:
 	$(MAKE) -C $(RS232_PWD) $@
 	ln -s $(RS232_PWD)/$@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

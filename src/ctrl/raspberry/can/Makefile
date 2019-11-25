@@ -1,13 +1,15 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/canbuffer.o \
-	bin/canbus.o \
-	bin/ixxatfactory.o \
-	bin/ixxatusbcan.o \
-	bin/ixxatcanatnet.o
+	$(BIN_PWD)/canbuffer.o \
+	$(BIN_PWD)/canbus.o \
+	$(BIN_PWD)/ixxatfactory.o \
+	$(BIN_PWD)/ixxatusbcan.o \
+	$(BIN_PWD)/ixxatcanatnet.o
 	
 OBJECTS_LINUX = \
 	$(OBJECTS) \
-	bin/ixxatusbcan.o
+	$(BIN_PWD)/ixxatusbcan.o
 
 POLL_PWD = ../poll
 SOCKET_PWD = ../socket
@@ -22,7 +24,7 @@ LDFLAGS = $(LIBS)
 all: libcan.dll
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 	
 # LINUX
@@ -62,5 +64,5 @@ libcan.dll: $(OBJECTS)
 	$(MAKE) libsocket.dll
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

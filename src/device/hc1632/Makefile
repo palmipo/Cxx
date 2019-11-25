@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/hc1632.o
+	$(BIN_PWD)/hc1632.o
 
 LOG_REP = ../../ctrl/raspberry/log
 POLL_REP = ../../ctrl/raspberry/poll
@@ -19,19 +21,19 @@ clean:
 	$(MAKE) -C $(GPIO_REP) $@
 	$(MAKE) -C $(POLL_REP) $@
 	$(MAKE) -C $(LOG_REP) $@
-	rm bin/*.o *.so bad
+	rm $(BIN_PWD)/*.o *.so bad
 
-bad: bin/badminton.o bin/badmintonfactory.o
+bad: $(BIN_PWD)/badminton.o $(BIN_PWD)/badmintonfactory.o
 	$(MAKE) libgpio.so
 	$(MAKE) libpoll.so
 	$(MAKE) liblog.so
 	$(MAKE) libhc1632.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lpthread
 
-bin/badminton.o: badminton/badminton.cpp
+$(BIN_PWD)/badminton.o: badminton/badminton.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-bin/badmintonfactory.o: badminton/badmintonfactory.cpp
+$(BIN_PWD)/badmintonfactory.o: badminton/badmintonfactory.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 libgpio.so:
@@ -49,5 +51,5 @@ liblog.so:
 libhc1632.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
