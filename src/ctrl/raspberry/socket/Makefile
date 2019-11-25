@@ -1,10 +1,12 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/socketbuffer.o \
-	bin/socketbase.o \
-	bin/socketcan.o \
-	bin/sockettcp.o \
-	bin/sockettcpfifo.o \
-	bin/socketfactory.o
+	$(BIN_PWD)/socketbuffer.o \
+	$(BIN_PWD)/socketbase.o \
+	$(BIN_PWD)/socketcan.o \
+	$(BIN_PWD)/sockettcp.o \
+	$(BIN_PWD)/sockettcpfifo.o \
+	$(BIN_PWD)/socketfactory.o
 
 CC = g++
 POLL_PWD = ../poll
@@ -17,7 +19,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.dll *.so
+	rm -f $(BIN_PWD)/*.o *.dll *.so
 
 # LINUX
 liblog.so:
@@ -46,5 +48,5 @@ libsocket.dll: $(OBJECTS)
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 # GLOBAL
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -DMAKE_SOCKET_DLL -c $^ -o $@

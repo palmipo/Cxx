@@ -1,8 +1,10 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/rs232unix.o \
-	bin/rs232buffer.o \
-	bin/rs232fifo.o \
-	bin/rs232factory.o
+	$(BIN_PWD)/rs232unix.o \
+	$(BIN_PWD)/rs232buffer.o \
+	$(BIN_PWD)/rs232fifo.o \
+	$(BIN_PWD)/rs232factory.o
 
 MAKE = make
 CC = g++
@@ -16,30 +18,30 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.so *.dll fwup
+	rm -f $(BIN_PWD)/*.o *.so *.dll fwup
 
-rsclb : bin/rsclb.o
+rsclb : $(BIN_PWD)/rsclb.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
 
-bin/rsclb.o: test/main.cpp
+$(BIN_PWD)/rsclb.o: test/main.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-fwup : bin/fwup.o
+fwup : $(BIN_PWD)/fwup.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
 
-fwup.exe : bin/fwup.o
+fwup.exe : $(BIN_PWD)/fwup.o
 	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) librs232.dll
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
 
-bin/fwup.o: test/fwup.cpp
+$(BIN_PWD)/fwup.o: test/fwup.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 # LINUX
@@ -69,5 +71,5 @@ librs232.dll: $(OBJECTS)
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 # GLOBAL
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -DMAKE_RS232_DLL -c $^ -o $@

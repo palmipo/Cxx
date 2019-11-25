@@ -1,8 +1,10 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/pollfactory.o \
-	bin/polldevice.o \
-	bin/pollmutex.o \
-	bin/pollbuffer.o
+	$(BIN_PWD)/pollfactory.o \
+	$(BIN_PWD)/polldevice.o \
+	$(BIN_PWD)/pollmutex.o \
+	$(BIN_PWD)/pollbuffer.o
 
 LOG_PWD = ../log
 MAKE = make
@@ -16,7 +18,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 # LINUX
 liblog.so:
@@ -36,5 +38,5 @@ libpoll.dll: $(OBJECTS)
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 # GLOBAL
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -DMAKE_POLL_FACTORY_DLL -c $^ -o $@

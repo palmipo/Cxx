@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/log.o
+	$(BIN_PWD)/log.o
 
 CC = g++
 INCLUDE = -Isrc
@@ -11,7 +13,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 liblog.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
@@ -19,5 +21,5 @@ liblog.so: $(OBJECTS)
 liblog.dll: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -DMAKE_LOG_DLL -c $^ -o $@

@@ -1,29 +1,31 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/modbusbuffer.o \
-	bin/modbuschannel.o \
-	bin/modbusfactory.o \
-	bin/modbusmsg.o \
-	bin/modbusmsgdirect.o \
-	bin/modbusmsgfc01.o \
-	bin/modbusmsgfc02.o \
-	bin/modbusmsgfc03.o \
-	bin/modbusmsgfc04.o \
-	bin/modbusmsgfc05.o \
-	bin/modbusmsgfc06.o \
-	bin/modbusmsgfc08.o \
-	bin/modbusmsgfc11.o \
-	bin/modbusmsgfc15.o \
-	bin/modbusmsgfc16.o \
-	bin/modbusmsgfc23.o \
-	bin/modbusmsgfc43.o \
-	bin/modbusmsgfc71.o \
-	bin/modbusmsgfc72.o \
-	bin/modbusmsgfc90.o \
-	bin/modbusmsgheader.o \
-	bin/modbusqueue.o \
-	bin/modbusrtu.o \
-	bin/modbustcp.o
-	
+	$(BIN_PWD)/modbusbuffer.o \
+	$(BIN_PWD)/modbuschannel.o \
+	$(BIN_PWD)/modbusfactory.o \
+	$(BIN_PWD)/modbusmsg.o \
+	$(BIN_PWD)/modbusmsgdirect.o \
+	$(BIN_PWD)/modbusmsgfc01.o \
+	$(BIN_PWD)/modbusmsgfc02.o \
+	$(BIN_PWD)/modbusmsgfc03.o \
+	$(BIN_PWD)/modbusmsgfc04.o \
+	$(BIN_PWD)/modbusmsgfc05.o \
+	$(BIN_PWD)/modbusmsgfc06.o \
+	$(BIN_PWD)/modbusmsgfc08.o \
+	$(BIN_PWD)/modbusmsgfc11.o \
+	$(BIN_PWD)/modbusmsgfc15.o \
+	$(BIN_PWD)/modbusmsgfc16.o \
+	$(BIN_PWD)/modbusmsgfc23.o \
+	$(BIN_PWD)/modbusmsgfc43.o \
+	$(BIN_PWD)/modbusmsgfc71.o \
+	$(BIN_PWD)/modbusmsgfc72.o \
+	$(BIN_PWD)/modbusmsgfc90.o \
+	$(BIN_PWD)/modbusmsgheader.o \
+	$(BIN_PWD)/modbusqueue.o \
+	$(BIN_PWD)/modbusrtu.o \
+	$(BIN_PWD)/modbustcp.o
+
 RASPI_CTRL = ../../ctrl/raspberry
 UTIL_PWD = ../../util
 LOG_PWD = $(RASPI_CTRL)/log
@@ -45,9 +47,9 @@ clean:
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(SOCKET_PWD) $@
-	rm -f bin/*.o *.so *.dll fwupd modbus_cmd
+	rm -f $(BIN_PWD)/*.o *.so *.dll fwupd modbus_cmd
 
-fwupd: bin/fwupd.o
+fwupd: $(BIN_PWD)/fwupd.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
@@ -55,10 +57,18 @@ fwupd: bin/fwupd.o
 	$(MAKE) libmodbus.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
-bin/fwupd.o: test/fwupd.cpp
+fwupd.exe: $(BIN_PWD)/fwupd.o
+	$(MAKE) liblog.dll
+	$(MAKE) libpoll.dll
+	$(MAKE) librs232.dll
+	$(MAKE) libsocket.dll
+	$(MAKE) libmodbus.dll
+	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+
+$(BIN_PWD)/fwupd.o: test/fwupd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-modbus_cmd: bin/modbus_cmd.o
+modbus_cmd: $(BIN_PWD)/modbus_cmd.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
@@ -66,7 +76,7 @@ modbus_cmd: bin/modbus_cmd.o
 	$(MAKE) libmodbus.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
-bin/modbus_cmd.o: test/modbus_cmd.cpp
+$(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
@@ -120,5 +130,5 @@ libmodbus.dll: $(OBJECTS)
 #
 # GLOBAL
 #
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -DMAKE_MODBUS_DLL -c $^ -o $@

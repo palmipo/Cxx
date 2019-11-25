@@ -17,6 +17,7 @@ void Modbus::ModbusChannel::sendFC(Modbus::ModbusMsg * msg, int32_t max_retry, i
 	Log::getLogger()->debug(__FILE__, __LINE__, "sendFC");
 
 	// enregistrement fifo de sortie
+	msg->encodeQuestion();
 	_fifo_out.push(msg);
 
 	// attente presence element fifo entree
@@ -45,6 +46,7 @@ void Modbus::ModbusChannel::sendFC(Modbus::ModbusMsg * msg, int32_t max_retry, i
 	uint8_t data[512];
 	int32_t length = msg_fifo->in()->read(data, 512);
 	msg->in()->write(data, length);
+	msg->decodeResponse();
 
 	// liberation message entree
 	delete msg_fifo;
