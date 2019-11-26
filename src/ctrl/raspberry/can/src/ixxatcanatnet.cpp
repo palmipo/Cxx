@@ -1,6 +1,6 @@
 #include "ixxatcanatnet.h"
 #include "canexception.h"
-#include "sockettcp.h"
+// #include "sockettcp.h"
 #include <sstream>
 #include <thread>
 #include <iomanip>
@@ -104,9 +104,13 @@ int32_t Ixxat::CanAtNet::readData(uint16_t * node_id, uint8_t * data, int32_t da
 	return len;
 }
 
-int32_t Ixxat::CanAtNet::actionIn(uint8_t * msg, int32_t msg_length)
+int32_t Ixxat::CanAtNet::actionIn()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	_device->actionIn();
+
+	uint8_t msg[512];
+	int32_t msg_length = _device->read(msg, 512);
 
 	int32_t return_length = 0;
 	if (msg_length > 0)
@@ -179,14 +183,14 @@ int32_t Ixxat::CanAtNet::actionIn(uint8_t * msg, int32_t msg_length)
 	return return_length;
 }
 
-int32_t Ixxat::CanAtNet::actionOut(uint8_t *, int32_t)
+int32_t Ixxat::CanAtNet::actionOut()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
 	return 0;
 }
 
-int32_t Ixxat::CanAtNet::actionError(uint8_t *, int32_t)
+int32_t Ixxat::CanAtNet::actionError()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
 

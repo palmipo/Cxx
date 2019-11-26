@@ -1,17 +1,19 @@
 #ifndef CAN_BUS_H
 #define CAN_BUS_H
 
-#include "towerdevice.h"
-#include "canbuffer.h"
+#include "polldevice.h"
+// #include "canbuffer.h"
 #include <queue>
 
 namespace CAN
 {
-	class Bus : public TowerDevice
+	class CANBuffer;
+	class Bus : public Device
 	{
 		public:
 			Bus(uint16_t cob_id, PollDevice * device)
-			: TowerDevice(device)
+			: Device(device->handler())
+			, _device(device)
 			, _cob_id(cob_id)
 			{}
 
@@ -24,6 +26,7 @@ namespace CAN
 		protected:
 			uint16_t _cob_id;
 			std::queue < CANBuffer * > _fifo;
+			PollDevice * _device;
 	};
 }
 

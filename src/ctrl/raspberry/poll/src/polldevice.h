@@ -11,9 +11,10 @@
 #define POLL_FACTORY_DLL
 #endif
 
+#include "device.h"
 #include <cstdint>
 
-class POLL_FACTORY_DLL PollDevice
+class POLL_FACTORY_DLL PollDevice : public Device
 {
 	public:
 		PollDevice();
@@ -25,13 +26,6 @@ class POLL_FACTORY_DLL PollDevice
 
 		virtual int32_t write(uint8_t *, int32_t) = 0;
 		virtual int32_t read(uint8_t *, int32_t) = 0;
-
-		virtual int32_t handler();
-
-		bool operator==(const PollDevice &) const;
-
-	protected:
-		int32_t _handler;
 };
 
 #endif

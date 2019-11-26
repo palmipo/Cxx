@@ -3,7 +3,7 @@
 #include "ixxatcanatnet.h"
 // #include "ixxatusbcan.h"
 #include "polldevice.h"
-#include "towerdevice.h"
+// #include "towerdevice.h"
 
 Ixxat::Factory::Factory()
 : PollFactory()
@@ -42,17 +42,13 @@ int32_t Ixxat::Factory::actionError(PollDevice * device)
 
 int32_t Ixxat::Factory::actionIn(PollDevice * device)
 {
-	device->actionIn();
-
-	uint8_t data[512];
-	int32_t len = device->read(data, 512);
-
-	std::map < std::string, TowerDevice * >::iterator it = ctrlMap.begin();
+	int32_t len = 0;
+	std::map < std::string, Device * >::iterator it = ctrlMap.begin();
 	while (it != ctrlMap.end())
 	{
 		if (device->handler() == it->second->handler())
 		{
-			it->second->actionIn(data, len);
+			len = it->second->actionIn();
 		}
 		else
 		{

@@ -3,6 +3,8 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/log.o
 
+MAKE = make
+MKDIR = mkdir -p
 CC = g++
 INCLUDE = -Isrc
 LIBS =
@@ -22,4 +24,5 @@ liblog.dll: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -DMAKE_LOG_DLL -c $^ -o $@

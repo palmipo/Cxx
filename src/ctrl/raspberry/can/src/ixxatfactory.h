@@ -4,7 +4,7 @@
 #include "pollfactory.h"
 #include <string>
 
-class TowerDevice;
+class Device;
 class PollDevice;
 namespace Ixxat
 {
@@ -24,7 +24,7 @@ namespace Ixxat
 			virtual int32_t actionOut(PollDevice*);
 			virtual int32_t actionError(PollDevice*);
 
-			std::map < std::string, TowerDevice * > ctrlMap;
+			std::map < std::string, Device * > ctrlMap;
 		};
 }
 

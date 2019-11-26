@@ -1,5 +1,6 @@
 #include "canbus.h"
 #include "canexception.h"
+#include "canbuffer.h"
 
 int32_t CAN::Bus::writeData(CAN::CANBuffer * buffer)
 {

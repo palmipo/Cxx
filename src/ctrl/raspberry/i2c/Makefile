@@ -3,20 +3,25 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/raspii2c.o
 
+MAKE = make
+MKDIR = mkdir -p
 CC = g++
-INCLUDE = -I../../interface -Isrc -I../log/src
+LOG_PWD = ../log
+IFACE_PWD = ../../interface
+INCLUDE = -I$(IFACE_PWD) -Isrc -I$(LOG_PWD)/src
 LIBS = -L. -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
-all: libraspii2c.so
+all:
 
 clean:
-	rm -f $(BIN_PWD)/*.o libraspii2c.so
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 libraspii2c.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@

@@ -4,6 +4,7 @@
 #include "canbus.h"
 #include <string>
 
+// class PollDevice;
 namespace Ixxat
 {
 	class UsbCan : public CAN::Bus
@@ -15,9 +16,9 @@ namespace Ixxat
 			virtual int32_t writeData(uint16_t, uint8_t *, int32_t);
 			virtual int32_t readData(uint16_t *, uint8_t *, int32_t, int32_t = 10, int32_t = 1000);
 
-			virtual int32_t actionIn(uint8_t *, int32_t);
-			virtual int32_t actionOut(uint8_t *, int32_t);
-			virtual int32_t actionError(uint8_t *, int32_t);
+			virtual int32_t actionIn();
+			virtual int32_t actionOut();
+			virtual int32_t actionError();
 	};
 }
 

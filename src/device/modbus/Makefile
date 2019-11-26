@@ -26,16 +26,17 @@ OBJECTS = \
 	$(BIN_PWD)/modbusrtu.o \
 	$(BIN_PWD)/modbustcp.o
 
+MAKE = make
+MKDIR = mkdir -p
+CC = g++
 RASPI_CTRL = ../../ctrl/raspberry
 UTIL_PWD = ../../util
 LOG_PWD = $(RASPI_CTRL)/log
 POLL_PWD = $(RASPI_CTRL)/poll
 SOCKET_PWD = $(RASPI_CTRL)/socket
 RS232_PWD = $(RASPI_CTRL)/rs232
-CC = g++
-MAKE = make
 INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
-LIBS = -L. -llog -lpoll -lrs232 -lsocket
+LIBS = -L. -lutil -llog -lpoll -lrs232 -lsocket
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -58,10 +59,6 @@ fwupd: $(BIN_PWD)/fwupd.o
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
 fwupd.exe: $(BIN_PWD)/fwupd.o
-	$(MAKE) liblog.dll
-	$(MAKE) libpoll.dll
-	$(MAKE) librs232.dll
-	$(MAKE) libsocket.dll
 	$(MAKE) libmodbus.dll
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
@@ -69,10 +66,6 @@ $(BIN_PWD)/fwupd.o: test/fwupd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 modbus_cmd: $(BIN_PWD)/modbus_cmd.o
-	$(MAKE) liblog.so
-	$(MAKE) libpoll.so
-	$(MAKE) librs232.so
-	$(MAKE) libsocket.so
 	$(MAKE) libmodbus.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
@@ -82,6 +75,10 @@ $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 #
 # LINUX
 #
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
+
 liblog.so:
 	$(MAKE) -C $(LOG_PWD) $@
 	ln -s $(LOG_PWD)/$@
@@ -104,6 +101,10 @@ libmodbus.so: $(OBJECTS)
 #
 # MINGW
 #
+libutil.dll:
+	$(MAKE) -C $(UTIL_PWD) $@
+	cp $(UTIL_PWD)/$@ .
+
 liblog.dll:
 	$(MAKE) -C $(LOG_PWD) $@
 	cp $(LOG_PWD)/$@ .
@@ -121,6 +122,7 @@ libsocket.dll:
 	cp $(SOCKET_PWD)/$@ .
 
 libmodbus.dll: $(OBJECTS)
+	$(MAKE) libutil.dll
 	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) librs232.dll
@@ -131,4 +133,5 @@ libmodbus.dll: $(OBJECTS)
 # GLOBAL
 #
 $(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -DMAKE_MODBUS_DLL -c $^ -o $@

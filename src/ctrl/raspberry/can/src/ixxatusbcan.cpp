@@ -1,4 +1,5 @@
 #include "ixxatusbcan.h"
+#include "canbuffer.h"
 #include "canexception.h"
 #include <sys/ioctl.h>
 #include <net/if.h>
@@ -59,17 +60,17 @@ int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data
 	return len;
 }
 
-int32_t Ixxat::UsbCan::actionError(uint8_t *, int32_t)
+int32_t Ixxat::UsbCan::actionError()
 {
 	return 0;
 }
 
-int32_t Ixxat::UsbCan::actionIn(uint8_t * data, int32_t len)
+int32_t Ixxat::UsbCan::actionIn()
 {
 #if defined __MINGW64__ || defined __MINGW32__ || defined __CYGWIN__
 #else
 	struct can_frame frame;
-	memcpy(&frame, data, len);
+	_device->read(&frame, sizeof(struct can_frame));
 
 	CAN::CANBuffer * buffer = new CAN::CANBuffer();
 	buffer->cob_id = frame.can_id;
@@ -82,7 +83,7 @@ int32_t Ixxat::UsbCan::actionIn(uint8_t * data, int32_t len)
 #endif
 }
 
-int32_t Ixxat::UsbCan::actionOut(uint8_t *, int32_t)
+int32_t Ixxat::UsbCan::actionOut()
 {
 	return 0;
 }

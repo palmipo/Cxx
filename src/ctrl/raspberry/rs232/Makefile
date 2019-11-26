@@ -7,10 +7,13 @@ OBJECTS = \
 	$(BIN_PWD)/rs232factory.o
 
 MAKE = make
+MKDIR = mkdir -p
 CC = g++
+UTIL_PWD = ../../../util
 POLL_PWD = ../poll
-INCLUDE = -I$(POLL_PWD)/src -I../log/src -Isrc
-LIBS = -L. -lpoll -llog
+LOG_PWD = ../log
+INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc
+LIBS = -L. -lutil -lpoll -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -45,9 +48,13 @@ $(BIN_PWD)/fwup.o: test/fwup.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 # LINUX
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
+
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
 
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
@@ -57,19 +64,25 @@ librs232.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # WINDOWS
+libutil.dll:
+	$(MAKE) -C $(UTIL_PWD) $@
+	cp $(UTIL_PWD)/$@ .
+
 liblog.dll:
-	$(MAKE) -C ../log $@
-	cp ../log/$@ .
+	$(MAKE) -C $(LOG_PWD) $@
+	cp $(LOG_PWD)/$@ .
 
 libpoll.dll:
+	$(MAKE) libutil.dll
+	$(MAKE) liblog.dll
 	$(MAKE) -C $(POLL_PWD) $@
 	cp $(POLL_PWD)/$@ .
 
 librs232.dll: $(OBJECTS)
-	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 # GLOBAL
 $(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -DMAKE_RS232_DLL -c $^ -o $@

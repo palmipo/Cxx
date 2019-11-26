@@ -11,26 +11,34 @@ OBJECTS_LINUX = \
 	$(OBJECTS) \
 	$(BIN_PWD)/ixxatusbcan.o
 
+UTIL_PWD = ../../../util
+LOG_PWD = ../log
 POLL_PWD = ../poll
 SOCKET_PWD = ../socket
 CANOPEN_PWD = ../canopen
+MAKE = make
+MKDIR = mkdir -p
 CC = g++
-INCLUDE = -I../log/src -I$(SOCKET_PWD)/src -I$(POLL_PWD)/src -Isrc
-LIBS = -L. -llog -lpoll -lsocket
+INCLUDE = -I$(UTIL_PWD)/src -I$(LOG_PWD)/src -I$(SOCKET_PWD)/src -I$(POLL_PWD)/src -Isrc
+LIBS = -L. -lutil -llog -lpoll -lsocket
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
-all: libcan.dll
+all:
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 	
 # LINUX
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
+
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
 
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
@@ -40,15 +48,20 @@ libsocket.so:
 	$(MAKE) -C $(SOCKET_PWD) $@
 	ln -s $(SOCKET_PWD)/$@
 
-libcan.so: $(OBJECTS)
+libcan.so: $(OBJECTS_LINUX)
+	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) libsocket.so
 	$(CC) -shared $^ -o $@
 
 # WINDOWS
+libutil.dll:
+	$(MAKE) -C $(UTIL_PWD) $@
+	cp $(UTIL_PWD)/$@ .
+
 liblog.dll:
-	$(MAKE) -C ../log $@
-	cp ../log/$@ .
+	$(MAKE) -C $(LOG_PWD) $@
+	cp $(LOG_PWD)/$@ .
 
 libpoll.dll:
 	$(MAKE) -C $(POLL_PWD) $@
@@ -59,10 +72,12 @@ libsocket.dll:
 	cp $(SOCKET_PWD)/$@ .
 
 libcan.dll: $(OBJECTS)
+	$(MAKE) libutil.dll
 	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) libsocket.dll
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 $(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
