@@ -221,10 +221,12 @@ int32_t CAN::CANOpen::readData(CAN::CANOpenBuffer * buffer)
 	return len;
 }
 
-int32_t CAN::CANOpen::actionIn(uint8_t * data, int32_t length)
+int32_t CAN::CANOpen::actionIn()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
+	uint8_t data[512];
+	int32_t length = 512;
 	if (_bus_can->actionIn(data, length) > 0)
 	{
 		CAN::CANBuffer buf;
@@ -315,12 +317,12 @@ int32_t CAN::CANOpen::actionIn(uint8_t * data, int32_t length)
 	return 0;
 }
 
-int32_t CAN::CANOpen::actionOut(uint8_t *, int32_t)
+int32_t CAN::CANOpen::actionOut()
 {
 	return 0;
 }
 
-int32_t CAN::CANOpen::actionError(uint8_t *, int32_t)
+int32_t CAN::CANOpen::actionError()
 {
 	return 0;
 }

@@ -48,7 +48,7 @@ libutil.dll:
 
 liblog.dll:
 	$(MAKE) -C $(LOG_PWD) $@
-	cp $(POLL_PWD)/$@ .
+	cp $(LOG_PWD)/$@ .
 
 libpoll.dll:
 	$(MAKE) libutil.dll

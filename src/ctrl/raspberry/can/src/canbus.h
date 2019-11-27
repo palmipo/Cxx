@@ -1,10 +1,10 @@
 #ifndef CAN_BUS_H
 #define CAN_BUS_H
 
-#include "polldevice.h"
-// #include "canbuffer.h"
+#include "device.h"
 #include <queue>
 
+class PollDevice;
 namespace CAN
 {
 	class CANBuffer;
@@ -12,8 +12,7 @@ namespace CAN
 	{
 		public:
 			Bus(uint16_t cob_id, PollDevice * device)
-			: Device(device->handler())
-			, _device(device)
+			: Device()
 			, _cob_id(cob_id)
 			{}
 

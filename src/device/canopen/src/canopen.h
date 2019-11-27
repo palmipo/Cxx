@@ -44,9 +44,9 @@ namespace CAN
 			virtual int32_t writeData(CANOpenBuffer *);
 			virtual int32_t readData(CANOpenBuffer *);
 
-			virtual int32_t actionIn(uint8_t *, int32_t);
-			virtual int32_t actionOut(uint8_t *, int32_t);
-			virtual int32_t actionError(uint8_t *, int32_t);
+			virtual int32_t actionIn();
+			virtual int32_t actionOut();
+			virtual int32_t actionError();
 
 		protected:
 			virtual PollDevice * get(uint8_t);

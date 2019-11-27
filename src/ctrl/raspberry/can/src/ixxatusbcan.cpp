@@ -60,6 +60,16 @@ int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data
 	return len;
 }
 
+int32_t Ixxat::UsbCan::write(uint8_t * data, int32_t len)
+{
+	return _device->write(data, len);
+}
+
+int32_t Ixxat::UsbCan::read(uint8_t * data, int32_t len)
+{
+	return _device->read(data, len);
+}
+
 int32_t Ixxat::UsbCan::actionError()
 {
 	return 0;

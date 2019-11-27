@@ -8,7 +8,7 @@ class Device;
 class PollDevice;
 namespace Ixxat
 {
-	// class UsbCan;
+	class UsbCan;
 	class CanAtNet;
 	class Factory : public PollFactory
 	{
@@ -16,8 +16,8 @@ namespace Ixxat
 			Factory();
 			virtual ~Factory();
 			
-			virtual CanAtNet * canAtNet(const std::string &, int16_t);
-			// virtual UsbCan * usbToCan(const std::string &);
+			virtual CanAtNet * canAtNet(uint16_t, const std::string &, int16_t);
+			virtual UsbCan * usbToCan(uint16_t, const std::string &);
 
 		protected:
 			virtual int32_t actionIn(PollDevice*);

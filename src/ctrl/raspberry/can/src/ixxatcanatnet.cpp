@@ -104,6 +104,16 @@ int32_t Ixxat::CanAtNet::readData(uint16_t * node_id, uint8_t * data, int32_t da
 	return len;
 }
 
+int32_t Ixxat::CanAtNet::write(uint8_t * data, int32_t len)
+{
+	return _device->write(data, len);
+}
+
+int32_t Ixxat::CanAtNet::read(uint8_t * data, int32_t len)
+{
+	return _device->read(data, len);
+}
+
 int32_t Ixxat::CanAtNet::actionIn()
 {
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");

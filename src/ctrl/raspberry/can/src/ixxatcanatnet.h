@@ -26,6 +26,8 @@ namespace Ixxat
 
 		protected:
 			virtual int32_t writeCommand(const std::string &, int32_t = 10, int32_t = 1000);
+			virtual int32_t write(uint8_t *, int32_t);
+			virtual int32_t read(uint8_t *, int32_t);
 
 		protected:
 			std::queue < std::vector < std::string > > _cmd_fifo;
