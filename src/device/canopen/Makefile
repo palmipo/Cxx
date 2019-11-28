@@ -34,9 +34,13 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
 
+canopenatnet: $(BIN_PWD)/test_canatnet.o
+	$(MAKE) libcanopen.so
+	$(CC) -o $@ $^ $(LDFLAGS) -lcanopen -lpthread
+
 canopenatnet.exe: $(BIN_PWD)/test_canatnet.o
 	$(MAKE) libcanopen.dll
-	$(CC) -o $@ $^ $(LDFLAGS) -lcanopen
+	$(CC) -o $@ $^ $(LDFLAGS) -lcanopen -lpthread
 
 $(BIN_PWD)/test_canatnet.o: test/test_canatnet.cpp
 	$(MKDIR) $(BIN_PWD)

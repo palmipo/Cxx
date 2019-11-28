@@ -25,6 +25,17 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.dll *.so
 
+modbus_cmd: $(BIN_PWD)/modbus_cmd.o
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) libsocket.so
+	$(CC) $^ -o $@ $(LDFLAGS) -lsocket
+
+$(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
+	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 # LINUX
 libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@

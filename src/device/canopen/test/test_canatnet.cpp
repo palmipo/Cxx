@@ -22,7 +22,7 @@ int main(int argc, char ** argv)
 {
 	int32_t fin = 0;
 	CAN::CANOpenFactory factory;
-	// std::thread t(scrute, &factory, &fin);
+	std::thread t(scrute, &factory, &fin);
 	try
 	{
 		CAN::CANOpen * canopen = factory.canAtNet(5, "192.168.1.207");
@@ -46,7 +46,7 @@ int main(int argc, char ** argv)
 		Log::getLogger()->debug(__FILE__, __LINE__, "exception !!!");
 	}
 	fin = 1;
-	// t.join();
+	t.join();
 
 	return 0;
 }

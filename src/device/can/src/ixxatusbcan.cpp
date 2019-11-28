@@ -80,14 +80,14 @@ int32_t Ixxat::UsbCan::actionIn()
 #if defined __MINGW64__ || defined __MINGW32__ || defined __CYGWIN__
 #else
 	struct can_frame frame;
-	_device->read(&frame, sizeof(struct can_frame));
+	_device->read((uint8_t*)&frame, sizeof(struct can_frame));
 
 	CAN::CANBuffer * buffer = new CAN::CANBuffer();
 	buffer->cob_id = frame.can_id;
 	buffer->write(frame.data, frame.can_dlc);
 	_fifo.push(buffer);
 
-	len = frame.can_dlc;
+	int32_t len = frame.can_dlc;
 
 	return len;
 #endif

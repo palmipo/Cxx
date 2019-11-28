@@ -32,6 +32,8 @@ liblog.so:
 	ln -s $(LOG_PWD)/$@
 
 libpoll.so: $(OBJECTS)
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
 	$(CC) -shared $^ -o $@
 
 # WINDOWS
