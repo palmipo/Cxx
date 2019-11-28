@@ -16,8 +16,8 @@ namespace Ixxat
 			Factory();
 			virtual ~Factory();
 			
-			virtual CanAtNet * canAtNet(uint16_t, const std::string &, int16_t);
-			virtual UsbCan * usbToCan(uint16_t, const std::string &);
+			virtual CanAtNet * canAtNet(const std::string &, int16_t = 19227, int32_t = 1000);
+			virtual UsbCan * usbToCan(const std::string &);
 
 		protected:
 			virtual int32_t actionIn(PollDevice*);

@@ -11,10 +11,10 @@ OBJECTS_LINUX = \
 	$(OBJECTS) \
 	$(BIN_PWD)/ixxatusbcan.o
 
-UTIL_PWD = ../../../util
-LOG_PWD = ../log
-POLL_PWD = ../poll
-SOCKET_PWD = ../socket
+UTIL_PWD = ../../util
+LOG_PWD = ../../ctrl/raspberry/log
+POLL_PWD = ../../ctrl/raspberry/poll
+SOCKET_PWD = ../../ctrl/raspberry/socket
 CANOPEN_PWD = ../canopen
 MAKE = make
 MKDIR = mkdir -p

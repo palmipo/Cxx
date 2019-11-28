@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 
-class TowerDevice;
+class Device;
 namespace CAN
 {
 	class CANOpen;
@@ -15,8 +15,8 @@ namespace CAN
 			CANOpenFactory();
 			virtual ~CANOpenFactory();
 			
-			virtual CANOpen * canAtNet(const std::string &, int16_t, int32_t);
-			virtual CANOpen * usbToCan(const std::string &);
+			virtual CANOpen * canAtNet(uint16_t, const std::string &, int16_t = 19227, int32_t = 1000);
+			virtual CANOpen * usbToCan(uint16_t, const std::string &);
 
 		protected:
 			virtual int32_t actionIn(PollDevice*);
@@ -24,7 +24,7 @@ namespace CAN
 			virtual int32_t actionError(PollDevice*);
 		
 		protected:
-			std::map < std::string, TowerDevice * > ctrlMap;
+			std::map < std::string, Device * > ctrlMap;
 	};
 }
 

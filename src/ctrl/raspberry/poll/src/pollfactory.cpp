@@ -104,6 +104,8 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 
 int32_t PollFactory::action(const pollfd & evnt)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "action");
+
 	std::map<int32_t, PollDevice*>::iterator it = _liste.find(evnt.fd);
 	if (it == _liste.end())
 	{
@@ -114,13 +116,6 @@ int32_t PollFactory::action(const pollfd & evnt)
 
 	else if (evnt.revents & (POLLERR | POLLHUP | POLLNVAL))
 	{
-		// {
-		// std::stringstream ss;
-		// ss << "POLLERR : " << (int)(evnt.revents & POLLERR);
-		// ss << ", POLLHUP : " << (int)(evnt.revents & POLLHUP);
-		// ss << ", POLLNVAL : " << (int)(evnt.revents & POLLNVAL) << std::endl;
-		// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		// }
 		if (it->second)
 		{
 			return actionError(it->second);
@@ -129,12 +124,6 @@ int32_t PollFactory::action(const pollfd & evnt)
 
 	else if (evnt.revents & (POLLPRI | POLLIN))
 	{
-		// {
-		// std::stringstream ss;
-		// ss << "POLLPRI : " << (int)(evnt.revents & POLLPRI);
-		// ss << ", POLLIN : " << (int)(evnt.revents & POLLIN) << std::endl;
-		// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		// }
 		if (it->second)
 		{
 			return actionIn(it->second);
@@ -143,12 +132,6 @@ int32_t PollFactory::action(const pollfd & evnt)
 
 	else if (evnt.revents & (POLLOUT | POLLWRBAND))
 	{
-		// {
-		// std::stringstream ss;
-		// ss << "POLLOUT : " << (int)(evnt.revents & POLLOUT);
-		// ss << ", POLLWRBAND : " << (int)(evnt.revents & POLLWRBAND) << std::endl;
-		// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		// }
 		if (it->second)
 		{
 			return actionOut(it->second);

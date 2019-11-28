@@ -15,8 +15,8 @@
 #include <unistd.h>
 
 /* constructeur socket client */
-Ixxat::UsbCan::UsbCan(uint16_t cob_id, PollDevice * device)
-: CAN::Bus(cob_id, device)
+Ixxat::UsbCan::UsbCan(PollDevice * device)
+: CAN::Bus(device)
 {}
 
 Ixxat::UsbCan::~UsbCan()
@@ -44,7 +44,7 @@ int32_t Ixxat::UsbCan::writeData(uint16_t node_id, uint8_t * msg, int32_t length
 #endif
 }
 
-int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data_length, int32_t max_retry, int32_t timeout)
+int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data_length)
 {
 	if (_fifo.empty())
 	{

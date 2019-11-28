@@ -25,7 +25,7 @@ namespace Socket
 
 			virtual int32_t isServerMode() const;
 
-			virtual void connexion(const std::string &, int16_t, int32_t = 10, int32_t = 1000) = 0;
+			virtual void connexion(const std::string &, int16_t) = 0;
 			virtual int32_t write(uint8_t *, int32_t) = 0;
 			virtual int32_t read(uint8_t *, int32_t) = 0;
 

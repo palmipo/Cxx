@@ -6,8 +6,8 @@
 #include <iomanip>
 
 /* constructeur socket client */
-Ixxat::CanAtNet::CanAtNet(uint16_t cob_id, PollDevice * device)
-: CAN::Bus(cob_id, device)
+Ixxat::CanAtNet::CanAtNet(PollDevice * device)
+: CAN::Bus(device)
 {}
 
 Ixxat::CanAtNet::~CanAtNet()
@@ -33,17 +33,18 @@ void Ixxat::CanAtNet::init(int32_t baud_rate)
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-int32_t Ixxat::CanAtNet::writeCommand(const std::string & cmd, int32_t max_retry, int32_t timeout)
+int32_t Ixxat::CanAtNet::writeCommand(const std::string & cmd)
 {
 	std::stringstream ss1;
 	ss1 << "c " << cmd << "\r\n";
-	std::string msg1 = ss1.str();
+	std::string msg1(ss1.str());
+	Log::getLogger()->debug(__FILE__, __LINE__, msg1);
 	int32_t len = _device->write((uint8_t *)msg1.c_str(), msg1.length());
 
 	int32_t retry = 0;
-	while (_cmd_fifo.empty() && (retry < max_retry))
+	while (_cmd_fifo.empty() && (retry < _max_retry))
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+		std::this_thread::sleep_for(std::chrono::milliseconds(_timeout));
 		retry += 1;
 	}
 	
@@ -80,12 +81,12 @@ int32_t Ixxat::CanAtNet::writeData(uint16_t node_id, uint8_t * data, int32_t dat
 	return _device->write((uint8_t *)msg.c_str(), msg.length());
 }
 
-int32_t Ixxat::CanAtNet::readData(uint16_t * node_id, uint8_t * data, int32_t data_length, int32_t max_retry, int32_t timeout)
+int32_t Ixxat::CanAtNet::readData(uint16_t * node_id, uint8_t * data, int32_t data_length)
 {
 	int32_t retry = 0;
-	while (_fifo.empty() && (retry < max_retry))
+	while (_fifo.empty() && (retry < _max_retry))
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+		std::this_thread::sleep_for(std::chrono::milliseconds(_timeout));
 		retry += 1;
 	}
 	
@@ -116,11 +117,16 @@ int32_t Ixxat::CanAtNet::read(uint8_t * data, int32_t len)
 
 int32_t Ixxat::CanAtNet::actionIn()
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 	_device->actionIn();
 
 	uint8_t msg[512];
 	int32_t msg_length = _device->read(msg, 512);
+	{
+		std::stringstream ss_log;
+		ss_log << "actionIn => socket : " << msg_length << " " << msg;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss_log.str());
+	}
 
 	int32_t return_length = 0;
 	if (msg_length > 0)
@@ -163,11 +169,11 @@ int32_t Ixxat::CanAtNet::actionIn()
 						return_length += buffer->write(data.data(), cpt);
 						_fifo.push(buffer);
 					}
-					// {
-						// std::stringstream ss_log;
-						// ss_log << "taille du buffer : " << _fifo.size() << " buffer length : " << return_length;
-						// Log::getLogger()->debug(__FILE__, __LINE__, ss_log.str());
-					// }
+					{
+						std::stringstream ss_log;
+						ss_log << "taille du buffer : " << _fifo.size() << " buffer length : " << return_length;
+						Log::getLogger()->debug(__FILE__, __LINE__, ss_log.str());
+					}
 				}
 				else if (elements[0] == "I")
 				{

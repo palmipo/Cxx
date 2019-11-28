@@ -12,28 +12,33 @@ CAN::CANOpenFactory::CANOpenFactory()
 CAN::CANOpenFactory::~CANOpenFactory()
 {}
 
-CAN::CANOpen * CAN::CANOpenFactory::canAtNet(const std::string & addr, int16_t port, int32_t baud_rate)
+CAN::CANOpen * CAN::CANOpenFactory::canAtNet(uint16_t node_id, const std::string & addr, int16_t port, int32_t baud_rate)
 {
 	Socket::SocketTcpFifo * socket = new Socket::SocketTcpFifo();
 	socket->connexion(addr, port);
 	add(socket);
 	
-	Ixxat::CanAtNet * ixxat = new Ixxat::CanAtNet(5, socket);
-	ixxat->init(baud_rate);
+	Ixxat::CanAtNet * ixxat = new Ixxat::CanAtNet(socket);
 	
-	CAN::CANOpen * canopen = new CANOpen(5, ixxat, socket);
+	CAN::CANOpen * canopen = new CANOpen(node_id, ixxat);
+	ctrlMap[addr] = canopen;
+
+	ixxat->init(baud_rate);
+
 	return canopen;
 }
 
-CAN::CANOpen * CAN::CANOpenFactory::usbToCan(const std::string & iface)
+CAN::CANOpen * CAN::CANOpenFactory::usbToCan(uint16_t node_id, const std::string & iface)
 {
 	Socket::SocketCan * socket = new Socket::SocketCan();
 	socket->connexion(iface);
 	add(socket);
 	
-	Ixxat::UsbCan * ixxat = new Ixxat::UsbCan(5, socket);
+	Ixxat::UsbCan * ixxat = new Ixxat::UsbCan(socket);
 	
-	CAN::CANOpen * canopen = new CANOpen(5, ixxat, socket);
+	CAN::CANOpen * canopen = new CANOpen(node_id, ixxat);
+	ctrlMap[iface] = canopen;
+
 	return canopen;
 }
 
@@ -45,24 +50,21 @@ int32_t CAN::CANOpenFactory::actionError(PollDevice * device)
 int32_t CAN::CANOpenFactory::actionIn(PollDevice * device)
 {
 	// lecture sur le device
-	device->actionIn();
+	// device->actionIn();
 	
-	uint8_t data[512];
-	int32_t len = device->read(data, 512);
+	// uint8_t data[512];
+	// int32_t len = device->read(data, 512);
 	
 	//~ /!\ test
 	// envoie aux classes Modbus et CANOpen les donnees du controleur
-	std::map < std::string, TowerDevice * >::iterator it = ctrlMap.begin();
+	std::map < std::string, Device * >::iterator it = ctrlMap.begin();
 	while (it != ctrlMap.end())
 	{
 		if (device->handler() == it->second->handler())
 		{
-			it->second->actionIn(data, len);
+			it->second->actionIn();
 		}
-		else
-		{
-			it++;
-		}
+		it++;
 	}
 }
 

@@ -12,14 +12,14 @@ Socket::SocketTcpFifo::SocketTcpFifo()
 : Socket::SocketTcp()
 {}
 
-int32_t Socket::SocketTcpFifo::read(uint8_t * msg, int32_t length, int32_t max_retry, int32_t timeout)
+int32_t Socket::SocketTcpFifo::read(uint8_t * msg, int32_t length)
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "read");
+	Log::getLogger()->debug(__FILE__, __LINE__, "read");
 
 	int32_t retry = 0;
-	while (_fifo.empty() && (retry < max_retry))
+	while (_fifo.empty() && (retry < _max_retry))
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+		std::this_thread::sleep_for(std::chrono::milliseconds(_timeout));
 		retry += 1;
 	}
 	
@@ -39,7 +39,7 @@ int32_t Socket::SocketTcpFifo::read(uint8_t * msg, int32_t length, int32_t max_r
 
 int32_t Socket::SocketTcpFifo::actionIn()
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t msg[512];
 	int32_t len = Socket::SocketTcp::read(msg, 512);

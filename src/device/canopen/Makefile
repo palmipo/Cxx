@@ -14,24 +14,39 @@ OBJECTS = \
 	$(BIN_PWD)/canopensdo.o \
 	$(BIN_PWD)/canopen.o
 
-RASPI_CTRL = ../ctrl/raspberry
+RASPI_CTRL = ../../ctrl/raspberry
 LOG_PWD = $(RASPI_CTRL)/log
 POLL_PWD = $(RASPI_CTRL)/poll
 SOCKET_PWD = $(RASPI_CTRL)/socket
-CAN_PWD = $(RASPI_CTRL)/can
+CAN_PWD = ../can
+UTIL_PWD = ../../util
 CC = g++
-INCLUDE = -I$(LOG_PWD)/src -I$(SOCKET_PWD)/src -I$(CAN_PWD)/src -I$(POLL_PWD)/src -Isrc
-LIBS = -L. -lcan -lsocket -lpoll -llog
+MAKE = make
+MKDIR = mkdir -p
+INCLUDE = -I$(UTIL_PWD)/src -I$(LOG_PWD)/src -I$(SOCKET_PWD)/src -I$(CAN_PWD)/src -I$(POLL_PWD)/src -Isrc
+LIBS = -L. -lcan -lsocket -lpoll -llog -lutil
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
-all: libcanopen.dll
+all:
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
 
+canopenatnet.exe: $(BIN_PWD)/test_canatnet.o
+	$(MAKE) libcanopen.dll
+	$(CC) -o $@ $^ $(LDFLAGS) -lcanopen
+
+$(BIN_PWD)/test_canatnet.o: test/test_canatnet.cpp
+	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 # LINUX
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
+
 liblog.so:
 	$(MAKE) -C $(LOG_PWD) $@
 	ln -s $(LOG_PWD)/$@
@@ -53,9 +68,14 @@ libcanopen.so: $(OBJECTS)
 	$(MAKE) libsocket.so
 	$(MAKE) libpoll.so
 	$(MAKE) liblog.so
+	$(MAKE) libutil.so
 	$(CC) -shared $^ -o $@
 
 # WINDOWS
+libutil.dll:
+	$(MAKE) -C $(UTIL_PWD) $@
+	cp $(UTIL_PWD)/$@ .
+
 liblog.dll:
 	$(MAKE) -C $(LOG_PWD) $@
 	cp $(LOG_PWD)/$@ .
@@ -77,7 +97,9 @@ libcanopen.dll: $(OBJECTS)
 	$(MAKE) libsocket.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) liblog.dll
+	$(MAKE) libutil.dll
 	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 $(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@

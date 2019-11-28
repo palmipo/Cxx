@@ -29,6 +29,10 @@ class UTIL_DLL Device
 
 	protected:
 		int32_t _handler;
+
+	protected:
+		int32_t _max_retry;
+		int32_t _timeout;
 };
 
 #endif
