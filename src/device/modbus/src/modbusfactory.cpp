@@ -153,7 +153,7 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 			if (device->handler() == it->second->handler())
 			{
 				it->second->actionIn();
-				fin = 1;
+				// fin = 1;
 			}
 			it++;
 		}
@@ -173,7 +173,7 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 			if (device->handler() == it->second->handler())
 			{
 				it->second->actionOut();
-				fin = 1;
+				// fin = 1;
 			}
 			it++;
 		}
