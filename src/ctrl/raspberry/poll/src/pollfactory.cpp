@@ -104,7 +104,7 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 
 int32_t PollFactory::action(const pollfd & evnt)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "action");
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "action");
 
 	std::map<int32_t, PollDevice*>::iterator it = _liste.find(evnt.fd);
 	if (it == _liste.end())
