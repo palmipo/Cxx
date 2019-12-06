@@ -31,7 +31,7 @@ Modbus::ModbusRtu::~ModbusRtu()
 
 int32_t Modbus::ModbusRtu::actionIn()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t data[512];
 	int32_t retry = 0, nb, data_length = 0;
@@ -75,7 +75,7 @@ int32_t Modbus::ModbusRtu::actionIn()
 
 int32_t Modbus::ModbusRtu::actionOut()
 {
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
 
 	if (!_fifo_out.empty())
