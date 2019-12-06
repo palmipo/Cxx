@@ -9,6 +9,7 @@ OBJECTS = \
 MAKE = make
 MKDIR = mkdir -p
 CC = g++
+
 UTIL_PWD = ../../../util
 POLL_PWD = ../poll
 LOG_PWD = ../log
@@ -47,7 +48,15 @@ fwup.exe : $(BIN_PWD)/fwup.o
 $(BIN_PWD)/fwup.o: test/fwup.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
+dump : $(BIN_PWD)/dump.o
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
+
 dump.exe : $(BIN_PWD)/dump.o
+	$(MAKE) libutil.dll
 	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) librs232.dll

@@ -82,6 +82,7 @@ int main (int argc, char **argv)
 		Log::getLogger()->debug(__FILE__, __LINE__, e.what());
 	}
 
+	fin = 1;
 	t.join();
 
     return 0;
