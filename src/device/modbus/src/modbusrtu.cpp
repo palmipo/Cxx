@@ -25,7 +25,6 @@ Modbus::ModbusRtu::ModbusRtu(PollDevice * serial)
 : ModbusChannel(serial)
 {}
 
-
 Modbus::ModbusRtu::~ModbusRtu()
 {}
 

@@ -28,6 +28,7 @@ class POLL_FACTORY_DLL PollFactory
 		virtual PollDevice* get(int32_t);
 		virtual void del(int32_t);
 
+		//!\ sous windows POLLOUT gene le POLLIN
 		virtual int32_t scrute(int32_t, int32_t=1, int32_t=0, int32_t=1);
 
 		virtual int32_t actionIn(PollDevice*) = 0;

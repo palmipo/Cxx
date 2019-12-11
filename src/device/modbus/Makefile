@@ -69,6 +69,10 @@ modbus_cmd: $(BIN_PWD)/modbus_cmd.o
 	$(MAKE) libmodbus.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
+modbus_cmd.exe: $(BIN_PWD)/modbus_cmd.o
+	$(MAKE) libmodbus.dll
+	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+
 $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 

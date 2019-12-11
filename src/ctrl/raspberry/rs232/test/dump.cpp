@@ -17,6 +17,7 @@ class Factory : public RS232Factory
 
 		virtual RS232 * add(const std::string & device, int32_t (*f)(PollDevice *, PollBuffer *))
 		{
+			Log::getLogger()->debug(__FILE__, __LINE__, "add");
 			RS232 * rs = RS232Factory::add(device);
 			_clb.set(f, rs);
 			return rs;
@@ -24,6 +25,7 @@ class Factory : public RS232Factory
 
 		virtual int32_t actionIn(PollDevice * device)
 		{
+			Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 			uint8_t data[256];
 			device->actionIn();
 			int32_t len = device->read(data, 256);
@@ -49,13 +51,17 @@ void scrute(Factory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
-		factory->scrute(1000, 1, 1, 1);
+		factory->scrute(1000);
 	}
 }
 
 int32_t fct(PollDevice * device, PollBuffer * buffer)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
+	uint8_t data[512];
+	int32_t len = buffer->read(data, 512);
+	std::stringstream ss;
+	ss << "callback : " << device->handler() << " (" << len << ") " << data << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 }
 
 int main (int argc, char **argv)
@@ -76,6 +82,7 @@ int main (int argc, char **argv)
 	{
 		RS232 * serial = factory.add(argv[1], fct);
 		serial->setConfig(B19200, 8, 'E', 1);
+		std::this_thread::sleep_for(std::chrono::minutes(2));
 	}
 	catch(RS232Exception & e)
 	{

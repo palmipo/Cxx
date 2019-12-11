@@ -60,6 +60,7 @@ PollDevice* PollFactory::get(int32_t id)
 	throw PollException(__FILE__, __LINE__, ss.str());
 }
 
+//!\ sous windows POLLOUT gene le POLLIN
 int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut, int32_t scruteError)
 {
 //	Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
@@ -80,6 +81,9 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 		}
 	}
 
+	// std::stringstream ss;
+	// ss << "scrute nb handlers : " << cpt;
+	// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	int32_t ret = poll(lst_fd, cpt, timeout);
 	if (ret < 0)
 	{
@@ -114,7 +118,7 @@ int32_t PollFactory::action(const pollfd & evnt)
 		throw PollException(__FILE__, __LINE__, ss.str());
 	}
 
-	else if (evnt.revents & (POLLERR | POLLHUP | POLLNVAL))
+	if (evnt.revents & (POLLERR | POLLHUP | POLLNVAL))
 	{
 		if (it->second)
 		{
@@ -122,7 +126,7 @@ int32_t PollFactory::action(const pollfd & evnt)
 		}
 	}
 
-	else if (evnt.revents & (POLLPRI | POLLIN))
+	if (evnt.revents & (POLLPRI | POLLIN))
 	{
 		if (it->second)
 		{
@@ -130,7 +134,7 @@ int32_t PollFactory::action(const pollfd & evnt)
 		}
 	}
 
-	else if (evnt.revents & (POLLOUT | POLLWRBAND))
+	if (evnt.revents & (POLLOUT | POLLWRBAND))
 	{
 		if (it->second)
 		{
