@@ -65,6 +65,16 @@ dump.exe : $(BIN_PWD)/dump.o
 $(BIN_PWD)/dump.o: test/dump.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
+echo.exe : $(BIN_PWD)/echo.o
+	$(MAKE) libutil.dll
+	$(MAKE) liblog.dll
+	$(MAKE) libpoll.dll
+	$(MAKE) librs232.dll
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
+
+$(BIN_PWD)/echo.o: test/echo.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
 # LINUX
 libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@
