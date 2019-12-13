@@ -19,6 +19,7 @@ void Modbus::ModbusChannel::sendFC(Modbus::ModbusMsg * msg, int32_t max_retry, i
 	// enregistrement fifo de sortie
 	msg->encodeQuestion();
 	_fifo_out.push(msg);
+	actionOut();
 
 	// attente presence element fifo entree
 	uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();

@@ -60,7 +60,7 @@ int32_t fct(PollDevice * device, PollBuffer * buffer)
 	uint8_t data[512];
 	int32_t len = buffer->read(data, 512);
 	std::stringstream ss;
-	ss << "callback : " << device->handler() << " (" << len << ") " << data << std::endl;
+	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
 	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 }
 

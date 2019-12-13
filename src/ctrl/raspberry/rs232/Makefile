@@ -22,7 +22,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f $(BIN_PWD)/*.o *.so *.dll fwup
+	rm -f $(BIN_PWD)/*.o *.so *.dll fwup* dump*
 
 rsclb : $(BIN_PWD)/rsclb.o
 	$(MAKE) liblog.so
