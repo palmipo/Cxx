@@ -7,7 +7,7 @@
 #include <poll.h>
 #include <mutex>
 
-#if defined __MINGW32__ ||  defined __CYGWIN__
+#ifdef  __CYGWIN__
 #ifdef MAKE_POLL_FACTORY_DLL
 #define POLL_FACTORY_DLL __declspec(dllexport)
 #else

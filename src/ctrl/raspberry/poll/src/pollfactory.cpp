@@ -74,7 +74,11 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 		while(it != _liste.end())
 		{
 			lst_fd[cpt].fd = it->second->handler();
+			#ifdef __CYGWIN__
+			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
+			#else
 			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteOut ? POLLOUT | POLLWRBAND : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
+			#endif
 			lst_fd[cpt].revents = 0;
 			cpt += 1;
 			it++;
@@ -102,6 +106,18 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 	}
 
 	delete[] lst_fd;
+
+	#ifdef __CYGWIN__
+	if (scruteOut)
+	{
+		std::map<int32_t, PollDevice*>::iterator it = _liste.begin();
+		while(it != _liste.end())
+		{
+			actionOut(it->second);
+			it++;
+		}
+	}
+	#endif
 
 	return ret;
 }
