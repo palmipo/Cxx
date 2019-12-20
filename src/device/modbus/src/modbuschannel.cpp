@@ -19,13 +19,14 @@ void Modbus::ModbusChannel::sendFC(Modbus::ModbusMsg * msg, int32_t max_retry, i
 	// enregistrement fifo de sortie
 	msg->encodeQuestion();
 	_fifo_out.push(msg);
+	// actionOut();
 
 	// attente presence element fifo entree
 	uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();
 	uint8_t function_code = ((Modbus::ModbusMsgHeader *)msg)->functionCode();
-	//~ std::stringstream ss;
-	//~ ss << (int32_t)slave_address << " " << (int32_t)function_code;
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	// std::stringstream ss;
+	// ss << (int32_t)slave_address << " " << (int32_t)function_code;
+	// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	
 	int32_t retry = 0;
 	while (_fifo_in.isEmpty(slave_address, function_code) && (retry < max_retry))

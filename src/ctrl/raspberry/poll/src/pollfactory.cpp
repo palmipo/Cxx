@@ -60,6 +60,7 @@ PollDevice* PollFactory::get(int32_t id)
 	throw PollException(__FILE__, __LINE__, ss.str());
 }
 
+//!\ sous windows POLLOUT gene le POLLIN
 int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut, int32_t scruteError)
 {
 //	Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
@@ -73,13 +74,20 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 		while(it != _liste.end())
 		{
 			lst_fd[cpt].fd = it->second->handler();
+			#ifdef __CYGWIN__
+			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
+			#else
 			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteOut ? POLLOUT | POLLWRBAND : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
+			#endif
 			lst_fd[cpt].revents = 0;
 			cpt += 1;
 			it++;
 		}
 	}
 
+	// std::stringstream ss;
+	// ss << "scrute nb handlers : " << cpt;
+	// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	int32_t ret = poll(lst_fd, cpt, timeout);
 	if (ret < 0)
 	{
@@ -99,12 +107,24 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 
 	delete[] lst_fd;
 
+	#ifdef __CYGWIN__
+	if (scruteOut)
+	{
+		std::map<int32_t, PollDevice*>::iterator it = _liste.begin();
+		while(it != _liste.end())
+		{
+			actionOut(it->second);
+			it++;
+		}
+	}
+	#endif
+
 	return ret;
 }
 
 int32_t PollFactory::action(const pollfd & evnt)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "action");
+	// Log::getLogger()->debug(__FILE__, __LINE__, "action");
 
 	std::map<int32_t, PollDevice*>::iterator it = _liste.find(evnt.fd);
 	if (it == _liste.end())
@@ -114,7 +134,7 @@ int32_t PollFactory::action(const pollfd & evnt)
 		throw PollException(__FILE__, __LINE__, ss.str());
 	}
 
-	else if (evnt.revents & (POLLERR | POLLHUP | POLLNVAL))
+	if (evnt.revents & (POLLERR | POLLHUP | POLLNVAL))
 	{
 		if (it->second)
 		{
@@ -122,7 +142,7 @@ int32_t PollFactory::action(const pollfd & evnt)
 		}
 	}
 
-	else if (evnt.revents & (POLLPRI | POLLIN))
+	if (evnt.revents & (POLLPRI | POLLIN))
 	{
 		if (it->second)
 		{
@@ -130,7 +150,7 @@ int32_t PollFactory::action(const pollfd & evnt)
 		}
 	}
 
-	else if (evnt.revents & (POLLOUT | POLLWRBAND))
+	if (evnt.revents & (POLLOUT | POLLWRBAND))
 	{
 		if (it->second)
 		{

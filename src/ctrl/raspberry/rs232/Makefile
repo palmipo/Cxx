@@ -9,6 +9,7 @@ OBJECTS = \
 MAKE = make
 MKDIR = mkdir -p
 CC = g++
+
 UTIL_PWD = ../../../util
 POLL_PWD = ../poll
 LOG_PWD = ../log
@@ -21,7 +22,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f $(BIN_PWD)/*.o *.so *.dll fwup
+	rm -f $(BIN_PWD)/*.o *.so *.dll fwup* dump*
 
 rsclb : $(BIN_PWD)/rsclb.o
 	$(MAKE) liblog.so
@@ -45,6 +46,33 @@ fwup.exe : $(BIN_PWD)/fwup.o
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
 
 $(BIN_PWD)/fwup.o: test/fwup.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+dump : $(BIN_PWD)/dump.o
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
+
+dump.exe : $(BIN_PWD)/dump.o
+	$(MAKE) libutil.dll
+	$(MAKE) liblog.dll
+	$(MAKE) libpoll.dll
+	$(MAKE) librs232.dll
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
+
+$(BIN_PWD)/dump.o: test/dump.cpp
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+echo.exe : $(BIN_PWD)/echo.o
+	$(MAKE) libutil.dll
+	$(MAKE) liblog.dll
+	$(MAKE) libpoll.dll
+	$(MAKE) librs232.dll
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
+
+$(BIN_PWD)/echo.o: test/echo.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 # LINUX

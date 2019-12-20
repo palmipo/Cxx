@@ -56,8 +56,8 @@ int main(int argc, char **argv)
 
 	try
 	{
-		Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.tcp(argv[1]);
-		//~ Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.rtu(argv[1], 19200, 1, 1);
+		// Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.tcp(argv[1]);
+		Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.rtu(argv[1], 19200, 1, 1);
 
 		Modbus::ModbusMsgFC03 msg1;
 		msg1.setSlaveAddress(0xF8);

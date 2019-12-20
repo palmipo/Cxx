@@ -153,7 +153,7 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 			if (device->handler() == it->second->handler())
 			{
 				it->second->actionIn();
-				fin = 1;
+				// fin = 1;
 			}
 			it++;
 		}
@@ -173,7 +173,7 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 			if (device->handler() == it->second->handler())
 			{
 				it->second->actionOut();
-				fin = 1;
+				// fin = 1;
 			}
 			it++;
 		}
@@ -184,8 +184,20 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionError(PollDevice* device)
 {
-	if (device)
-		return device->actionError();
+    if (device)
+    {
+		int32_t fin = 0;
+		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+		while (!fin && (it != _codec.end()))
+		{
+			if (device->handler() == it->second->handler())
+			{
+				it->second->actionError();
+				fin = 1;
+			}
+			it++;
+		}
+    }
 
 	return 0;
 }
