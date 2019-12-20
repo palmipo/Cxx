@@ -16,7 +16,7 @@ static void * thread_start(void * data)
 
 	while(!fin)
 	{
-		factory->scrute(10000);
+		factory->scrute(1000);
 	}
     // Socket::SocketTcp * sock = (Socket::SocketTcp *)data;
     // u8 rep[100];

@@ -62,9 +62,9 @@ int main(int argc, char **argv)
 		Modbus::ModbusMsgFC03 msg1;
 		msg1.setSlaveAddress(0xF8);
 		msg1.setRegisterAddr(0xCA8, 1);
-		msg1.encodeQuestion();
+		// msg1.encodeQuestion();
 		sock1->sendFC(&msg1);
-		msg1.decodeResponse();
+		// msg1.decodeResponse();
 		std::stringstream ss;
 		ss << "slave addr : " << (int)msg1.slaveAddress();
 		ss << " fonction code : " << (int)msg1.functionCode();
