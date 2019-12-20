@@ -30,6 +30,10 @@ namespace Modbus
 			virtual ModbusChannel * rtu(const std::string &, int32_t, int32_t, int32_t);
 			virtual void close(const std::string &);
 
+			virtual int32_t actionIn();
+			virtual int32_t actionOut();
+			virtual int32_t actionError();
+
 		protected:
 			virtual int32_t actionIn(PollDevice*);
 			virtual int32_t actionOut(PollDevice*);

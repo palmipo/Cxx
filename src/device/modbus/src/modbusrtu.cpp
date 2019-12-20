@@ -44,30 +44,33 @@ int32_t Modbus::ModbusRtu::actionIn()
 
 	int32_t cpt = data_length-2;
 
-	// recomposition du crc
-	uint16_t crc = data[cpt] << 8;
-	crc |= data[cpt+1];
-
-	// calcul du crc du message
-	uint16_t ccrc = calcul_crc(data, cpt);
-
-	if (crc != ccrc)
+	if (cpt > 0)
 	{
-		std::stringstream ss;
-		ss << "========> ERREUR CRC <======== " << std::endl;
-		ss << std::hex << "Calcul CRC : " << (int)ccrc << " different de celui recue dans la trame : " << (int)crc << std::endl;
-		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
+		// recomposition du crc
+		uint16_t crc = data[cpt] << 8;
+		crc |= data[cpt+1];
+
+		// calcul du crc du message
+		uint16_t ccrc = calcul_crc(data, cpt);
+
+		if (crc != ccrc)
+		{
+			std::stringstream ss;
+			ss << "========> ERREUR CRC <======== " << std::endl;
+			ss << std::hex << "Calcul CRC : " << (int)ccrc << " different de celui recue dans la trame : " << (int)crc << std::endl;
+			throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
+		}
+		
+		Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
+		msg->in()->write(data, cpt);
+		msg->decodeHeader();
+		uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();
+		uint8_t function_code = ((Modbus::ModbusMsgHeader *)msg)->functionCode();
+		//~ std::stringstream ss;
+		//~ ss << (int32_t)slave_address << " " << (int32_t)function_code;
+		//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		_fifo_in.add(slave_address, function_code, msg);
 	}
-	
-	Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
-	msg->in()->write(data, cpt);
-	msg->decodeHeader();
-	uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();
-	uint8_t function_code = ((Modbus::ModbusMsgHeader *)msg)->functionCode();
-	//~ std::stringstream ss;
-	//~ ss << (int32_t)slave_address << " " << (int32_t)function_code;
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-	_fifo_in.add(slave_address, function_code, msg);
 
 	return cpt;
 }
