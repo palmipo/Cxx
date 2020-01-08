@@ -87,7 +87,7 @@ Socket::SocketTcp::~SocketTcp()
 	::close(_handler);
 }
 
-void Socket::SocketTcp::connexion(const std::string & addr, int16_t port, int32_t max_retry, int32_t timeout)
+void Socket::SocketTcp::connexion(const std::string & addr, int16_t port)
 {
     if (!isServerMode())
     {
@@ -115,10 +115,10 @@ void Socket::SocketTcp::connexion(const std::string & addr, int16_t port, int32_
 
 		int32_t retry = 0;
 		int32_t resultat = ::connect(_handler, (struct sockaddr *) &st_sockaddr_in, st_sockaddr_in_len);
-		while ((resultat < 0) && (retry < max_retry))
+		while ((resultat < 0) && (retry < _max_retry))
 		{
 			// /* tempo */
-			std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+			std::this_thread::sleep_for(std::chrono::milliseconds(_timeout));
 			
 			// /* connexion */
 			resultat = ::connect(_handler, (struct sockaddr *) &st_sockaddr_in, st_sockaddr_in_len);
@@ -153,8 +153,6 @@ int32_t Socket::SocketTcp::write(uint8_t * msg, int32_t length)
 
 int32_t Socket::SocketTcp::read(uint8_t * msg, int32_t length)
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "read");
-
     int32_t len = ::recv(_handler, msg, length, 0);
     if (len <= 0)
     {
@@ -216,25 +214,4 @@ int32_t Socket::SocketTcp::getInterCharacterTimer()
     }
 	
 	return sttimeout.tv_sec;
-}
-
-int32_t Socket::SocketTcp::actionError()
-{
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
-
-	return 0;
-}
-
-int32_t Socket::SocketTcp::actionIn()
-{
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
-
-	return 0;
-}
-
-int32_t Socket::SocketTcp::actionOut()
-{
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
-
-	return 0;
 }

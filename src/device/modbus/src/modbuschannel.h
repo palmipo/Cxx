@@ -15,11 +15,11 @@
 #include "modbusqueue.h"
 #include <queue>
 
-// class PollDevice;
+class PollDevice;
 namespace Modbus
 {
 	class ModbusMsg;
-	class ModbusMsgDirect;
+	// class ModbusMsgDirect;
 	class MODBUS_DLL ModbusChannel : public PollDevice
 	{
 		public:

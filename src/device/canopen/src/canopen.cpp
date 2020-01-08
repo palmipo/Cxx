@@ -18,8 +18,8 @@
 #include <sstream>
 #include <iomanip>
 
-CAN::CANOpen::CANOpen(uint16_t node_id, CAN::Bus * interface_can, PollDevice * device)
-: TowerDevice(device)
+CAN::CANOpen::CANOpen(uint16_t node_id, CAN::Bus * interface_can)
+: Device(interface_can->handler())
 , _bus_can(interface_can)
 , _node_id(node_id)
 , _map_nmt(0)
@@ -51,10 +51,9 @@ CAN::CANOpen::~CANOpen()
 		}
 	}
 }
-
+/*
 PollDevice * CAN::CANOpen::get(uint8_t pdo_id)
 {
-	//~ uint8_t fct = pdo_id;
 	switch (pdo_id)
 	{
 		case MNT_ID:
@@ -86,7 +85,7 @@ PollDevice * CAN::CANOpen::get(uint8_t pdo_id)
 
 	}
 }
-
+*/
 CAN::CANOpenNMT * CAN::CANOpen::nmt()
 {
 	if (!_map_nmt)
@@ -221,11 +220,11 @@ int32_t CAN::CANOpen::readData(CAN::CANOpenBuffer * buffer)
 	return len;
 }
 
-int32_t CAN::CANOpen::actionIn(uint8_t * data, int32_t length)
+int32_t CAN::CANOpen::actionIn()
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
-	if (_bus_can->actionIn(data, length) > 0)
+	if (_bus_can->actionIn() > 0)
 	{
 		CAN::CANBuffer buf;
 		int32_t len = _bus_can->readData(&buf);
@@ -315,12 +314,12 @@ int32_t CAN::CANOpen::actionIn(uint8_t * data, int32_t length)
 	return 0;
 }
 
-int32_t CAN::CANOpen::actionOut(uint8_t *, int32_t)
+int32_t CAN::CANOpen::actionOut()
 {
 	return 0;
 }
 
-int32_t CAN::CANOpen::actionError(uint8_t *, int32_t)
+int32_t CAN::CANOpen::actionError()
 {
 	return 0;
 }

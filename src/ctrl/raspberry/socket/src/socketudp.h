@@ -10,13 +10,15 @@ namespace Socket
 	{
 	public:
 		SocketUdp();
-		SocketUdp(const std::string &, s16);
+		SocketUdp(const std::string &, int16_t);
 		virtual ~SocketUdp();
 
-		virtual void connexion(const std::string &, s16);
-		virtual s32 write(u8 *, s32);
-		virtual s32 read(u8 *, s32);
-	
+		virtual void connexion(const std::string &, int16_t);
+		virtual void broadcast(int32_t, int16_t);
+
+		virtual int32_t write(uint8_t *, int32_t);
+		virtual int32_t read(uint8_t *, int32_t);
+
 	protected:
 		struct sockaddr_in _st_sockaddr_in;
 	};

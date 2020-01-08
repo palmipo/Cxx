@@ -7,6 +7,7 @@ Modbus::ModbusMsgHeader::ModbusMsgHeader(uint8_t fct_code)
 : _error_code(0)
 , _slave_address(0xF8)
 , _function_code(fct_code)
+, ModbusMsg()
 {}
 
 Modbus::ModbusMsgHeader::~ModbusMsgHeader()

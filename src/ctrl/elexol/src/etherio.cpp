@@ -5,9 +5,10 @@
 #include "poll.h"
 
 EtherIO::EtherIO(Socket::SocketUdp * sock)
-: PIA()
-, _socket(sock)
-{}
+: PollFactory()
+{
+	PollFactory::add(sock);
+}
 
 EtherIO::~EtherIO()
 {}
@@ -19,8 +20,8 @@ u8 EtherIO::getDirection(u8 port)
 	// direction
 	buffer[0] = 0x21;
 	buffer[1] = 0x61 + (port & 0x03);
-	_socket->write(buffer, 3);
-	_socket->read(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
+	PollFactory::get(_socket)->read(buffer, 3);
 
 	return buffer[2];
 }
@@ -32,8 +33,8 @@ u8 EtherIO::getPullup(u8 port)
 	// direction
 	buffer[0] = 0x40;
 	buffer[1] = 0x61 + (port & 0x03);
-	_socket->write(buffer, 3);
-	_socket->read(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
+	PollFactory::get(_socket)->read(buffer, 3);
 
 	return buffer[2];
 }
@@ -45,8 +46,8 @@ u8 EtherIO::getThreshold(u8 port)
 	// direction
 	buffer[0] = 0x23;
 	buffer[1] = 0x61 + (port & 0x03);
-	_socket->write(buffer, 3);
-	_socket->read(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
+	PollFactory::get(_socket)->read(buffer, 3);
 
 	return buffer[2];
 }
@@ -58,8 +59,8 @@ u8 EtherIO::getSchmitt(u8 port)
 	// direction
 	buffer[0] = 0x24;
 	buffer[1] = 0x61 + (port & 0x03);
-	_socket->write(buffer, 3);
-	_socket->read(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
+	PollFactory::get(_socket)->read(buffer, 3);
 
 	return buffer[2];
 }
@@ -72,7 +73,7 @@ void EtherIO::setDirection(u8 port, u8 dir)
 	buffer[0] = 0x21;
 	buffer[1] = 0x41 + (port & 0x03);
 	buffer[2] = dir;
-	_socket->write(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
 }
 
 void EtherIO::setPullup(u8 port, u8 pullup)
@@ -82,7 +83,7 @@ void EtherIO::setPullup(u8 port, u8 pullup)
 	buffer[0] = 0x40;
 	buffer[1] = 0x41 + (port & 0x03);
 	buffer[2] = pullup;
-	_socket->write(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
 }
 
 void EtherIO::setThreshold(u8 port, u8 threshold)
@@ -92,7 +93,7 @@ void EtherIO::setThreshold(u8 port, u8 threshold)
 	buffer[0] = 0x23;
 	buffer[1] = 0x41 + (port & 0x03);
 	buffer[2] = threshold;
-	_socket->write(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
 }
 
 void EtherIO::setSchmitt(u8 port, u8 schmitt)
@@ -102,7 +103,7 @@ void EtherIO::setSchmitt(u8 port, u8 schmitt)
 	buffer[0] = 0x24;
 	buffer[1] = 0x41 + (port & 0x03);
 	buffer[2] = schmitt;
-	_socket->write(buffer, 3);
+	PollFactory::get(_socket)->write(buffer, 3);
 }
 
 void EtherIO::set(u8 port, u8 value)
@@ -111,7 +112,7 @@ void EtherIO::set(u8 port, u8 value)
 
 	buffer[0] = 0x41 + (port & 0x03);
 	buffer[1] = value;
-	_socket->write(buffer, 2);
+	PollFactory::get(_socket)->write(buffer, 2);
 }
 
 u8 EtherIO::get(u8 port)
@@ -119,8 +120,8 @@ u8 EtherIO::get(u8 port)
 	s32 nBytes;
 	u8 buffer[2];
 	buffer[0] = 0x61 + (port & 0x03);
-	_socket->write(buffer, 1);
-	_socket->read(buffer, 2);
+	PollFactory::get(_socket)->write(buffer, 1);
+	PollFactory::get(_socket)->read(buffer, 2);
 	
 	return buffer[1];
 }
@@ -134,15 +135,15 @@ void EtherIO::resetModule()
 	buffer[2] = 0x00;
 	buffer[3] = 0xAA;
 	buffer[4] = 0x55;
-	_socket->write(buffer, 5);
+	PollFactory::get(_socket)->write(buffer, 5);
 }
 
 void EtherIO::setAutoScan(u8 port, u8 filterCount, u16 autoScanRate/*, u8 * mac_addr, u8 * ip_addr, u16 port_addr*/)
 {
 	u8 buffer[16];
 	buffer[0] = 0x25;
-	_socket->write(buffer, 1);
-	_socket->read(buffer, 16);
+	PollFactory::get(_socket)->write(buffer, 1);
+	PollFactory::get(_socket)->read(buffer, 16);
 
 	std::cout << "send host data : " << std::hex;
 	for (u8 i=0; i<16; i+=1)
@@ -215,8 +216,8 @@ u16 EtherIO::readEEPROM(u8 addr)
 	buffer[2] = addr;
 	buffer[3] = 0;
 	buffer[4] = 0;
-	_socket->write(buffer, 5);
-	_socket->read(buffer, 4);
+	PollFactory::get(_socket)->write(buffer, 5);
+	PollFactory::get(_socket)->read(buffer, 4);
 	
 	u16 res = buffer[2]<<8;
 	res |= buffer[3];
@@ -232,7 +233,7 @@ void EtherIO::writeEEPROM(u8 addr, u8 msb, u8 lsb)
 	buffer[2] = addr;
 	buffer[3] = msb;
 	buffer[4] = lsb;
-	_socket->write(buffer, 5);
+	PollFactory::get(_socket)->write(buffer, 5);
 	poll(0, 0, 100);
 }
 
@@ -245,7 +246,7 @@ void EtherIO::eraseEEPROM(u8 addr)
 	buffer[2] = addr;
 	buffer[3] = 0xAA;
 	buffer[4] = 0x55;
-	_socket->write(buffer, 5);
+	PollFactory::get(_socket)->write(buffer, 5);
 }
 
 void EtherIO::enableEEPROM()
@@ -257,7 +258,7 @@ void EtherIO::enableEEPROM()
 	buffer[2] = 0;
 	buffer[3] = 0xAA;
 	buffer[4] = 0x55;
-	_socket->write(buffer, 5);
+	PollFactory::get(_socket)->write(buffer, 5);
 }
 
 void EtherIO::disableEEPROM()
@@ -269,7 +270,7 @@ void EtherIO::disableEEPROM()
 	buffer[2] = 0;
 	buffer[3] = 0;
 	buffer[4] = 0;
-	_socket->write(buffer, 5);
+	PollFactory::get(_socket)->write(buffer, 5);
 }
 
 void EtherIO::identifyUnit()
@@ -280,8 +281,8 @@ void EtherIO::identifyUnit()
 	buffer[1] = 0x4F;
 	buffer[2] = 0x32;
 	buffer[3] = 0x34;
-	_socket->write(buffer, 4);
-	nBytes = _socket->read(buffer, 12);
+	PollFactory::get(_socket)->write(buffer, 4);
+	nBytes = PollFactory::get(_socket)->read(buffer, 12);
 	std::cout << "reception " << nBytes << " bytes" << std::hex << std::endl;
 	for (s32 i=0; i<nBytes; ++i)
 	{

@@ -3,9 +3,9 @@
 #include "modbustcp.h"
 #include "modbusrtu.h"
 #include "modbusexception.h"
-#include "sockettcp.h"
+#include "sockettcpfifo.h"
 #include "socketexception.h"
-#include "rs232.h"
+#include "rs232fifo.h"
 #include "rs232exception.h"
 #include "log.h"
 #include <sstream>
@@ -55,7 +55,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host)
     {}
     
     // creation de la socket
-    Socket::SocketTcp * tcp = new Socket::SocketTcp();
+    Socket::SocketTcpFifo * tcp = new Socket::SocketTcpFifo();
     if (!tcp)
     {
         throw Modbus::ModbusException(__FILE__, __LINE__, "i can't tcp enough");
@@ -85,7 +85,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
     catch(...)
     {}
     
-    RS232 * serial = new RS232(device);
+    RS232Fifo * serial = new RS232Fifo(device);
     if (!serial)
     {
         throw Modbus::ModbusException(__FILE__, __LINE__, "i can't rtu enough");
@@ -146,17 +146,7 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 
     if (device)
     {
-		int32_t fin = 0;
-		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
-		while (!fin && (it != _codec.end()))
-		{
-			if (device->handler() == it->second->handler())
-			{
-				it->second->actionIn();
-				fin = 1;
-			}
-			it++;
-		}
+		device->actionIn();
     }
 	
 	return 0;
@@ -166,17 +156,7 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 {
     if (device)
     {
-		int32_t fin = 0;
-		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
-		while (!fin && (it != _codec.end()))
-		{
-			if (device->handler() == it->second->handler())
-			{
-				it->second->actionOut();
-				fin = 1;
-			}
-			it++;
-		}
+		device->actionOut();
     }
 
 	return 0;
@@ -184,8 +164,72 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionError(PollDevice* device)
 {
-	if (device)
-		return device->actionError();
+    if (device)
+    {
+		device->actionError();
+    }
+
+	return 0;
+}
+
+int32_t Modbus::ModbusFactory::actionIn()
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+
+    // if (device)
+    // {
+		int32_t fin = 0;
+		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+		while (!fin && (it != _codec.end()))
+		{
+			// if (device->handler() == it->second->handler())
+			// {
+				it->second->actionIn();
+				// fin = 1;
+			// }
+			it++;
+		}
+    // }
+	
+	return 0;
+}
+
+int32_t Modbus::ModbusFactory::actionOut()
+{
+    // if (device)
+    // {
+		int32_t fin = 0;
+		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+		while (!fin && (it != _codec.end()))
+		{
+			// if (device->handler() == it->second->handler())
+			// {
+				it->second->actionOut();
+				// fin = 1;
+			// }
+			it++;
+		}
+    // }
+
+	return 0;
+}
+
+int32_t Modbus::ModbusFactory::actionError()
+{
+    // if (device)
+    // {
+		int32_t fin = 0;
+		std::map<std::string, ModbusChannel *>::iterator it = _codec.begin();
+		while (!fin && (it != _codec.end()))
+		{
+			// if (device->handler() == it->second->handler())
+			// {
+				it->second->actionError();
+				// fin = 1;
+			// }
+			it++;
+		}
+    // }
 
 	return 0;
 }

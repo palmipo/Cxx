@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/rc522.o
+	$(BIN_PWD)/rc522.o
 
 SPI_REP = ../../ctrl/raspberry/spi
 CC = g++
@@ -13,12 +15,12 @@ LDFLAGS = $(LIBS)
 all: test_rfid
 
 clean:
-	rm bin/*.o libspi.so libspidevice.so test_rfid
+	rm $(BIN_PWD)/*.o libspi.so libspidevice.so test_rfid
 
-test_rfid: bin/test_rfid.o libspidevice.so
+test_rfid: $(BIN_PWD)/test_rfid.o libspidevice.so
 	$(CC) -o $@ $< $(LDFLAGS)
 
-bin/test_rfid.o: test/test_rfid.cpp
+$(BIN_PWD)/test_rfid.o: test/test_rfid.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 libspi.so:
@@ -28,5 +30,5 @@ libspi.so:
 libspidevice.so: $(OBJECTS)
 	$(CC) $(CFLAGS) -shared $^ -o $@
 
-bin/rc522.o: src/rc522.cpp
+$(BIN_PWD)/rc522.o: src/rc522.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

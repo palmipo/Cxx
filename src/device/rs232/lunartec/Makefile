@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/lunartec.o
+	$(BIN_PWD)/lunartec.o
 
 LOG_PWD = ../../../ctrl/raspberry/log
 POLL_PWD = ../../../ctrl/raspberry/factory
@@ -15,16 +17,16 @@ LDFLAGS = $(LIBS)
 all: lunartec
 
 clean:
-	rm bin/*.o liblunartec.so librs232.so lunartec
+	rm $(BIN_PWD)/*.o liblunartec.so librs232.so lunartec
 
-lunartec: bin/test_lunartec.o
+lunartec: $(BIN_PWD)/test_lunartec.o
 	$(MAKE) liblunartec.so
 	$(MAKE) librs232.so
 	$(MAKE) libpoll.so
 	$(MAKE) liblog.so
 	$(CC) $< -o $@  $(LDFLAGS)
 	
-bin/test_lunartec.o: test/test_lunartec.cpp
+$(BIN_PWD)/test_lunartec.o: test/test_lunartec.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 liblog.so:
@@ -42,5 +44,5 @@ librs232.so:
 liblunartec.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

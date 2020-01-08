@@ -1,8 +1,14 @@
+BIN_PWD = bin/$(HOSTNAME)
+
+OBJECTS = \
+	$(BIN_PWD)/device.o
+
 LOG_PWD = ../src/ctrl/raspberry/log
 MAKE = make
+MKDIR = mkdir -p
 CC = g++
-INCLUDE = -Isrc -I$(LOG_PWD)/src
-LIBS = -L. -llog
+INCLUDE = -Isrc
+LIBS = -L.
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -10,25 +16,38 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f bin/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
-test_callback: bin/test_callback.o
+test_callback: $(BIN_PWD)/test_callback.o
 	$(MAKE) liblog.so
-	$(CC) -o $@ $^ $(LIBS)
+	$(MAKE) libutil.so
+	$(CC) -o $@ $^ $(LIBS) -llog
 
-test_callback.exe: bin/test_callback.o
+test_callback.exe: $(BIN_PWD)/test_callback.o
 	$(MAKE) liblog.dll
-	$(CC) -o $@ $^ $(LIBS)
+	$(MAKE) libutil.dll
+	$(CC) -o $@ $^ $(LIBS) -llog
 
-bin/test_callback.o: test/test_callback.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
+$(BIN_PWD)/test_callback.o: test/test_callback.cpp
+	$(CC) $(CFLAGS) -I$(LOG_PWD)/src -c $^ -o $@
 
 # LINUX
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
+
+libutil.so: $(OBJECTS)
+	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 # WINDOWS
 liblog.dll:
-	$(MAKE) -C ../log $@
-	cp ../log/$@ .
+	$(MAKE) -C $(LOG_PWD) $@
+	cp $(LOG_PWD)/$@ .
+
+libutil.dll: $(OBJECTS)
+	$(CC) -shared $^ -o $@ $(LDFLAGS)
+
+# GLOBAL
+$(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -DMAKE_UTIL_DLL -c $^ -o $@

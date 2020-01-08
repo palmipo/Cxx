@@ -36,9 +36,9 @@ namespace Socket
 			virtual void delTcp(const std::string &, uint16_t);
 
 		protected:
-			virtual int32_t actionIn(PollDevice*);
-			virtual int32_t actionOut(PollDevice*);
-			virtual int32_t actionError(PollDevice*);
+			virtual int32_t actionIn(PollDevice*) = 0;
+			virtual int32_t actionOut(PollDevice*) = 0;
+			virtual int32_t actionError(PollDevice*) = 0;
 
 			// ip:port => handler
 			std::map < std::pair < std::string, uint16_t > , int32_t > _hosts;

@@ -7,6 +7,7 @@
 #include "pollexception.h"
 #include "rs232exception.h"
 #include "log.h"
+#include <sstream>
 #include <thread>
 
 static void scrute(Modbus::ModbusFactory * factory, int32_t * fin)
@@ -19,6 +20,14 @@ static void scrute(Modbus::ModbusFactory * factory, int32_t * fin)
 
 int main(int argc, char ** argv)
 {
+	if (argc != 2)
+	{
+		std::stringstream ss;
+		ss << argv[0] << " <COMx>";
+		Log::getLogger()->error(__FILE__, __LINE__, ss.str());
+		return -1;
+	}
+
 	int32_t fin = 0;
 	Modbus::ModbusFactory factory;
 	std::thread t(scrute, &factory, &fin);
@@ -33,9 +42,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC03 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegisterAddr(0xFFDB, 1);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 			if (msg.slaveAddress() != 2)
 			{
 				Log::getLogger()->debug(__FILE__, __LINE__, "erreur reception Modbus !");
@@ -52,9 +59,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC06 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegister(0x5DC, 0x5450);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 		}
 		
 		{
@@ -62,9 +67,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC06 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegister(0xFFDA, 0x2);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 		}
 
 		{
@@ -72,9 +75,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC03 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegisterAddr(0xFFDB, 1);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 			if (0x5 != msg.getRegister(0xFFDB))
 			{
 				Log::getLogger()->debug(__FILE__, __LINE__, "erreur drive mauvais mode !");
@@ -86,9 +87,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC06 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegister(0x5DC, 0x5450);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 		}
 	
 		{
@@ -96,9 +95,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC06 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegister(0xFFDA, 0x3);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 		}
 
 		{
@@ -106,9 +103,7 @@ int main(int argc, char ** argv)
 			Modbus::ModbusMsgFC03 msg;
 			msg.setSlaveAddress(2);
 			msg.setRegisterAddr(0xFFDB, 1);
-			msg.encodeQuestion();
 			channel->sendFC(&msg);
-			msg.decodeResponse();
 			if (0x4 != msg.getRegister(0xFFDB))
 			{
 				Log::getLogger()->debug(__FILE__, __LINE__, "erreur drive mauvais mode !");

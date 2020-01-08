@@ -1,8 +1,6 @@
 #ifndef ETHERIO_H
 #define ETHERIO_H
 
-#include "batratypes.h"
-#include "pia.h"
 #include <string>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -11,7 +9,7 @@ namespace Socket
 {
 	class SocketUdp;
 }
-class EtherIO : public PollDevice
+class EtherIO : public PollFactory
 {
 public:
 	EtherIO(Socket::SocketUdp *);
@@ -44,7 +42,7 @@ public:
 	virtual void disableEEPROM();
 
 protected:
-	Socket::SocketUdp * _socket;
+	int32_t _socket;
 };
 
 #endif /* ETERHIO_H */

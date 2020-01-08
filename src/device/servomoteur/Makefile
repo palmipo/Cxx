@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/sg90.o
+	$(BIN_PWD)/sg90.o
 
 I2C_PWD = ../../ctrl/raspberry/i2c
 USBI2C_PWD = ../../ctrl/usb_i2c
@@ -15,18 +17,18 @@ LDFLAGS = $(LIBS)
 all: raspi_servomoteur
 
 clean:
-	rm bin/*.o libservomoteur.so libraspii2c.so raspi_servomoteur test_servomoteur
+	rm $(BIN_PWD)/*.o libservomoteur.so libraspii2c.so raspi_servomoteur test_servomoteur
 
-test_servomoteur: bin/test_servomoteur.o libservomoteur.so libi2cdevice.so libusbi2c.so librs232.so
+test_servomoteur: $(BIN_PWD)/test_servomoteur.o libservomoteur.so libi2cdevice.so libusbi2c.so librs232.so
 	$(CC) $< -o $@ -lusbi2c -lrs232 $(LDFLAGS)
 	
-bin/test_servomoteur.o: test/test_servomoteur.cpp
+$(BIN_PWD)/test_servomoteur.o: test/test_servomoteur.cpp
 	$(CC) $(CFLAGS) -DUSBI2C -c $^ -o $@
 
-raspi_servomoteur: bin/raspi_servomoteur.o libservomoteur.so libi2cdevice.so libraspii2c.so
+raspi_servomoteur: $(BIN_PWD)/raspi_servomoteur.o libservomoteur.so libi2cdevice.so libraspii2c.so
 	$(CC) $< -o $@ -lraspii2c $(LDFLAGS)
 	
-bin/raspi_servomoteur.o: test/test_servomoteur.cpp
+$(BIN_PWD)/raspi_servomoteur.o: test/test_servomoteur.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 librs232.so:
@@ -48,5 +50,5 @@ libi2cdevice.so:
 libservomoteur.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/sg90.o: src/sg90.cpp
+$(BIN_PWD)/sg90.o: src/sg90.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

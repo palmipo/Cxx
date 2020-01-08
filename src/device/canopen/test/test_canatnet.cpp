@@ -1,72 +1,52 @@
 #include "ixxatcanatnet.h"
-#include "ixxatfactory.h"
+#include "canopenfactory.h"
 #include "canopen.h"
+#include "canopensdo.h"
+#include "log.h"
 #include <thread>
 #include <mutex>
-#include <log4cxx/logger.h>
-#include <log4cxx/basicconfigurator.h>
-#include <log4cxx/helpers/exception.h>
 #include <poll.h>
-bool fin = false;
+#include <sstream>
 
-void scrute(Ixxat::Factory * ixxat)
+void scrute(CAN::CANOpenFactory * ixxat, int32_t * fin)
 {
-	log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("ixxat"));
-
-	while (!fin)
+	while (! *fin)
 	{
+		Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
 		ixxat->scrute(1000);
-		LOG4CXX_DEBUG(logger, "scrute !!!");
 	}
+	Log::getLogger()->debug(__FILE__, __LINE__, "fin thread secondaire");
 }
 
 int main(int argc, char ** argv)
 {
- 	log4cxx::BasicConfigurator::configure();
-	log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger("main"));
-
-	fin = false;
+	int32_t fin = 0;
+	CAN::CANOpenFactory factory;
+	std::thread t(scrute, &factory, &fin);
 	try
 	{
-		Ixxat::Factory factory;
+		CAN::CANOpen * canopen = factory.canAtNet(5, "192.168.1.207");
+		std::this_thread::sleep_for(std::chrono::seconds(60));
 
-		std::thread t(scrute, &factory);
-		t.detach();
-
-		Ixxat::CanAtNet * bus = factory.canAtNet("192.168.1.207", 19227);
-		// factory.scrute(1000);
-		// factory.scrute(1000);
-
-		CAN::CANOpen canopen(bus);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-
-		LOG4CXX_DEBUG(logger, "DEBUT TEMPO !!!");
-		canopen.write(0xC, 0x5, 0x1018, 0x03, 0, 0);
+		canopen->sdo()->writeDictionary(0x1018, 0x03, 0, 0);
 		std::this_thread::sleep_for(std::chrono::seconds(10));
-		LOG4CXX_DEBUG(logger, "FIN TEMPO !!!");
-		// factory.scrute(1000);
-		// factory.scrute(1000);
-		// factory.scrute(1000);
 		
 		int32_t len = 0;
-		uint8_t pdo;
-		uint8_t node_id;
-		uint16_t index;
-		uint8_t subindex;
+		uint16_t index = 0;
+		uint8_t subindex = 0;
 		uint8_t msg[4];
-		// do
-		// {
-			len = canopen.read(&pdo, &node_id, &index, &subindex, msg, 4);
-			LOG4CXX_DEBUG(logger, "read : " << len << " " << std::hex << (int)pdo << " " << (int)node_id << " " << (int)index << " " << (int)subindex);
-			len = canopen.read(&pdo, &node_id, &index, &subindex, msg, 4);
-			LOG4CXX_DEBUG(logger, "read : " << len << " " << (int)pdo << " " << (int)node_id << " " << (int)index << " " << (int)subindex);
-		// } while (len);
-		fin = true;
+		
+		std::stringstream ss;
+		len = canopen->sdo()->readDictionary(index, subindex, msg, 4);
+		ss << "read : " << len << " " << std::hex << " " << (int)index << " " << (int)subindex;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	}
 	catch(...)
 	{
-		LOG4CXX_ERROR(logger, "exception !!!");
+		Log::getLogger()->debug(__FILE__, __LINE__, "exception !!!");
 	}
+	fin = 1;
+	t.join();
 
 	return 0;
 }

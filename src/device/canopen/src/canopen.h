@@ -1,7 +1,7 @@
 #ifndef CANOPEN_H
 #define CANOPEN_H
 
-#include "towerdevice.h"
+#include "device.h"
 #include <map>
 
 #define MNT_ID 0
@@ -29,10 +29,10 @@ namespace CAN
 	class CANOpenFifo;
 	class CANOpenBuffer;
 	class CANOpenStateMachine;
-	class CANOpen : public TowerDevice
+	class CANOpen : public Device
 	{
 		public:
-			CANOpen(uint16_t, CAN::Bus *, PollDevice *);
+			CANOpen(uint16_t, CAN::Bus *);
 			virtual ~CANOpen();
 
 			virtual CANOpenNMT  * nmt();
@@ -44,12 +44,12 @@ namespace CAN
 			virtual int32_t writeData(CANOpenBuffer *);
 			virtual int32_t readData(CANOpenBuffer *);
 
-			virtual int32_t actionIn(uint8_t *, int32_t);
-			virtual int32_t actionOut(uint8_t *, int32_t);
-			virtual int32_t actionError(uint8_t *, int32_t);
+			virtual int32_t actionIn();
+			virtual int32_t actionOut();
+			virtual int32_t actionError();
 
-		protected:
-			virtual PollDevice * get(uint8_t);
+		// protected:
+			// virtual PollDevice * get(uint8_t);
 
 		protected:
 			uint16_t _node_id;

@@ -7,7 +7,7 @@
 #include <poll.h>
 #include <mutex>
 
-#if defined __MINGW32__ ||  defined __CYGWIN__
+#ifdef  __CYGWIN__
 #ifdef MAKE_POLL_FACTORY_DLL
 #define POLL_FACTORY_DLL __declspec(dllexport)
 #else
@@ -28,6 +28,7 @@ class POLL_FACTORY_DLL PollFactory
 		virtual PollDevice* get(int32_t);
 		virtual void del(int32_t);
 
+		//!\ sous windows POLLOUT gene le POLLIN
 		virtual int32_t scrute(int32_t, int32_t=1, int32_t=0, int32_t=1);
 
 		virtual int32_t actionIn(PollDevice*) = 0;

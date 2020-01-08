@@ -1,6 +1,8 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/sabertooth.o \
-	bin/moteurcc.o
+	$(BIN_PWD)/sabertooth.o \
+	$(BIN_PWD)/moteurcc.o
 
 RS232_PWD = ../../../ctrl/raspberry/rs232
 JOYSTICK_PWD = ../../../ctrl/raspberry/joystick
@@ -16,7 +18,7 @@ all: libsabertooth.so librs232.so
 	echo "library libsabertooth.so"
 
 clean:
-	rm bin/*.o libsabertooth.so librs232.so libjoystick.so test_sabertooth
+	rm $(BIN_PWD)/*.o libsabertooth.so librs232.so libjoystick.so test_sabertooth
 
 librs232.so:
 	$(MAKE) -C $(RS232_PWD)
@@ -29,14 +31,14 @@ libjoystick.so:
 libsabertooth.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/sabertooth.o: src/sabertooth.cpp
+$(BIN_PWD)/sabertooth.o: src/sabertooth.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-bin/moteurcc.o: src/moteurcc.cpp
+$(BIN_PWD)/moteurcc.o: src/moteurcc.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-test_sabertooth: bin/test_sabertooth.o libsabertooth.so librs232.so libjoystick.so
+test_sabertooth: $(BIN_PWD)/test_sabertooth.o libsabertooth.so librs232.so libjoystick.so
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-bin/test_sabertooth.o: test/test_sabertooth.cpp
+$(BIN_PWD)/test_sabertooth.o: test/test_sabertooth.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

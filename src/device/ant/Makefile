@@ -1,16 +1,18 @@
-OBJECTS = \
-	bin/ant.o \
-	bin/antfactory.o \
-	bin/antprofile.o \
-	bin/antprofilecallback.o \
-	bin/antprofilesend.o \
-	bin/antslave.o \
-	bin/anthr.o \
-	bin/antspeedcadence.o \
-	bin/anttempe.o
+BIN_PWD = bin/$(HOSTNAME)
 
-#	bin/antmaster.o \
-#	bin/antctrl.o \
+OBJECTS = \
+	$(BIN_PWD)/ant.o \
+	$(BIN_PWD)/antfactory.o \
+	$(BIN_PWD)/antprofile.o \
+	$(BIN_PWD)/antprofilecallback.o \
+	$(BIN_PWD)/antprofilesend.o \
+	$(BIN_PWD)/antslave.o \
+	$(BIN_PWD)/anthr.o \
+	$(BIN_PWD)/antspeedcadence.o \
+	$(BIN_PWD)/anttempe.o
+
+#	$(BIN_PWD)/antmaster.o \
+#	$(BIN_PWD)/antctrl.o \
 
 LOG_REP = ../../ctrl/raspberry/log
 POLL_REP = ../../ctrl/raspberry/poll
@@ -29,12 +31,12 @@ clean:
 	make -C $(LOG_REP) clean
 	make -C $(POLL_REP) clean
 	make -C $(RS232_REP) clean
-	rm -f bin/*.o libant.so librs232.so test_ant
+	rm -f $(BIN_PWD)/*.o libant.so librs232.so test_ant
 
-test_ant: bin/test_ant.o libant.so librs232.so libpoll.so liblog.so
+test_ant: $(BIN_PWD)/test_ant.o libant.so librs232.so libpoll.so liblog.so
 	$(CC) $< -o $@ $(LDFLAGS)
 
-bin/test_ant.o: test/test_ant.cpp
+$(BIN_PWD)/test_ant.o: test/test_ant.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 liblog.so:
@@ -52,5 +54,5 @@ librs232.so:
 libant.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

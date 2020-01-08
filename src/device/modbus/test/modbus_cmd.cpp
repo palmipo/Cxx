@@ -9,7 +9,7 @@
 #include <sstream>
 
 
-static void * thread_start(Modbus::ModbusFactory * factory, int32_t * fin)
+void * thread_poll_start(Modbus::ModbusFactory * factory, int32_t * fin)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread");
 
@@ -17,7 +17,40 @@ static void * thread_start(Modbus::ModbusFactory * factory, int32_t * fin)
 	{
 		try
 		{
-			factory->scrute(1000, 1, 1, 1);
+			factory->scrute(1000);
+		}
+		catch(Modbus::ModbusException e)
+		{
+			std::stringstream ss;
+			ss << "thread exception " << e.what();
+			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		}
+		catch(PollException e)
+		{
+			std::stringstream ss;
+			ss << "thread exception " << e.what();
+			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		}
+		catch(...)
+		{
+			Log::getLogger()->debug(__FILE__, __LINE__, "thread exception");
+		}
+	}
+
+	Log::getLogger()->debug(__FILE__, __LINE__, "FIN thread");
+}
+
+void * thread_action_start(Modbus::ModbusFactory * factory, int32_t * fin)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread");
+
+	while(! *fin)
+	{
+		try
+		{
+			factory->actionOut();
+			factory->actionIn();
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
 		catch(Modbus::ModbusException e)
 		{
@@ -52,19 +85,18 @@ int main(int argc, char **argv)
 	int32_t fin = 0;
 	Modbus::ModbusFactory factory;
 
-	std::thread t1(thread_start, &factory, &fin);
+	std::thread t1(thread_poll_start, &factory, &fin);
+	std::thread t2(thread_action_start, &factory, &fin);
 
 	try
 	{
-		Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.tcp(argv[1]);
-		//~ Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.rtu(argv[1], 19200, 1, 1);
+		// Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.tcp(argv[1]);
+		Modbus::ModbusChannel * sock1 = (Modbus::ModbusChannel *)factory.rtu(argv[1], 19200, 1, 1);
 
 		Modbus::ModbusMsgFC03 msg1;
 		msg1.setSlaveAddress(0xF8);
 		msg1.setRegisterAddr(0xCA8, 1);
-		msg1.encodeQuestion();
 		sock1->sendFC(&msg1);
-		msg1.decodeResponse();
 		std::stringstream ss;
 		ss << "slave addr : " << (int)msg1.slaveAddress();
 		ss << " fonction code : " << (int)msg1.functionCode();
@@ -92,6 +124,7 @@ int main(int argc, char **argv)
 	// arret du thread secondaire
 	fin = 1;
 	t1.join();
+	t2.join();
 
 	return 0;
 }

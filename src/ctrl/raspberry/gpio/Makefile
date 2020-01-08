@@ -1,13 +1,17 @@
-OBJECTS = \
-	bin/gpio.o \
-	bin/gpiofifo.o \
-	bin/gpioevent.o \
-	bin/gpiofactory.o
+BIN_PWD = bin/$(HOSTNAME)
 
+OBJECTS = \
+	$(BIN_PWD)/gpio.o \
+	$(BIN_PWD)/gpiofifo.o \
+	$(BIN_PWD)/gpioevent.o \
+	$(BIN_PWD)/gpiofactory.o
+
+MKDIR = mkdir -p
 MAKE = make
 CC = g++
+LOG_PWD = ../log
 POLL_PWD = ../poll
-INCLUDE = -I$(POLL_PWD)/src -I../log/src -Isrc
+INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc
 LIBS = -L. -lpoll -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
@@ -16,23 +20,21 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	$(MAKE) -C ../log $@
-	$(MAKE) -C $(POLL_PWD) $@
-	rm -f bin/*.o *.so *.dll out
+	rm -f $(BIN_PWD)/*.o *.so *.dll out
 
-out: bin/out.o
+out: $(BIN_PWD)/out.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libgpio.so
 	$(CC) -o $@ $< -L. $(LDFLAGS) -lgpio
 
-bin/out.o: test/out.cpp
+$(BIN_PWD)/out.o: test/out.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 # LINUX
 liblog.so:
-	$(MAKE) -C ../log $@
-	ln -s ../log/$@
+	$(MAKE) -C $(LOG_PWD) $@
+	ln -s $(LOG_PWD)/$@
 
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
@@ -44,5 +46,6 @@ libgpio.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # GLOBAL
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@

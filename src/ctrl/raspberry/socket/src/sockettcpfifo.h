@@ -22,11 +22,14 @@ namespace Socket
 		public:
 			SocketTcpFifo();
 
-			virtual int32_t read(uint8_t *, int32_t, int32_t = 10, int32_t = 1000);
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 			virtual int32_t actionIn();
+			virtual int32_t actionOut();
 		
 		protected:
-			std::queue < SocketBuffer > _fifo;
+			std::queue < SocketBuffer > _fifo_in;
+			std::queue < SocketBuffer > _fifo_out;
 	};
 }
 

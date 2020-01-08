@@ -13,6 +13,7 @@ const int32_t GAUCHE_PIN = 24;
 const int32_t FIN_PIN = 9;
 const int32_t DATA_PIN = 7;
 const int32_t WRITE_PIN = 11;
+//const int32_t CS_PIN[NB_MATRIX] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
 const int32_t CS_PIN[NB_MATRIX] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
 
 class HC1632;

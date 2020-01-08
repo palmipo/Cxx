@@ -1,4 +1,6 @@
 *.o
 *.txt
 *.so
+*.dll
+*.exe
 bin/

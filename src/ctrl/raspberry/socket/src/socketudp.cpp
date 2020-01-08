@@ -22,7 +22,7 @@ Socket::SocketUdp::SocketUdp()
 }
 
 /* constructeur socket listen */
-Socket::SocketUdp::SocketUdp(const std::string & addr, s16 port)
+Socket::SocketUdp::SocketUdp(const std::string & addr, int16_t port)
 : Socket::SocketBase(addr, port)
 {
 	if ((_handler = ::socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -54,7 +54,19 @@ Socket::SocketUdp::~SocketUdp()
 	::close(_handler);
 }
 
-void Socket::SocketUdp::connexion(const std::string & addr, s16 port)
+void Socket::SocketUdp::broadcast(int32_t broadcastEnable, int16_t port)
+{
+	int32_t ret = setsockopt(_handler, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+
+    memset(&_st_sockaddr_in, 0, sizeof(struct sockaddr_in));
+    _st_sockaddr_in.sin_family = AF_INET;
+	_st_sockaddr_in.sin_port = ::htons(port);
+    _st_sockaddr_in.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+
+	return ret;
+}
+
+void Socket::SocketUdp::connexion(const std::string & addr, int16_t port)
 {
 	memset(&_st_sockaddr_in, 0, sizeof(struct sockaddr_in));
 
@@ -67,10 +79,9 @@ void Socket::SocketUdp::connexion(const std::string & addr, s16 port)
 	}
 }
 
-s32 Socket::SocketUdp::write(u8 * msg, s32 length)
+int32_t Socket::SocketUdp::write(uint8_t * msg, int32_t length)
 {
-
-	s32 len = ::sendto(_handler, msg, length, 0, (const struct sockaddr *) &_st_sockaddr_in, (socklen_t) sizeof(struct sockaddr_in));
+	int32_t len = ::sendto(_handler, msg, length, 0, (const struct sockaddr *) &_st_sockaddr_in, (socklen_t) sizeof(struct sockaddr_in));
 	if (len < 0)
 	{
 		std::cerr << __FILE__ << __LINE__ << std::endl;
@@ -80,11 +91,11 @@ s32 Socket::SocketUdp::write(u8 * msg, s32 length)
 	return len;
 }
 
-s32 Socket::SocketUdp::read(u8 * msg, s32 length)
+int32_t Socket::SocketUdp::read(uint8_t * msg, int32_t length)
 {
 	socklen_t st_sockaddr_in_len;
 	struct sockaddr st_sockaddr_in;
-	s32 len = ::recvfrom(_handler, msg, length, 0, &st_sockaddr_in, &st_sockaddr_in_len);
+	int32_t len = ::recvfrom(_handler, msg, length, 0, &st_sockaddr_in, &st_sockaddr_in_len);
 	if (len < 0)
 	{
 		std::cerr << __FILE__ << __LINE__ << std::endl;

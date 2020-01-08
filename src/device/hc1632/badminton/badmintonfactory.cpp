@@ -62,16 +62,16 @@ BatmintonFactory::BatmintonFactory(const std::string & device)
 	_matrix = new HC1632(_data, _write, _cs_vector);
 
 	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
-	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
-	_matrix->write_led_buffer(4, tiret, NB_POINT);
-	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
-	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
+//	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
+//	_matrix->write_led_buffer(4, tiret, NB_POINT);
+//	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
+//	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
 
-	_matrix->write_led_buffer(1, terrain[0], NB_POINT);
-	_matrix->write_led_buffer(3, terrain[1], NB_POINT);
-	_matrix->write_led_buffer(5, terrain[2], NB_POINT);
-	_matrix->write_led_buffer(7, terrain[3], NB_POINT);
-	_matrix->write_led_buffer(9, terrain[4], NB_POINT);
+//	_matrix->write_led_buffer(1, terrain[0], NB_POINT);
+//	_matrix->write_led_buffer(3, terrain[1], NB_POINT);
+//	_matrix->write_led_buffer(5, terrain[2], NB_POINT);
+//	_matrix->write_led_buffer(7, terrain[3], NB_POINT);
+//	_matrix->write_led_buffer(9, terrain[4], NB_POINT);
 
 	_last_valid_irq = std::chrono::high_resolution_clock::now();
 
@@ -159,8 +159,8 @@ int32_t BatmintonFactory::actionError(PollDevice * device)
 void BatmintonFactory::majAffichage()
 {
 	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
-	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
-	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
-	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
+//	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
+//	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
+//	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
 	_status = 0;
 }

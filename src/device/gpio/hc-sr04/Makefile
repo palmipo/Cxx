@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/hc_sr04.o
+	$(BIN_PWD)/hc_sr04.o
 
 POLL_PWD = ../../../ctrl/raspberry/poll
 LOG_PWD = ../../../ctrl/raspberry/log
@@ -20,18 +22,18 @@ clean:
 	$(MAKE) -C $(LOG_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(GPIO_PWD) $@
-	rm -f bin/*.o *.so
+	rm -f $(BIN_PWD)/*.o *.so
 
 #
 #
-telemetre: bin/test_telemetre.o
+telemetre: $(BIN_PWD)/test_telemetre.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libgpio.so
 	$(MAKE) libhcsr04.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lhcsr04
 
-bin/test_telemetre.o: test/test_telemetre.cpp
+$(BIN_PWD)/test_telemetre.o: test/test_telemetre.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
@@ -59,6 +61,6 @@ libhcsr04.so: $(OBJECTS)
 
 #
 #
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 

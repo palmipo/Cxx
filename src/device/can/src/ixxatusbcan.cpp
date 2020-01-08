@@ -1,4 +1,5 @@
 #include "ixxatusbcan.h"
+#include "canbuffer.h"
 #include "canexception.h"
 #include <sys/ioctl.h>
 #include <net/if.h>
@@ -14,8 +15,8 @@
 #include <unistd.h>
 
 /* constructeur socket client */
-Ixxat::UsbCan::UsbCan(uint16_t cob_id, PollDevice * device)
-: CAN::Bus(cob_id, device)
+Ixxat::UsbCan::UsbCan(PollDevice * device)
+: CAN::Bus(device)
 {}
 
 Ixxat::UsbCan::~UsbCan()
@@ -43,7 +44,7 @@ int32_t Ixxat::UsbCan::writeData(uint16_t node_id, uint8_t * msg, int32_t length
 #endif
 }
 
-int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data_length, int32_t max_retry, int32_t timeout)
+int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data_length)
 {
 	if (_fifo.empty())
 	{
@@ -59,30 +60,40 @@ int32_t Ixxat::UsbCan::readData(uint16_t * node_id, uint8_t * data, int32_t data
 	return len;
 }
 
-int32_t Ixxat::UsbCan::actionError(uint8_t *, int32_t)
+int32_t Ixxat::UsbCan::write(uint8_t * data, int32_t len)
+{
+	return _device->write(data, len);
+}
+
+int32_t Ixxat::UsbCan::read(uint8_t * data, int32_t len)
+{
+	return _device->read(data, len);
+}
+
+int32_t Ixxat::UsbCan::actionError()
 {
 	return 0;
 }
 
-int32_t Ixxat::UsbCan::actionIn(uint8_t * data, int32_t len)
+int32_t Ixxat::UsbCan::actionIn()
 {
 #if defined __MINGW64__ || defined __MINGW32__ || defined __CYGWIN__
 #else
 	struct can_frame frame;
-	memcpy(&frame, data, len);
+	_device->read((uint8_t*)&frame, sizeof(struct can_frame));
 
 	CAN::CANBuffer * buffer = new CAN::CANBuffer();
 	buffer->cob_id = frame.can_id;
 	buffer->write(frame.data, frame.can_dlc);
 	_fifo.push(buffer);
 
-	len = frame.can_dlc;
+	int32_t len = frame.can_dlc;
 
 	return len;
 #endif
 }
 
-int32_t Ixxat::UsbCan::actionOut(uint8_t *, int32_t)
+int32_t Ixxat::UsbCan::actionOut()
 {
 	return 0;
 }

@@ -1,5 +1,7 @@
+BIN_PWD = bin/$(HOSTNAME)
+
 OBJECTS = \
-	bin/ada1334.o
+	$(BIN_PWD)/ada1334.o
 
 LOG_PWD = ../../ctrl/raspberry/log
 POLL_PWD = ../../ctrl/raspberry/factory
@@ -25,11 +27,11 @@ clean:
 	$(MAKE) -C $(I2C_PWD) $@
 	$(MAKE) -C $(I2CDEV_PWD) $@
 	$(MAKE) -C $(GPIO_PWD) $@
-	rm -f bin/*.o *.so lumiere
+	rm -f $(BIN_PWD)/*.o *.so lumiere
 
 #
 ##
-lumiere: bin/lumiere.o
+lumiere: $(BIN_PWD)/lumiere.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) libraspii2c.so
@@ -38,7 +40,7 @@ lumiere: bin/lumiere.o
 	$(MAKE) libada1334.so
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-bin/lumiere.o: test/lumiere.cpp
+$(BIN_PWD)/lumiere.o: test/lumiere.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
@@ -78,5 +80,5 @@ libada1334.so: $(OBJECTS)
 
 #
 #
-bin/%.o: src/%.cpp
+$(BIN_PWD)/%.o: src/%.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

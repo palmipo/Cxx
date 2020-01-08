@@ -1,18 +1,17 @@
 #include "socketfactory.h"
 #include "sockettcp.h"
 #include "socketexception.h"
-#include <log4cxx/logger.h>
-#include <log4cxx/basicconfigurator.h>
-#include <log4cxx/helpers/exception.h>
+#include "log.h"
+#include <sstream>
 
 int main(int argc, char **argv)
 {
-	log4cxx::BasicConfigurator::configure();
-	log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger( "main"));
-
 	if (argc != 2)
 	{
-		LOG4CXX_ERROR(logger, argv[0] << " <ip>");
+		std::stringstream ss;
+		ss << argv[0] << " <ip>";
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		return -1;
 	}
 
 	try
@@ -21,21 +20,21 @@ int main(int argc, char **argv)
 		Socket::SocketTcp * sock = (Socket::SocketTcp *)factory.addTcpConnection(argv[1], 502);
 		if (sock)
 		{
-			u8 msg[] = {0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0xF8, 0x10, 0x00, 0x01, 0x02, 0x00, 0xFF};
+			uint8_t msg[] = {0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0xF8, 0x10, 0x00, 0x01, 0x02, 0x00, 0xFF};
 
-			s32 len = sock->write(msg, 13);
+			int32_t len = sock->write(msg, 13);
 			factory.scrute(10000);
-			u8 rep[100];
+			uint8_t rep[100];
 			len = sock->read(rep, 100);
 		}
 	}
 	catch(Socket::SocketException e)
 	{
-		LOG4CXX_ERROR(logger, "exception " << e.what());
+		Log::getLogger()->debug(__FILE__, __LINE__, e.what());
 	}
 	catch(...)
 	{
-		LOG4CXX_ERROR(logger, "exception.");
+		Log::getLogger()->debug(__FILE__, __LINE__, "exception.");
 	}
 
 	return 0;
