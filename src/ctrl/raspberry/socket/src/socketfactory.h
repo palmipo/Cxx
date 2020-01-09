@@ -40,7 +40,7 @@ namespace Socket
 			virtual int32_t actionOut(PollDevice*) = 0;
 			virtual int32_t actionError(PollDevice*) = 0;
 
-			// ip:port => handler
+			/* ip:port => handler */
 			std::map < std::pair < std::string, uint16_t > , int32_t > _hosts;
 	};
 }

@@ -215,3 +215,18 @@ int32_t Socket::SocketTcp::getInterCharacterTimer()
 	
 	return sttimeout.tv_sec;
 }
+
+int32_t Socket::SocketTcp::actionIn()
+{
+	return 0;
+}
+
+int32_t Socket::SocketTcp::actionOut()
+{
+	return 0;
+}
+
+int32_t Socket::SocketTcp::actionError()
+{
+	return 0;
+}

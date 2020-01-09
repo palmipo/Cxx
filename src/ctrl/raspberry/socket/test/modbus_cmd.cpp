@@ -4,6 +4,22 @@
 #include "log.h"
 #include <sstream>
 
+class Factory : public Socket::SocketFactory
+{
+	public:
+		Factory()
+		{}
+
+		virtual int32_t actionIn(PollDevice * device)
+		{}
+
+		virtual int32_t actionOut(PollDevice * device)
+		{}
+
+		virtual int32_t actionError(PollDevice * device)
+		{}
+};
+
 int main(int argc, char **argv)
 {
 	if (argc != 2)
@@ -16,7 +32,7 @@ int main(int argc, char **argv)
 
 	try
 	{
-		Socket::SocketFactory factory;
+		Factory factory;
 		Socket::SocketTcp * sock = (Socket::SocketTcp *)factory.addTcpConnection(argv[1], 502);
 		if (sock)
 		{

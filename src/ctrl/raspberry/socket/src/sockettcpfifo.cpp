@@ -56,8 +56,8 @@ int32_t Socket::SocketTcpFifo::actionOut()
 	SocketBuffer buffer = _fifo_out.front();
 	_fifo_out.pop();
 
-	len = buffer.read(msg, length);
-
+	uint8_t msg[512];
+	int32_t length = buffer.read(msg, 512);
     int32_t len = Socket::SocketTcp::write(msg, length);
 
     return len;
