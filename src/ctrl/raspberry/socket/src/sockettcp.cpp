@@ -215,24 +215,3 @@ int32_t Socket::SocketTcp::getInterCharacterTimer()
 	
 	return sttimeout.tv_sec;
 }
-
-int32_t Socket::SocketTcp::actionError()
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
-
-	return 0;
-}
-
-int32_t Socket::SocketTcp::actionIn()
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
-
-	return 0;
-}
-
-int32_t Socket::SocketTcp::actionOut()
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
-
-	return 0;
-}

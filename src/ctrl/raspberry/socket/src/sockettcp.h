@@ -30,10 +30,6 @@ namespace Socket
 
 			virtual int32_t write(uint8_t *, int32_t);
 			virtual int32_t read(uint8_t *, int32_t);
-
-			virtual int32_t actionIn();
-			virtual int32_t actionOut();
-			virtual int32_t actionError();
 	};
 }
 
