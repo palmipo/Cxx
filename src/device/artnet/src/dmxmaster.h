@@ -3,12 +3,13 @@
 
 namespace Dmx
 {
-class Master
-{
-	public:
-		Master(Socket::SocketUdp*);
-		
-		virtual Dmx::Slave * addSlave(uint8_t, uint8_t);
-};
+	class Master
+	{
+		public:
+			Master(Socket::SocketUdp*);
+			
+			virtual Dmx::Slave * addSlave(uint8_t, uint8_t);
+	};
+}
 
 #endif

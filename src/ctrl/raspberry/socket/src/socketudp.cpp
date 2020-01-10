@@ -16,8 +16,7 @@ Socket::SocketUdp::SocketUdp()
 {
 	if ((_handler = ::socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 }
 
@@ -27,8 +26,7 @@ Socket::SocketUdp::SocketUdp(const std::string & addr, int16_t port)
 {
 	if ((_handler = ::socket(AF_INET, SOCK_DGRAM, 0)) < 0)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 
 	::memset(&_st_sockaddr_in, 0, sizeof(struct sockaddr_in));
@@ -37,14 +35,12 @@ Socket::SocketUdp::SocketUdp(const std::string & addr, int16_t port)
 	_st_sockaddr_in.sin_port = ::htons(port);
 	if (::inet_aton(addr.c_str(), &_st_sockaddr_in.sin_addr) != 1)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 
 	if (::bind(_handler, (struct sockaddr *) &_st_sockaddr_in, sizeof(struct sockaddr_in)) < 0)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 }
 
@@ -54,16 +50,23 @@ Socket::SocketUdp::~SocketUdp()
 	::close(_handler);
 }
 
-void Socket::SocketUdp::broadcast(int32_t broadcastEnable, int16_t port)
+void Socket::SocketUdp::broadcast(int16_t port)
 {
-	int32_t ret = setsockopt(_handler, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+	int32_t broadcastEnable = 1;
+	if (::setsockopt(_handler, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable)) == -1)
+	{
+		throw SocketException(__FILE__, __LINE__,errno);
+	}
 
     memset(&_st_sockaddr_in, 0, sizeof(struct sockaddr_in));
     _st_sockaddr_in.sin_family = AF_INET;
 	_st_sockaddr_in.sin_port = ::htons(port);
     _st_sockaddr_in.sin_addr.s_addr = htonl(INADDR_BROADCAST);
 
-	return ret;
+	if (::bind(_handler, (struct sockaddr *) &_st_sockaddr_in, sizeof(struct sockaddr_in)) < 0)
+	{
+		throw SocketException(__FILE__, __LINE__,errno);
+	}
 }
 
 void Socket::SocketUdp::connexion(const std::string & addr, int16_t port)
@@ -74,8 +77,7 @@ void Socket::SocketUdp::connexion(const std::string & addr, int16_t port)
 	_st_sockaddr_in.sin_port = ::htons(port);
 	if (::inet_aton(addr.c_str(), &_st_sockaddr_in.sin_addr) != 1)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 }
 
@@ -84,8 +86,7 @@ int32_t Socket::SocketUdp::write(uint8_t * msg, int32_t length)
 	int32_t len = ::sendto(_handler, msg, length, 0, (const struct sockaddr *) &_st_sockaddr_in, (socklen_t) sizeof(struct sockaddr_in));
 	if (len < 0)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 
 	return len;
@@ -98,9 +99,23 @@ int32_t Socket::SocketUdp::read(uint8_t * msg, int32_t length)
 	int32_t len = ::recvfrom(_handler, msg, length, 0, &st_sockaddr_in, &st_sockaddr_in_len);
 	if (len < 0)
 	{
-		std::cerr << __FILE__ << __LINE__ << std::endl;
-		throw SocketException(errno);
+		throw SocketException(__FILE__, __LINE__,errno);
 	}
 
 	return len;
+}
+
+int32_t Socket::SocketUdp::actionIn()
+{
+	return 0;
+}
+
+int32_t Socket::SocketUdp::actionOut()
+{
+	return 0;
+}
+
+int32_t Socket::SocketUdp::actionError()
+{
+	return 0;
 }
