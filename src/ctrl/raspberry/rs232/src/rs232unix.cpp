@@ -282,3 +282,17 @@ int32_t RS232::getBlockingReadUntilCharacterArrives()
 	return _newios.c_cc[VMIN];
 }
 
+int32_t RS232::actionIn()
+{
+	return 0;
+}
+
+int32_t RS232::actionOut()
+{
+	return 0;
+}
+
+int32_t RS232::actionError()
+{
+	return 0;
+}

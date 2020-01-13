@@ -39,6 +39,8 @@ int32_t Socket::SocketTcpFifo::read(uint8_t * msg, int32_t length)
 
 int32_t Socket::SocketTcpFifo::write(uint8_t * msg, int32_t length)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "write");
+
 	SocketBuffer buffer;
 	int32_t len = buffer.write(msg, length);
 	_fifo_out.push(buffer);
@@ -48,6 +50,8 @@ int32_t Socket::SocketTcpFifo::write(uint8_t * msg, int32_t length)
 
 int32_t Socket::SocketTcpFifo::actionOut()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+
 	if (_fifo_out.empty())
 	{
 		throw Socket::SocketException(__FILE__, __LINE__, "fifo vide !");

@@ -20,6 +20,7 @@
 namespace Socket
 {
 	class SocketBase;
+	class SocketUdp;
 	class SocketTcp;
 	class SocketTcpFifo;
 	class SOCKET_DLL SocketFactory : public PollFactory
@@ -32,8 +33,10 @@ namespace Socket
 			virtual SocketTcp * addTcpConnection(const std::string &, uint16_t);
 			virtual SocketTcpFifo * addTcpFifoConnection(const std::string &, uint16_t);
 
-			virtual SocketTcp * getTcp(const std::string &, uint16_t);
-			virtual void delTcp(const std::string &, uint16_t);
+			virtual SocketUdp * addUdpConnection(const std::string &, uint16_t);
+
+			virtual SocketBase * get(const std::string &, uint16_t);
+			virtual void del(const std::string &, uint16_t);
 
 		protected:
 			virtual int32_t actionIn(PollDevice*) = 0;
