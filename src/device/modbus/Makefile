@@ -63,6 +63,7 @@ fwupd.exe: $(BIN_PWD)/fwupd.o
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
 $(BIN_PWD)/fwupd.o: test/fwupd.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 modbus_cmd: $(BIN_PWD)/modbus_cmd.o
@@ -74,6 +75,7 @@ modbus_cmd.exe: $(BIN_PWD)/modbus_cmd.o
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
 $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
+	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
