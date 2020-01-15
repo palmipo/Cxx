@@ -6,6 +6,7 @@ OBJECTS = \
 	$(BIN_PWD)/socketcan.o \
 	$(BIN_PWD)/sockettcp.o \
 	$(BIN_PWD)/sockettcpfifo.o \
+	$(BIN_PWD)/socketudp.o \
 	$(BIN_PWD)/socketfactory.o
 
 MAKE = make

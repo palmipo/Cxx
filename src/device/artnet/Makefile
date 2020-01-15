@@ -1,21 +1,14 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
-	$(BIN_PWD)/canbuffer.o \
-	$(BIN_PWD)/canbus.o \
-	$(BIN_PWD)/ixxatfactory.o \
-	$(BIN_PWD)/ixxatusbcan.o \
-	$(BIN_PWD)/ixxatcanatnet.o
-	
-OBJECTS_LINUX = \
-	$(OBJECTS) \
-	$(BIN_PWD)/ixxatusbcan.o
+	$(BIN_PWD)/artnet.o \
+	$(BIN_PWD)/dmxmaster.o \
+	$(BIN_PWD)/dmxslave.o
 
 UTIL_PWD = ../../util
 LOG_PWD = ../../ctrl/raspberry/log
 POLL_PWD = ../../ctrl/raspberry/poll
 SOCKET_PWD = ../../ctrl/raspberry/socket
-CANOPEN_PWD = ../canopen
 MAKE = make
 MKDIR = mkdir -p
 CC = g++
@@ -30,6 +23,13 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
 
+
+artnetdirect: $(BIN_PWD)/artnetdirect.o
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+$(BIN_PWD)/%.o: test/%.cpp
+	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -c $^ -o $@
 	
 # LINUX
 libutil.so:
@@ -48,7 +48,7 @@ libsocket.so:
 	$(MAKE) -C $(SOCKET_PWD) $@
 	ln -s $(SOCKET_PWD)/$@
 
-libcan.so: $(OBJECTS_LINUX)
+libartnet.so:
 	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) libsocket.so
@@ -71,7 +71,7 @@ libsocket.dll:
 	$(MAKE) -C $(SOCKET_PWD) $@
 	cp $(SOCKET_PWD)/$@ .
 
-libcan.dll: $(OBJECTS)
+libcan.dll:
 	$(MAKE) libutil.dll
 	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll

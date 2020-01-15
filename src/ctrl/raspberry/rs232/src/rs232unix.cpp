@@ -220,21 +220,6 @@ int32_t RS232::recvUntilEnd(uint8_t * data, int32_t data_length)
 	return cpt;
 }
 
-int32_t RS232::actionError()
-{
-	return 0;
-}
-
-int32_t RS232::actionIn()
-{
-	return 0;
-}
-
-int32_t RS232::actionOut()
-{
-	return 0;
-}
-
 void RS232::setInterCharacterTimer(int32_t timeout)
 {
 	if (::tcgetattr(_handler, &_newios))
@@ -297,3 +282,17 @@ int32_t RS232::getBlockingReadUntilCharacterArrives()
 	return _newios.c_cc[VMIN];
 }
 
+int32_t RS232::actionIn()
+{
+	return 0;
+}
+
+int32_t RS232::actionOut()
+{
+	return 0;
+}
+
+int32_t RS232::actionError()
+{
+	return 0;
+}

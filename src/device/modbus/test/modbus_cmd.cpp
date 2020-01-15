@@ -9,40 +9,40 @@
 #include <sstream>
 
 
-void * thread_poll_start(Modbus::ModbusFactory * factory, int32_t * fin)
+void thread_poll_start(Modbus::ModbusFactory * factory, int32_t * fin)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread");
+	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread_poll_start");
 
 	while(! *fin)
 	{
 		try
 		{
-			factory->scrute(1000);
+			factory->scrute(1000, 1, 1, 1);
 		}
 		catch(Modbus::ModbusException e)
 		{
 			std::stringstream ss;
-			ss << "thread exception " << e.what();
+			ss << "thread_poll_start exception " << e.what();
 			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 		}
 		catch(PollException e)
 		{
 			std::stringstream ss;
-			ss << "thread exception " << e.what();
+			ss << "thread_poll_start exception " << e.what();
 			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 		}
 		catch(...)
 		{
-			Log::getLogger()->debug(__FILE__, __LINE__, "thread exception");
+			Log::getLogger()->debug(__FILE__, __LINE__, "thread_poll_start exception");
 		}
 	}
 
-	Log::getLogger()->debug(__FILE__, __LINE__, "FIN thread");
+	Log::getLogger()->debug(__FILE__, __LINE__, "FIN thread_poll_start");
 }
 
-void * thread_action_start(Modbus::ModbusFactory * factory, int32_t * fin)
+void thread_action_start(Modbus::ModbusFactory * factory, int32_t * fin)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread");
+	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread_action_start");
 
 	while(! *fin)
 	{
@@ -55,22 +55,22 @@ void * thread_action_start(Modbus::ModbusFactory * factory, int32_t * fin)
 		catch(Modbus::ModbusException e)
 		{
 			std::stringstream ss;
-			ss << "thread exception " << e.what();
+			ss << "thread_action_start exception " << e.what();
 			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 		}
 		catch(PollException e)
 		{
 			std::stringstream ss;
-			ss << "thread exception " << e.what();
+			ss << "thread_action_start exception " << e.what();
 			Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 		}
 		catch(...)
 		{
-			Log::getLogger()->debug(__FILE__, __LINE__, "thread exception");
+			Log::getLogger()->debug(__FILE__, __LINE__, "thread_action_start exception");
 		}
 	}
 
-	Log::getLogger()->debug(__FILE__, __LINE__, "FIN thread");
+	Log::getLogger()->debug(__FILE__, __LINE__, "FIN thread_action_start");
 }
 
 int main(int argc, char **argv)

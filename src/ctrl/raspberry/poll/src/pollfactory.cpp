@@ -74,10 +74,9 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 		while(it != _liste.end())
 		{
 			lst_fd[cpt].fd = it->second->handler();
-			#ifdef __CYGWIN__
 			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
-			#else
-			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteOut ? POLLOUT | POLLWRBAND : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
+			#ifndef __CYGWIN__
+			lst_fd[cpt].events |= (scruteOut ? POLLOUT | POLLWRBAND : 0);
 			#endif
 			lst_fd[cpt].revents = 0;
 			cpt += 1;

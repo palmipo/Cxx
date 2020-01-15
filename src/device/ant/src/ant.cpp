@@ -19,7 +19,7 @@ ANT::Ant::Ant(const std::string & device_p)
 
 ANT::Ant::~Ant()
 {
-	del(_handler);
+	// del(_handler);
 }
 
 void ANT::Ant::unassignChannel(uint8_t channel_number)

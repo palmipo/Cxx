@@ -1,6 +1,7 @@
 #include "socketfactory.h"
 #include "socketexception.h"
 #include "sockettcpfifo.h"
+#include "socketudp.h"
 #include <cerrno>
 
 Socket::SocketFactory::SocketFactory()
@@ -15,7 +16,7 @@ Socket::SocketTcp * Socket::SocketFactory::addTcpServer(const std::string & addr
 {
 	try
 	{
-		return getTcp(addr, port);
+		return (Socket::SocketTcp *)get(addr, port);
 	}
 	catch(...)
 	{
@@ -34,7 +35,7 @@ Socket::SocketTcp * Socket::SocketFactory::addTcpConnection(const std::string & 
 {
 	try
 	{
-		return (Socket::SocketTcp *)getTcp(addr, port);
+		return (Socket::SocketTcp *)get(addr, port);
 	}
 	catch(...)
 	{
@@ -54,7 +55,7 @@ Socket::SocketTcpFifo * Socket::SocketFactory::addTcpFifoConnection(const std::s
 {
 	try
 	{
-		return (Socket::SocketTcpFifo *)getTcp(addr, port);
+		return (Socket::SocketTcpFifo *)get(addr, port);
 	}
 	catch(...)
 	{
@@ -70,18 +71,38 @@ Socket::SocketTcpFifo * Socket::SocketFactory::addTcpFifoConnection(const std::s
 	return 0;
 }
 
-Socket::SocketTcp * Socket::SocketFactory::getTcp(const std::string & addr, uint16_t port)
+Socket::SocketUdp * Socket::SocketFactory::addUdpConnection(const std::string & addr, uint16_t port)
+{
+	try
+	{
+		return (Socket::SocketUdp *)get(addr, port);
+	}
+	catch(...)
+	{
+		Socket::SocketUdp * sock = new Socket::SocketUdp();
+		sock->connexion(addr, port);
+
+		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock->handler();
+		add(sock);
+
+		return sock;
+	}
+
+	return 0;
+}
+
+Socket::SocketBase * Socket::SocketFactory::get(const std::string & addr, uint16_t port)
 {
 	std::map<std::pair<std::string, uint16_t>, int32_t>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
 	if (it != _hosts.end())
 	{
-		return (Socket::SocketTcp *)PollFactory::get(it->second);
+		return (Socket::SocketBase *)PollFactory::get(it->second);
 	}
 	
 	throw Socket::SocketException(__FILE__, __LINE__, "not find");
 }
 
-void Socket::SocketFactory::delTcp(const std::string & addr, uint16_t port)
+void Socket::SocketFactory::del(const std::string & addr, uint16_t port)
 {
 	std::map<std::pair<std::string, uint16_t>, int32_t>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
 	if (it != _hosts.end())
@@ -93,28 +114,28 @@ void Socket::SocketFactory::delTcp(const std::string & addr, uint16_t port)
 	throw Socket::SocketException(__FILE__, __LINE__, "not find");
 }
 
-int32_t Socket::SocketFactory::actionError(PollDevice * device)
-{
-	return device->actionError();
-}
+// int32_t Socket::SocketFactory::actionError(PollDevice * device)
+// {
+	// return device->actionError();
+// }
 
-int32_t Socket::SocketFactory::actionIn(PollDevice * device)
-{
-	Socket::SocketBase * base = (Socket::SocketBase*)device;
-	if (base->isServerMode())
-	{
-		// demande de connexion sur la socket d'ecoute
-		Socket::SocketTcp * s = new Socket::SocketTcp(device->handler());
-		add(s);
-	}
-	else
-	{
-		return device->actionIn();
-	}
-}
+// int32_t Socket::SocketFactory::actionIn(PollDevice * device)
+// {
+	// Socket::SocketBase * base = (Socket::SocketBase*)device;
+	// if (base->isServerMode())
+	// {
+		/* demande de connexion sur la socket d'ecoute */
+		// Socket::SocketTcp * s = new Socket::SocketTcp(device->handler());
+		// add(s);
+	// }
+	// else
+	// {
+		// return device->actionIn();
+	// }
+// }
 
-int32_t Socket::SocketFactory::actionOut(PollDevice * device)
-{
-	return device->actionOut();
-}
+// int32_t Socket::SocketFactory::actionOut(PollDevice * device)
+// {
+	// return device->actionOut();
+// }
 

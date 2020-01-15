@@ -23,10 +23,13 @@ namespace Socket
 			SocketTcpFifo();
 
 			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 			virtual int32_t actionIn();
+			virtual int32_t actionOut();
 		
 		protected:
-			std::queue < SocketBuffer > _fifo;
+			std::queue < SocketBuffer > _fifo_in;
+			std::queue < SocketBuffer > _fifo_out;
 	};
 }
 
