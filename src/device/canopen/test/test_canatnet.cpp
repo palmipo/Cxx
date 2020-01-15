@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
 	std::thread t(scrute, &factory, &fin);
 	try
 	{
-		CAN::CANOpen * canopen = factory.canAtNet(5, "192.168.1.207");
+		CAN::CANOpen * canopen = factory.canAtNet(5, "192.168.1.3");
 		std::this_thread::sleep_for(std::chrono::seconds(60));
 
 		canopen->sdo()->writeDictionary(0x1018, 0x03, 0, 0);
