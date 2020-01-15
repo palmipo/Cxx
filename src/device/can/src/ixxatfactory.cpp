@@ -51,20 +51,47 @@ Ixxat::CanAtNet * Ixxat::Factory::canAtNet(const std::string & addr, int16_t por
 
 int32_t Ixxat::Factory::actionError(PollDevice * device)
 {
-	return device->actionError();
+	if (device)
+	{
+		return device->actionError();
+	}
+	
+	return 0;
 }
 
 int32_t Ixxat::Factory::actionIn(PollDevice * device)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
+	if (device)
+	{
+		return device->actionIn();
+	}
+
+	return 0;
+}
+
+int32_t Ixxat::Factory::actionOut(PollDevice * device)
+{
+	if (device)
+	{
+		return device->actionOut();
+	}
+	
+	return 0;
+}
+
+int32_t Ixxat::Factory::actionError()
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
+
 	int32_t len = 0;
 	std::map < std::string, Device * >::iterator it = ctrlMap.begin();
 	while (it != ctrlMap.end())
 	{
-		if (device->handler() == it->second->handler())
+		if (it->second)
 		{
-			len = it->second->actionIn();
+			len += it->second->actionError();
 		}
 		it++;
 	}
@@ -72,7 +99,38 @@ int32_t Ixxat::Factory::actionIn(PollDevice * device)
 	return len;
 }
 
-int32_t Ixxat::Factory::actionOut(PollDevice * device)
+int32_t Ixxat::Factory::actionIn()
 {
-	return device->actionOut();
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+
+	int32_t len = 0;
+	std::map < std::string, Device * >::iterator it = ctrlMap.begin();
+	while (it != ctrlMap.end())
+	{
+		if (it->second)
+		{
+			len += it->second->actionIn();
+		}
+		it++;
+	}
+
+	return len;
+}
+
+int32_t Ixxat::Factory::actionOut()
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+
+	int32_t len = 0;
+	std::map < std::string, Device * >::iterator it = ctrlMap.begin();
+	while (it != ctrlMap.end())
+	{
+		if (it->second)
+		{
+			len += it->second->actionOut();
+		}
+		it++;
+	}
+
+	return len;
 }

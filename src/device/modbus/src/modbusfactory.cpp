@@ -154,6 +154,8 @@ int32_t Modbus::ModbusFactory::actionIn(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+
     if (device)
     {
 		return device->actionOut();
@@ -164,6 +166,8 @@ int32_t Modbus::ModbusFactory::actionOut(PollDevice* device)
 
 int32_t Modbus::ModbusFactory::actionError(PollDevice* device)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
+
     if (device)
     {
 		return device->actionError();
@@ -196,6 +200,8 @@ int32_t Modbus::ModbusFactory::actionIn()
 
 int32_t Modbus::ModbusFactory::actionOut()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+
     // if (device)
     // {
 		int32_t fin = 0;
@@ -216,6 +222,8 @@ int32_t Modbus::ModbusFactory::actionOut()
 
 int32_t Modbus::ModbusFactory::actionError()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
+
     // if (device)
     // {
 		int32_t fin = 0;

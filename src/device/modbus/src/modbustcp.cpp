@@ -19,7 +19,7 @@ Modbus::ModbusTcp::~ModbusTcp()
 
 int32_t Modbus::ModbusTcp::actionIn()
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t trame[512];
 	int32_t len = _device->read(trame, 512);
@@ -66,7 +66,7 @@ int32_t Modbus::ModbusTcp::actionIn()
 
 int32_t Modbus::ModbusTcp::actionOut()
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
 	if (!_fifo_out.empty())
 	{

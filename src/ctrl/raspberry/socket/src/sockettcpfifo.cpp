@@ -52,19 +52,24 @@ int32_t Socket::SocketTcpFifo::actionOut()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
-	if (_fifo_out.empty())
+	// if (_fifo_out.empty())
+	// {
+		// throw Socket::SocketException(__FILE__, __LINE__, "fifo vide !");
+	// }
+
+	if (!_fifo_out.empty())
 	{
-		throw Socket::SocketException(__FILE__, __LINE__, "fifo vide !");
+		SocketBuffer buffer = _fifo_out.front();
+		_fifo_out.pop();
+
+		uint8_t msg[512];
+		int32_t length = buffer.read(msg, 512);
+		int32_t len = Socket::SocketTcp::write(msg, length);
+
+		return len;
 	}
-
-	SocketBuffer buffer = _fifo_out.front();
-	_fifo_out.pop();
-
-	uint8_t msg[512];
-	int32_t length = buffer.read(msg, 512);
-    int32_t len = Socket::SocketTcp::write(msg, length);
-
-    return len;
+	
+	return 0;
 }
 
 int32_t Socket::SocketTcpFifo::actionIn()

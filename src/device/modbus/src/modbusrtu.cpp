@@ -77,7 +77,7 @@ int32_t Modbus::ModbusRtu::actionIn()
 
 int32_t Modbus::ModbusRtu::actionOut()
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
 
 	if (!_fifo_out.empty())
