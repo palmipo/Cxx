@@ -1,8 +1,8 @@
 #include "modbusmsgdirect.h"
 #include <cstring>
 
-Modbus::ModbusMsgDirect::ModbusMsgDirect()
-: ModbusMsgHeader()
+Modbus::ModbusMsgDirect::ModbusMsgDirect(uint8_t fct_code)
+: ModbusMsgHeader(fct_code)
 {}
 
 uint16_t Modbus::ModbusMsgDirect::encodeQuestion()
