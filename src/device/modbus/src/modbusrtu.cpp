@@ -33,14 +33,7 @@ int32_t Modbus::ModbusRtu::actionIn()
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t data[512];
-	int32_t retry = 0, nb, data_length = 0;
-	do
-	{
-		nb = _device->read(data+data_length, 512-data_length);
-		data_length += nb;
-		retry += 1;
-	}
-	while (nb && (retry < 5));
+	int32_t data_length = _device->read(data, 512);
 
 	int32_t cpt = data_length-2;
 
