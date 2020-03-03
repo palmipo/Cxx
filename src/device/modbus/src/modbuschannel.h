@@ -30,10 +30,10 @@ namespace Modbus
 		// virtual pur dans PollDevice
 		protected:
 			virtual int32_t read(uint8_t *, int32_t)
-			{}
+			{ return 0; }
 
 			virtual int32_t write(uint8_t *, int32_t)
-			{}
+			{ return 0; }
 
 		protected:
 			ModbusQueue _fifo_in;

@@ -7,18 +7,18 @@ Modbus::ModbusMsgDirect::ModbusMsgDirect(uint8_t fct_code)
 
 uint16_t Modbus::ModbusMsgDirect::encodeQuestion()
 {
-	msg->encodeHeader();
+	encodeHeader();
 	return 0;
 }
 
 uint16_t Modbus::ModbusMsgDirect::decodeQuestion()
 {
-	msg->decodeHeader();
+	decodeHeader();
 	return 0;
 }
 
 uint16_t Modbus::ModbusMsgDirect::decodeResponse()
 {
-	msg->decodeHeader();
+	decodeHeader();
 	return 0;
 }
