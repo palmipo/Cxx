@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<interface>
+	<controleurs>
+		<!-- eth0 -->
+		<!-- <controleur id="eth4" type="tcp"/> -->
+
+		<!-- serial serial0 -->
+		<controleur id="serial0">
+			<config>
+				<serial>
+					<device registre="TBR">/dev/ttyS4</device>
+					<baud>19200</baud>
+					<data>8</data>
+					<parity>1</parity>
+					<stop>1</stop>
+				</serial>
+			</config>
+		</controleur>
+
+		<!-- can0 -->
+		<controleur id="can0">
+			<config>
+				<canatnet>
+					<ip>
+						<address>192.168.1.3</address>
+						<port>19227</port>
+						<mask>255.255.255.0</mask>
+					</ip>
+					<baud registre="BDCO">1000</baud>
+				</canatnet>
+			</config>
+		</controleur>
+
+		<!-- can1 -->
+		<controleur id="can1">
+			<config>
+				<usbcan>
+					<device>eth1</device>
+					<baud registre="BDCO">1000</baud>
+				</usbcan>
+			</config>
+		</controleur>
+	</controleurs>
+
+	<automates>
+		<plc id="PLC">
+			<modbus iface="TCP">
+				<slave_address>0x01</slave_address>
+				<controleur id="eth0">
+					<config>
+						<ip>
+							<address>192.168.1.100</address>
+							<port>502</port>
+						</ip>
+					</config>
+				</controleur>
+			</modbus>
+			<signal id="LAMPE">
+				<index id="ORANGE">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x04</mask>
+						<hight_value>0x04</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+			<signal id="SWITCH">
+				<index id="1">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x08</mask>
+						<hight_value>0x08</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="2">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x10</mask>
+						<hight_value>0x10</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+			<signal id="CC">
+				<index id="MODBUS">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x20</mask>
+						<hight_value>0x20</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="CAN">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x40</mask>
+						<hight_value>0x40</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+			<signal id="GATEWAY">
+				<index id="can0">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x80</mask>
+						<hight_value>0x80</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+			<signal id="ATV930">
+				<index id="1">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x200</mask>
+						<hight_value>0x200</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="2">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0001</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x400</mask>
+						<hight_value>0x400</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+			<signal id="ATV630">
+				<index id="1">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x04</mask>
+						<hight_value>0x04</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="2">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x02</mask>
+						<hight_value>0x02</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="3">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x01</mask>
+						<hight_value>0x01</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="4">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x08</mask>
+						<hight_value>0x08</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="5">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x100</mask>
+						<hight_value>0x100</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+			<signal id="ATV340">
+				<index id="TCP">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x10</mask>
+						<hight_value>0x10</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+				<index id="CAN">
+					<modbus>
+						<readFC>03</readFC>
+						<writeFC>06</writeFC>
+						<registre>0000</registre>
+						<nb_registre>1</nb_registre>
+						<mask>0x20</mask>
+						<hight_value>0x20</hight_value>
+						<low_value>0</low_value>
+						<default_value>L</default_value>
+					</modbus>
+				</index>
+			</signal>
+		</plc>
+	</automates>
+
+	<drives>
+		<!-- <drive id="ATV630_1" devFeat="nera" devSys="nera"> -->
+			<!-- <modbus iface="RTU"> -->
+				<!-- <modbus_id>0x01</modbus_id> -->
+				<!-- <controleur id="serial0"/> -->
+				<!-- <fichier>AltiLab_KOP_NERA_CS_V2.6IE96_B12.xml</fichier> -->
+			<!-- </modbus> -->
+			<!-- <modbus iface="TCP"> -->
+				<!-- <modbus_id>0xF8</modbus_id> -->
+				<!-- <controleur id="eth1"> -->
+					<!-- <config> -->
+						<!-- <ip> -->
+							<!-- <mode registre="IM00" nb_registre="1">DHCP</mode> -->
+							<!-- <address registre="IC01" nb_registre="4">192.168.1.101</address> -->
+							<!-- <port>502</port> -->
+							<!-- <mask registre="IM01" nb_registre="4">255.255.255.0</mask> -->
+							<!-- <gateway registre="IG01" nb_registre="4">192.168.1.1</gateway> -->
+						<!-- </ip> -->
+						<!-- <name registre="PAN0" nb_registre="8">ATV630_1</name> -->
+						<!-- <fdr> -->
+							<!-- <enable>false</enable> -->
+							<!-- <action register="FDA0">IDLE</action> -->
+						<!-- </fdr> -->
+					<!-- </config> -->
+				<!-- </controleur> -->
+				<!-- <fichier>AltiLab_KOP_NERA_CS_V2.6IE96_B12.xml</fichier> -->
+			<!-- </modbus> -->
+			<!-- <modbus iface="UAP"> -->
+				<!-- <modbus_id>0xF8</modbus_id> -->
+				<!-- <controleur id="eth2"> -->
+					<!-- <config> -->
+						<!-- <ip> -->
+							<!-- <mode registre="IM10" nb_registre="1">DHCP</mode> -->
+							<!-- <address registre="IC11" nb_registre="4">192.168.1.102</address> -->
+							<!-- <port>502</port> -->
+							<!-- <mask registre="IM11" nb_registre="4">255.255.255.0</mask> -->
+							<!-- <gateway registre="IG11" nb_registre="4">192.168.1.1</gateway> -->
+						<!-- </ip> -->
+					<!-- </config> -->
+				<!-- </controleur> -->
+				<!-- <fichier>AltiLab_KOP_NERA_CS_V2.6IE96_B12.xml</fichier> -->
+			<!-- </modbus> -->
+			<!-- <power plc_id="PLC" modbus_iface="TCP" signal_id="ATV630" index_id="2"/> -->
+		<!-- </drive> -->
+		<drive id="ATV630_2" devFeat="nera" devSys="nera">
+			<modbus iface="RTU">
+				<modbus_id>0x02</modbus_id>
+				<controleur id="serial0"/>
+				<fichier>AltiLab_KOP_NERA_CS_V2.6IE96_B12.xml</fichier>
+			</modbus>
+			<!-- <canopen iface="CAN"> -->
+				<!-- <node_id>0x03</node_id> -->
+				<!-- <controleur id="can0"/> -->
+				<!-- <fichier>SEATV340_010203E_V2.3IE20_B01.eds</fichier> -->
+			<!-- </canopen> -->
+			<!-- <ioscanner> -->
+				<!-- .... -->
+			<!-- </ioscanner> -->
+			<power plc_id="PLC" modbus_iface="TCP" signal_id="ATV630" index_id="2"/>
+		</drive>
+	</drives>
+</interface>
