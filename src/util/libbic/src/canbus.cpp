@@ -2,7 +2,7 @@
 #include "libbic/factory.h"
 #include "libbic/ctrl.h"
 #include "libbic/exception.h"
-#include "log.h"
+//#include "log.h"
 
 #include <iostream>
 #include <iomanip>

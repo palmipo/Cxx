@@ -16,7 +16,7 @@
 #endif
 
 
-class LogMutex
+class LOG_DLL LogMutex
 {
     std::mutex &m_;
 

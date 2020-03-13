@@ -34,9 +34,9 @@ RS232_PWD = $(RASPI_CTRL)/rs232
 DEVICE_PWD = ../../device
 MODBUS_PWD = $(DEVICE_PWD)/modbus
 
-INCLUDE = -Iinclude -Ilibxml2/include -I$(LOG_PWD)/src
+INCLUDE = -Iinclude -I$(LOG_PWD)/src -Ilibxml2/include
 COPY = cp
-LIBS = -L. -Llibxml2/lib -lxml2 -llog
+LIBS = -L. -lxml2 -llog libxml2/lib/libxml2.lib
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
