@@ -27,7 +27,7 @@ namespace Modbus
 
 			virtual ModbusChannel * get(const std::string &);
 			virtual ModbusChannel * tcp(const std::string &);
-			virtual ModbusChannel * rtu(const std::string &, int32_t, int32_t, int32_t);
+			virtual ModbusChannel * rtu(const std::string &, int32_t=19200, int32_t=1, int32_t=1);
 			virtual void close(const std::string &);
 
 			virtual int32_t actionIn();

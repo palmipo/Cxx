@@ -67,7 +67,7 @@ int main(int argc, char ** argv)
 
 		AltiLab::Parser parser(argv[2]);
 		AltiLab::DataObjectCollection * doc = parser.dataObject();
-		
+
 		// IM00 = DHCP
 		AltiLab::DataObject * IM00_dataobject = doc->find_dataobject("IM00");
 		AltiLab::DataObjectItem * IM00_address_item = IM00_dataobject->find_dataobjectitem("address");

@@ -91,7 +91,11 @@ int32_t Modbus::ModbusTcp::actionOut()
 
 		return ((Socket::SocketTcp *)_device)->write(trame, cpt);
 	}
+	
+	return 0;
 }
 
 int32_t Modbus::ModbusTcp::actionError()
-{}
+{
+	return 0;
+}

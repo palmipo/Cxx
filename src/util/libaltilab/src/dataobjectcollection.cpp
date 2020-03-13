@@ -2,6 +2,7 @@
 #include "libaltilab/dataobjectlist.h"
 #include "libaltilab/dataobject.h"
 #include "libaltilab/grouplist.h"
+// #include "libaltilab/parser.h"
 #include "libaltilab/choicetypelist.h"
 #include "libaltilab/choicetype.h"
 #include "libaltilab/exception.h"
@@ -18,19 +19,25 @@ AltiLab::DataObjectCollection::DataObjectCollection()
 
 AltiLab::DataObjectCollection::~DataObjectCollection()
 {
-	// std::map < std::string, AltiLab::Register * >::iterator it1 = map_registers.begin();
-	// while (it1 != map_registers.end())
-	// {
-		// delete it1->second;
-		// ++it1;
-	// }
+	std::list < DataObjectList * >::iterator it1 =  list_dataobjectlist.begin();
+	while (it1 != list_dataobjectlist.end())
+	{
+		delete *it1;
+		++it1;
+	}
+	std::list < ChoiceTypeList * >::iterator it2 =  list_choicetypelist.begin();
+	while (it2 != list_choicetypelist.end())
+	{
+		delete *it2;
+		++it2;
+	}
 
-	// std::map < std::string, RegistreChoiceType * >::iterator it2 = map_choice_type.begin();
-	// while (it2 != map_choice_type.end())
-	// {
-		// delete it2->second;
-		// ++it2;
-	// }
+	std::map < std::string, GroupList * >::iterator it3 =  map_grouplist.begin();
+	while (it3 != map_grouplist.end())
+	{
+		delete it3->second;
+		++it3;
+	}
 }
 
 uint32_t AltiLab::DataObjectCollection::cpu()

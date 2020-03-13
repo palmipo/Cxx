@@ -36,12 +36,12 @@ AltiLab::Parser::~Parser()
 {
     xmlCleanupParser();
 
-	// std::map < std::tuple < std::string, std::string, std::string >, AltiLab::DataObject * >::iterator it = map_data_object.begin();
-	// while (it != map_data_object.end())
-	// {
-		// delete it->second;
-		// ++it;
-	// }
+	std::map < std::tuple < std::string, std::string, std::string >, AltiLab::DataObjectCollection * >::iterator it = map_data_object.begin();
+	while (it != map_data_object.end())
+	{
+		delete it->second;
+		++it;
+	}
 }
 
 AltiLab::DataObjectCollection * AltiLab::Parser::dataObject(const std::string & defaultgroupname, const std::string & defaultgroupname_id, const std::string & defaultgroupname_name)

@@ -26,6 +26,7 @@ SOCKET_PWD = $(RASPI_CTRL)/socket
 RS232_PWD = $(RASPI_CTRL)/rs232
 DEVICE_PWD = ../../device
 MODBUS_PWD = $(DEVICE_PWD)/modbus
+BIC_PWD= ../libbic
 
 INCLUDE = -Iinclude -I/usr/include/libxml2 -I$(LOG_PWD)/src
 COPY = cp
@@ -45,6 +46,15 @@ altilab.exe: $(BIN_PWD)/altilab.o
 $(BIN_PWD)/altilab.o: test/src/altilab.cpp
 	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@ -I$(UTIL_PWD)/src -I$(LOG_PWD)/src -I$(POLL_PWD)/src -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src -I$(MODBUS_PWD)/src
+
+bicaltilab.exe: $(BIN_PWD)/bicaltilab.o 
+	$(MAKE) libbic.dll
+	$(MAKE) libaltilab.dll
+	$(CC) $^ -o $@ $(LDFLAGS) -lbic -laltilab -lpthread -lmodbus -lsocket -lpoll -llog
+
+$(BIN_PWD)/bicaltilab.o: test/src/bicaltilab.cpp
+	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -c $^ -o $@ -I$(UTIL_PWD)/src -I$(LOG_PWD)/src -I$(POLL_PWD)/src -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src -I$(MODBUS_PWD)/src -I$(BIC_PWD)/include
 
 libutil.dll:
 	$(MAKE) -C $(UTIL_PWD) $@
@@ -69,6 +79,10 @@ libsocket.dll:
 libmodbus.dll:
 	$(MAKE) -C $(MODBUS_PWD) $@
 	cp $(MODBUS_PWD)/$@ .
+
+libbic.dll:
+	$(MAKE) -C $(BIC_PWD) $@
+	cp $(BIC_PWD)/$@ .
 
 libaltilab.dll: $(OBJECTS)
 	$(MAKE) libutil.dll
