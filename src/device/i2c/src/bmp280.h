@@ -15,36 +15,36 @@ class BMP280 : public DeviceI2C
 		uint8_t id();
 		void reset();
 		uint8_t status();
-		void measure(double *, double *);
-		void measure_int32(int32_t *, int32_t *);
+		//~ void measure(double *, double *);
+		//~ void measure_int32(int32_t *, int32_t *);
 
 	protected:
-		int32_t dig_T1;
-		int32_t dig_T2;
-		int32_t dig_T3;
-		int32_t dig_P1;
-		int32_t dig_P2;
-		int32_t dig_P3;
-		int32_t dig_P4;
-		int32_t dig_P5;
-		int32_t dig_P6;
-		int32_t dig_P7;
-		int32_t dig_P8;
-		int32_t dig_P9;
-		int32_t dig_H1;
-		int32_t dig_H2;
-		int32_t dig_H3;
-		int32_t dig_H4;
-		int32_t dig_H5;
-		int32_t dig_H6;
-		int32_t t_fine;
+		//~ int32_t dig_T1;
+		//~ int32_t dig_T2;
+		//~ int32_t dig_T3;
+		//~ int32_t dig_P1;
+		//~ int32_t dig_P2;
+		//~ int32_t dig_P3;
+		//~ int32_t dig_P4;
+		//~ int32_t dig_P5;
+		//~ int32_t dig_P6;
+		//~ int32_t dig_P7;
+		//~ int32_t dig_P8;
+		//~ int32_t dig_P9;
+		//~ int32_t dig_H1;
+		//~ int32_t dig_H2;
+		//~ int32_t dig_H3;
+		//~ int32_t dig_H4;
+		//~ int32_t dig_H5;
+		//~ int32_t dig_H6;
+		//~ int32_t t_fine;
 		
-		double bmp280_compensate_T(int32_t adc_T);
-		double bmp280_compensate_P(int32_t adc_P);
+		//~ double bmp280_compensate_T(int32_t adc_T);
+		//~ double bmp280_compensate_P(int32_t adc_P);
 
-		int32_t t_fine_int32;
-		int32_t bmp280_compensate_T_int32(int32_t adc_T);
-		uint32_t bmp280_compensate_P_int32(int32_t adc_P);
+		//~ int32_t t_fine_int32;
+		//~ int32_t bmp280_compensate_T_int32(int32_t adc_T);
+		//~ uint32_t bmp280_compensate_P_int32(int32_t adc_P);
 
 };
 
