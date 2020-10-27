@@ -1,3 +1,4 @@
+HOSTNAME = hostname
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
@@ -55,6 +56,9 @@ librs232.so:
 	ln -s $(RS232_PWD)/$@
 
 libusbi2c.so: $(OBJECTS)
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -shared $^ -o $@
 

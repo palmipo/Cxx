@@ -5,7 +5,7 @@
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-// #include <cstdio>
+#include <errno.h>
 #include <cstring>
 #include <unistd.h>
 #include <sstream>
@@ -78,18 +78,22 @@
 RaspiI2C::RaspiI2C(const char * device)
 {
 	if ((_fd = open(device, O_RDWR)) < 0)
-		throw I2CException("I2C::I2C()");
+	{
+		std::stringstream ss;
+		ss << "RaspiI2C::RaspiI2C() errno : " << strerror(errno);
+		throw I2CException(ss.str());
+	}
 
 	uint32_t val = 0;
 	if (ioctl(_fd, I2C_TENBIT, val) < 0)
-		throw I2CException("I2C::I2C_TENBIT()");
+		throw I2CException("RaspiI2C::I2C_TENBIT()");
 
 	uint32_t fct = 0;
 	if (ioctl(_fd, I2C_FUNCS, &fct) < 0)
-		throw I2CException("I2C::I2C_FUNCS()");
+		throw I2CException("RaspiI2C::I2C_FUNCS()");
 	
 	if ((fct & I2C_FUNC_I2C) != I2C_FUNC_I2C)
-		throw I2CException("I2C::I2C_FUNC_I2C()");
+		throw I2CException("RaspiI2C::I2C_FUNC_I2C()");
 }
 
 RaspiI2C::~RaspiI2C()
@@ -100,7 +104,7 @@ RaspiI2C::~RaspiI2C()
 // void RaspiI2C::setOwnAddress(uint8_t own_address)
 // {
 	// if (ioctl(_fd, I2C_SLAVE, (long)own_address) < 0)
-		// throw I2CException("I2C::setOwnAddress()");
+		// throw I2CException("RaspiI2C::setOwnAddress()");
 // }
 
 void RaspiI2C::set(uint8_t addr, uint8_t* buf, int32_t len)
@@ -123,7 +127,7 @@ void RaspiI2C::set(uint8_t addr, uint8_t* buf, int32_t len)
 	msg.msgs[0].buf = buf;
 
 	if (ioctl(_fd, I2C_RDWR, &msg) < 0)
-		throw I2CException("I2C::write()");
+		throw I2CException("RaspiI2C::write()");
 	
 	delete[] msg.msgs;
 }
@@ -140,7 +144,7 @@ void RaspiI2C::get(uint8_t addr, uint8_t* buf, int32_t len)
 	msg.msgs[0].buf = buf;
 
 	if (ioctl(_fd, I2C_RDWR, &msg) < 0)
-		throw I2CException("I2C::read()");
+		throw I2CException("RaspiI2C::read()");
 	
 	std::stringstream ss;
 	ss << "I2C::read() ";
@@ -174,7 +178,7 @@ void RaspiI2C::transfert(uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* b
 	memset(msg.msgs[1].buf, 0, msg.msgs[1].len);
 
 	if (ioctl(_fd, I2C_RDWR, &msg) < 0)
-		throw I2CException("I2C::I2C_RDWR()");
+		throw I2CException("RaspiI2C::I2C_RDWR()");
 	
 	std::stringstream ss;
 	ss << "I2C::transfert() emission : ";

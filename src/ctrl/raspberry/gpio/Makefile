@@ -11,8 +11,9 @@ MAKE = make
 CC = g++
 LOG_PWD = ../log
 POLL_PWD = ../poll
-INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc
-LIBS = -L. -lpoll -llog
+UTIL_PWD = ../../../util
+INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -I$(UTIL_PWD)/src -Isrc
+LIBS = -L. -lpoll -llog -lutil
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)

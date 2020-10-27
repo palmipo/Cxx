@@ -9,11 +9,28 @@
 #include <thread>
 #include <ctime>
 
+class I2CFactory : public RS232Factory
+{
+public:
+    int32_t actionIn(PollDevice*)
+    {
+    }
+
+    int32_t actionOut(PollDevice*)
+    {
+    }
+
+    int32_t actionError(PollDevice*)
+    {
+    }
+
+};
+
 int main(int argc, char **argv)
 {
 	try
 	{
-		RS232Factory factory;
+		I2CFactory factory;
 		RS232 * uart = factory.add(argv[1]);
 		UsbI2C i2c(uart);
 

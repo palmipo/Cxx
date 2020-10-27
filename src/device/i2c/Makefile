@@ -2,6 +2,8 @@ BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
 	$(BIN_PWD)/at24c32.o \
+	$(BIN_PWD)/bmp280.o \
+	$(BIN_PWD)/bme280.o \
 	$(BIN_PWD)/ds1307.o \
 	$(BIN_PWD)/ds1621.o \
 	$(BIN_PWD)/is31fl3731.o \
@@ -20,8 +22,8 @@ OBJECTS = \
 	$(BIN_PWD)/tcs34725.o \
 	$(BIN_PWD)/tda8440.o
 
-	#$(BIN_PWD)/bmp280.o \
 
+UTIL_PWD = ../../util
 CTRL_PWD = ../../ctrl
 RASPI_PWD = $(CTRL_PWD)/raspberry
 POLL_PWD = $(RASPI_PWD)/poll
@@ -32,8 +34,8 @@ LOG_PWD = $(RASPI_PWD)/log
 GPIO_PWD = $(RASPI_PWD)/gpio
 CC = g++
 MAKE = make
-INCLUDE = -I$(CTRL_PWD)/interface -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -llog -li2cdevice -lgpio -lpoll
+INCLUDE = -I$(UTIL_PWD)/src -I$(CTRL_PWD)/interface -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
+LIBS = -L. -llog -li2cdevice -lpoll -lutil
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -44,12 +46,27 @@ all: libi2cdevice.so
 #
 clean:
 	$(MAKE) -C $(LOG_PWD) $@
+	$(MAKE) -C $(UTIL_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(USBI2C_PWD) $@
 	$(MAKE) -C $(I2C_PWD) $@
 	$(MAKE) -C $(GPIO_PWD) $@
 	rm -f $(BIN_PWD)/*.o *.so test_mcp23017 raspi_nunchuk test_nunchuk test_ds1621 test_ds1307 raspi_mcp23017 test_pca9685 test_saa1064 ph_hd
+
+#
+#
+bmp280: $(BIN_PWD)/test_bmp280.o
+	$(MAKE) liblog.so
+	$(MAKE) libutil.so
+	$(MAKE) libpoll.so
+	$(MAKE) libi2cdevice.so
+	$(MAKE) libraspii2c.so
+	$(MAKE) libgpio.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
+
+$(BIN_PWD)/test_bmp280.o: test/test_bmp280.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 #
 #
@@ -154,6 +171,12 @@ libgpio.so:
 liblog.so:
 	$(MAKE) -C $(LOG_PWD) $@
 	ln -s $(LOG_PWD)/$@
+
+#
+#
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
 
 #
 #
