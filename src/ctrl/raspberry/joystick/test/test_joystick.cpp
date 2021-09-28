@@ -6,32 +6,13 @@
 #include <iostream>
 #include <iomanip>
 
-class Factory : public PollFactory
+static int32_t actionIn(PollDevice * device)
 {
-	public:
-		Factory()
-		{}
-		
-		int32_t actionIn(PollDevice * device)
-		{
-			device->actionIn();
-			
-			uint8_t data[4];
-			int32_t len = device->read(data, 4);
-			
-			return len;
-		}
-
-		int32_t actionOut(PollDevice*)
-		{
-			return 0;
-		}
-
-		int32_t actionError(PollDevice*)
-		{
-			return 0;
-		}
-};
+	uint8_t data[4];
+	int32_t len = device->read(data, 4);
+	
+	return len;
+}
 
 int main(int argc, char **argv)
 {
@@ -49,9 +30,11 @@ int main(int argc, char **argv)
 		
 		ForceFeedback ff(argv[2]);
 
-		Factory factory;
+		PollFactory factory;
+		factory.setActionInCallback(actionIn);
 		factory.add(&manette);
 		factory.add(&ff);
+
 		while (1)
 		{
 			factory.scrute(30000);

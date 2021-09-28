@@ -105,17 +105,3 @@ int32_t Socket::SocketUdp::read(uint8_t * msg, int32_t length)
 	return len;
 }
 
-int32_t Socket::SocketUdp::actionIn()
-{
-	return 0;
-}
-
-int32_t Socket::SocketUdp::actionOut()
-{
-	return 0;
-}
-
-int32_t Socket::SocketUdp::actionError()
-{
-	return 0;
-}

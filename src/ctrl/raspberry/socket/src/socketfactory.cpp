@@ -114,28 +114,3 @@ void Socket::SocketFactory::del(const std::string & addr, uint16_t port)
 	throw Socket::SocketException(__FILE__, __LINE__, "not find");
 }
 
-// int32_t Socket::SocketFactory::actionError(PollDevice * device)
-// {
-	// return device->actionError();
-// }
-
-// int32_t Socket::SocketFactory::actionIn(PollDevice * device)
-// {
-	// Socket::SocketBase * base = (Socket::SocketBase*)device;
-	// if (base->isServerMode())
-	// {
-		/* demande de connexion sur la socket d'ecoute */
-		// Socket::SocketTcp * s = new Socket::SocketTcp(device->handler());
-		// add(s);
-	// }
-	// else
-	// {
-		// return device->actionIn();
-	// }
-// }
-
-// int32_t Socket::SocketFactory::actionOut(PollDevice * device)
-// {
-	// return device->actionOut();
-// }
-

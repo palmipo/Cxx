@@ -9,56 +9,27 @@
 #include <sstream>
 #include <thread>
 
-class Factory : public RS232Factory
+static int32_t actionIn(PollDevice * device)
 {
-	public:
-		Factory()
-		{}
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
-		virtual RS232 * add(const std::string & device, int32_t (*f)(PollDevice *, PollBuffer *))
-		{
-			Log::getLogger()->debug(__FILE__, __LINE__, "add");
-			RS232 * rs = RS232Factory::add(device);
-			_clb.set(f, rs);
-			return rs;
-		}
+	uint8_t data[256];
+	int32_t len = device->read(data, 256);
+	device->write(data, len);
 
-		virtual int32_t actionIn(PollDevice * device)
-		{
-			Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
-			uint8_t data[256];
-			device->actionIn();
-			int32_t len = device->read(data, 256);
-			device->write(data, len);
-		}
+	std::stringstream ss;
+	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	
+	return 0;
+}
 
-		virtual int32_t actionOut(PollDevice * device)
-		{
-		}
-
-		virtual int32_t actionError(PollDevice * device)
-		{
-		}
-
-	protected:
-		Callback<int32_t (*)(PollDevice *, PollBuffer *), PollDevice *, PollBuffer *> _clb;
-};
-
-void scrute(Factory * factory, int32_t * fin)
+void scrute(RS232Factory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
 		factory->scrute(1000);
 	}
-}
-
-int32_t fct(PollDevice * device, PollBuffer * buffer)
-{
-	uint8_t data[512];
-	int32_t len = buffer->read(data, 512);
-	std::stringstream ss;
-	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 }
 
 int main (int argc, char **argv)
@@ -71,23 +42,26 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	int32_t fin = 0;
-	Factory factory;
-	std::thread t(scrute, &factory, &fin);
-
 	try
 	{
-		RS232 * serial = factory.add(argv[1], fct);
+		int32_t fin = 0;
+		RS232Factory factory;
+		factory.setActionInCallback(actionIn);
+
+		std::thread t(scrute, &factory, &fin);
+
+		RS232 * serial = factory.add(argv[1]);
 		serial->setConfig(B19200, 8, 'E', 1);
+
 		std::this_thread::sleep_for(std::chrono::minutes(2));
+
+		fin = 1;
+		t.join();
 	}
 	catch(RS232Exception & e)
 	{
 		Log::getLogger()->debug(__FILE__, __LINE__, e.what());
 	}
-
-	fin = 1;
-	t.join();
 
     return 0;
 }

@@ -2,50 +2,24 @@
 #include "rs232factory.h"
 #include "rs232exception.h"
 #include "log.h"
-#include "callback.h"
 #include "polldevice.h"
 #include "pollbuffer.h"
 #include <cstdint>
 #include <sstream>
 #include <thread>
 
-class Factory : public RS232Factory
+
+static int32_t actionIn(PollDevice * device)
 {
-	public:
-		Factory()
-		{}
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
-		virtual RS232 * add(const std::string & device, int32_t (*f)(PollDevice *, PollBuffer *))
-		{
-			Log::getLogger()->debug(__FILE__, __LINE__, "add");
-			RS232 * rs = RS232Factory::add(device);
-			_clb.set(f, rs);
-			return rs;
-		}
+	uint8_t data[256];
+	int32_t len = device->read(data, 256);
 
-		virtual int32_t actionIn(PollDevice * device)
-		{
-			Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
-			uint8_t data[256];
-			device->actionIn();
-			int32_t len = device->read(data, 256);
+	std::stringstream ss;
+	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
-			PollBuffer buffer;
-			buffer.write(data, len);
-			_clb.call(&buffer);
-		}
-
-		virtual int32_t actionOut(PollDevice * device)
-		{
-		}
-
-		virtual int32_t actionError(PollDevice * device)
-		{
-		}
-
-	protected:
-		Callback<int32_t (*)(PollDevice *, PollBuffer *), PollDevice *, PollBuffer *> _clb;
-};
 
 void scrute(Factory * factory, int32_t * fin)
 {
@@ -53,15 +27,6 @@ void scrute(Factory * factory, int32_t * fin)
 	{
 		factory->scrute(1000);
 	}
-}
-
-int32_t fct(PollDevice * device, PollBuffer * buffer)
-{
-	uint8_t data[512];
-	int32_t len = buffer->read(data, 512);
-	std::stringstream ss;
-	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 }
 
 int main (int argc, char **argv)
@@ -75,13 +40,18 @@ int main (int argc, char **argv)
 	}
 
 	int32_t fin = 0;
-	Factory factory;
+	RS232Factory factory;
+	factory.setActionInCallback(fct);
+
+	// creation du thread secondaire
 	std::thread t(scrute, &factory, &fin);
 
 	try
 	{
-		RS232 * serial = factory.add(argv[1], fct);
+		RS232 * serial = factory.add(argv[1]);
 		serial->setConfig(B19200, 8, 'E', 1);
+		
+		// endort le thread principal pour 2 minutes
 		std::this_thread::sleep_for(std::chrono::minutes(2));
 	}
 	catch(RS232Exception & e)

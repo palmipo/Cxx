@@ -19,29 +19,29 @@ RS232::RS232(const std::string & device_p)
 : PollDevice()
 {
 	{
-	std::stringstream ss;
-    ss << "ouverture device : " << device_p;
-    Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+		std::stringstream ss;
+		ss << "ouverture device : " << device_p;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	}
 
-    // ouverture du port
-    _handler = ::open(device_p.c_str(), O_RDWR | O_NOCTTY);
-    if (_handler < 0)
+	// ouverture du port
+	_handler = ::open(device_p.c_str(), O_RDWR | O_NOCTTY);
+	if (_handler < 0)
 	{
 		std::stringstream ss;
 		ss << "open : " << strerror(errno);
 		throw RS232Exception(__FILE__, __LINE__, ss.str());
 	}
 
-    if (!::isatty(_handler))
+	if (!::isatty(_handler))
 	{
 		std::stringstream ss;
 		ss << "isatty : " << strerror(errno);
 		throw RS232Exception(__FILE__, __LINE__, ss.str(), this);
 	}
 
-    // lecture de la configuration actuelle
-    if (::tcgetattr(_handler, &_oldios))
+	// lecture de la configuration actuelle
+	if (::tcgetattr(_handler, &_oldios))
 	{
 		std::stringstream ss;
 		ss << "tcgetattr : " << strerror(errno);
@@ -53,16 +53,18 @@ RS232::~RS232()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "close");
 
-    ::tcflush(_handler, TCIOFLUSH);
+	::tcflush(_handler, TCIOFLUSH);
 
-    // fin connexion
-    ::cfsetispeed (&_oldios, B0);
-    ::cfsetospeed (&_oldios, B0);
-    ::tcsetattr (_handler, TCSANOW, &_oldios);
+	// fin connexion
+	::cfsetispeed (&_oldios, B0);
+	::cfsetospeed (&_oldios, B0);
+	::tcsetattr (_handler, TCSANOW, &_oldios);
 
-    // fermeture du port
-    if (!::close(_handler))
+	// fermeture du port
+	if (!::close(_handler))
+	{
 		Log::getLogger()->error(__FILE__, __LINE__, std::strerror(errno));
+	}
 }
 
 /*
@@ -74,86 +76,86 @@ stop   : 1/2
 void RS232::setConfig(speed_t baud, int32_t data, int32_t parity, int32_t stop, int32_t is_raw)
 {
 	// std::stringstream ss;
-    // ss << " baud : " << baud;
+	// ss << " baud : " << baud;
 	// ss << ", data : " << data;
 	// ss << ", parity : " << parity;
 	// ss << ", stop : " << stop;
 	// ss << ", is_raw : " << is_raw;
-    // Log::getLogger()->DEBUG(__FILE__, __LINE__, ss.str());
+	// Log::getLogger()->DEBUG(__FILE__, __LINE__, ss.str());
 
-    ::memset(&_newios, 0, sizeof(struct termios));
+	::memset(&_newios, 0, sizeof(struct termios));
 
-    if (::cfsetispeed (&_newios, baud) < 0)
+	if (::cfsetispeed (&_newios, baud) < 0)
 	{
 		std::stringstream ss;
 		ss << "cfsetispeed : " << strerror(errno);
 		throw RS232Exception(__FILE__, __LINE__, ss.str(), this);
 	}
 
-    if (::cfsetospeed (&_newios, baud) < 0)
+	if (::cfsetospeed (&_newios, baud) < 0)
 	{
 		std::stringstream ss;
 		ss << "cfsetospeed : " << strerror(errno);
 		throw RS232Exception(__FILE__, __LINE__, ss.str(), this);
 	}
 
-    if (parity == 'O') // impair
-    {
+	if (parity == 'O') // impair
+	{
 		_newios.c_cflag |= _newios.c_cflag | PARENB | PARODD;
 		_newios.c_iflag &= ~IGNPAR;
-    }
-    else if (parity == 'E') // pair
-    {
+	}
+	else if (parity == 'E') // pair
+	{
 		_newios.c_cflag |= (_newios.c_cflag & ~PARODD) | PARENB;
 		_newios.c_iflag &= ~IGNPAR;
-    }
-    else
-    {
+	}
+	else
+	{
 		_newios.c_cflag &= ~(PARENB | PARODD);
 		_newios.c_iflag |= IGNPAR;
-    }
-    
-    if (data == 8)
-    {
+	}
+
+	if (data == 8)
+	{
 		_newios.c_cflag |= (_newios.c_cflag & ~CSIZE) | CS8;
-    }
-    else if (data == 7)
-    {
+	}
+	else if (data == 7)
+	{
 		_newios.c_cflag |= (_newios.c_cflag & ~CSIZE) | CS7;
-    }
-    else if (data == 6)
-    {
+	}
+	else if (data == 6)
+	{
 		_newios.c_cflag |= (_newios.c_cflag & ~CSIZE) | CS6;
-    }
-    else
-    {
+	}
+	else
+	{
 		_newios.c_cflag |= (_newios.c_cflag & ~CSIZE) | CS5;
-    }
-    
-    if (stop == 2)
-    {
+	}
+
+	if (stop == 2)
+	{
 		_newios.c_cflag |= CSTOPB;
-    }
-    else
-    {
+	}
+	else
+	{
 		_newios.c_cflag &= ~CSTOPB;
-    }
+	}
 
-    _newios.c_cflag |= CREAD | CLOCAL;
-    _newios.c_iflag |= IGNBRK;
-    _newios.c_oflag = 0;
-    _newios.c_lflag = (is_raw == 0) ? 0 : ICANON;
-    _newios.c_cc[VTIME] = 0;
-    _newios.c_cc[VMIN]  = 0;
+	_newios.c_cflag |= CREAD | CLOCAL;
+	_newios.c_iflag |= IGNBRK;
+	_newios.c_oflag = 0;
+	_newios.c_lflag = (is_raw == 0) ? 0 : ICANON;
+	_newios.c_cc[VTIME] = 0;
+	_newios.c_cc[VMIN]  = 0;
 
-    if (::tcflush(_handler, TCIOFLUSH) < 0)
+	if (::tcflush(_handler, TCIOFLUSH) < 0)
 	{
 		std::stringstream ss;
 		ss << "tcflush : " << strerror(errno);
 		throw RS232Exception(__FILE__, __LINE__, errno, this);
 	}
 
-    if (::tcsetattr (_handler, TCSANOW, &_newios) < 0)
+	if (::tcsetattr (_handler, TCSANOW, &_newios) < 0)
 	{
 		std::stringstream ss;
 		ss << "tcsetattr : " << strerror(errno);
@@ -280,19 +282,4 @@ int32_t RS232::getBlockingReadUntilCharacterArrives()
 	}
 
 	return _newios.c_cc[VMIN];
-}
-
-int32_t RS232::actionIn()
-{
-	return 0;
-}
-
-int32_t RS232::actionOut()
-{
-	return 0;
-}
-
-int32_t RS232::actionError()
-{
-	return 0;
 }

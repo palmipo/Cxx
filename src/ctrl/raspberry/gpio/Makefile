@@ -25,6 +25,7 @@ clean:
 
 out: $(BIN_PWD)/out.o
 	$(MAKE) liblog.so
+	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) libgpio.so
 	$(CC) -o $@ $< -L. $(LDFLAGS) -lgpio
@@ -40,6 +41,10 @@ liblog.so:
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
 	ln -s $(POLL_PWD)/$@
+
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
 
 libgpio.so: $(OBJECTS)
 	$(MAKE) liblog.so

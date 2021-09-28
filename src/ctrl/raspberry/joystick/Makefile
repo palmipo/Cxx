@@ -10,8 +10,8 @@ MKDIR = mkdir -p
 UTIL_PWD = ../../../util
 LOG_PWD = ../log
 POLL_PWD = ../poll
-INCLUDE = -I$(LOG_PWD)/src -I$(POLL_PWD)/src -Isrc
-LIBS = -L. -ljoystick -lpoll -llog
+INCLUDE = -I$(LOG_PWD)/src -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -Isrc
+LIBS = -L. -ljoystick -lutil -lpoll -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -20,6 +20,9 @@ clean:
 	rm $(BIN_PWD)/*.o *.so test_joystick
 
 test_joystick: $(BIN_PWD)/test_joystick.o
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
 	$(MAKE) libjoystick.so
 	$(CC) -o $@ $< $(LDFLAGS)
 
@@ -35,13 +38,10 @@ liblog.so:
 	ln -s $(LOG_PWD)/$@
 
 libpoll.so:
-	$(MAKE) libutil.so
-	$(MAKE) liblog.so
 	$(MAKE) -C $(POLL_PWD) $@
 	ln -s $(POLL_PWD)/$@
 
 libjoystick.so: $(OBJECTS)
-	$(MAKE) libpoll.so
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp

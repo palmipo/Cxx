@@ -31,14 +31,22 @@ class POLL_FACTORY_DLL PollFactory
 		//!\ sous windows POLLOUT gene le POLLIN
 		virtual int32_t scrute(int32_t, int32_t=1, int32_t=0, int32_t=1);
 
-		virtual int32_t actionIn(PollDevice*) = 0;
-		virtual int32_t actionOut(PollDevice*) = 0;
-		virtual int32_t actionError(PollDevice*) = 0;
+		virtual void setActionInCallback(int32_t (*)(PollDevice*));
+		virtual void setActionOutCallback(int32_t (*)(PollDevice*));
+		virtual void setActionErrorCallback(int32_t (*)(PollDevice*));
+
+		virtual int32_t actionIn(PollDevice*);
+		virtual int32_t actionOut(PollDevice*);
+		virtual int32_t actionError(PollDevice*);
 
 	protected:
 		virtual int32_t action(const pollfd &);
 		std::map<int32_t, PollDevice*> _liste;
 		std::mutex _mutex;
+
+		int32_t (*_clb_in)(PollDevice*);
+		int32_t (*_clb_out)(PollDevice*);
+		int32_t (*_clb_error)(PollDevice*);
 };
 
 #endif

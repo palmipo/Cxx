@@ -34,9 +34,6 @@ class GpioFactory : public PollFactory
 	protected:
 		// GPIOEVENT_EVENT_RISING_EDGE
 		// GPIOEVENT_EVENT_FALLING_EDGE
-		virtual int32_t actionIn(PollDevice*) = 0;
-		virtual int32_t actionOut(PollDevice*) = 0;
-		virtual int32_t actionError(PollDevice*) = 0;
 
 	protected:
 		int32_t _handler;

@@ -6,6 +6,9 @@
 #include <sstream>
 
 PollFactory::PollFactory()
+: _clb_in(0)
+, _clb_out(0)
+, _clb_error(0)
 {}
 
 PollFactory::~PollFactory()
@@ -161,3 +164,50 @@ int32_t PollFactory::action(const pollfd & evnt)
 	ss << "evnt non traite !!!";
 	throw PollException(__FILE__, __LINE__, ss.str());
 }
+
+void PollFactory::setActionInCallback(int32_t (*clb)(PollDevice*))
+{
+	_clb_in = clb;
+}
+
+void PollFactory::setActionOutCallback(int32_t (*clb)(PollDevice*))
+{
+	_clb_out = clb;
+}
+
+void PollFactory::setActionErrorCallback(int32_t (*clb)(PollDevice*))
+{
+	_clb_error = clb;
+}
+
+int32_t PollFactory::actionIn(PollDevice* dev)
+{
+	if (_clb_in)
+	{
+		return _clb_in(dev);
+	}
+	
+	return 0;
+}
+
+int32_t PollFactory::actionOut(PollDevice* dev)
+{
+	if (_clb_out)
+	{
+		return _clb_out(dev);
+	}
+	
+	return 0;
+}
+
+
+int32_t PollFactory::actionError(PollDevice* dev)
+{
+	if (_clb_error)
+	{
+		return _clb_error(dev);
+	}
+	
+	return 0;
+}
+

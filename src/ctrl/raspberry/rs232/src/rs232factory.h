@@ -22,24 +22,17 @@ class RS232;
 class RS232Fifo;
 class RS232_DLL RS232Factory : public PollFactory
 {
-    public:
-        RS232Factory();
-        virtual ~RS232Factory();
-        
-        virtual RS232 * add(const std::string &);
-        virtual RS232Fifo * addFifo(const std::string &);
-        virtual RS232 * get(const std::string &);
-        virtual void del(const std::string &);
+	public:
+		RS232Factory();
+		virtual ~RS232Factory();
+
+		virtual RS232 * add(const std::string &);
+		virtual RS232Fifo * addFifo(const std::string &);
+		virtual RS232 * get(const std::string &);
+		virtual void del(const std::string &);
 
 	protected:
-        virtual int32_t actionIn(PollDevice*) = 0;
-        virtual int32_t actionOut(PollDevice*) = 0;
-        virtual int32_t actionError(PollDevice*) = 0;
-    
-    protected:
-        std::map<std::string, int32_t> _port;
-        
-
+		std::map<std::string, int32_t> _port;
 };
 
 #endif

@@ -79,22 +79,6 @@ void ForceFeedback::doEffect()
     }
 }
 
-
-int32_t ForceFeedback::actionIn()
-{
-	return 0;
-}
-
-int32_t ForceFeedback::actionOut()
-{
-	return 0;
-}
-
-int32_t ForceFeedback::actionError()
-{
-	return 0;
-}
-
 int32_t ForceFeedback::write(uint8_t *, int32_t)
 {
 	return 0;

@@ -18,22 +18,12 @@ class Test : public GpioFactory
 	protected:
 		virtual int32_t actionIn(PollDevice * device)
 		{
-			int32_t etat = device->actionIn();
+			int32_t etat = ((Gpio*)device)->readEvent();
 			if (etat & GPIOEVENT_EVENT_RISING_EDGE)
 				Log::getLogger()->info(__FILE__, __LINE__, "RISING");
 
 			if (etat & GPIOEVENT_EVENT_FALLING_EDGE)
 				Log::getLogger()->info(__FILE__, __LINE__, "FALLING");
-			return 0;
-		}
-
-		virtual int32_t actionOut(PollDevice*)
-		{
-			return 0;
-		}
-
-		virtual int32_t actionError(PollDevice*)
-		{
 			return 0;
 		}
 };

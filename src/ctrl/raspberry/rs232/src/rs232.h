@@ -34,11 +34,6 @@ class RS232_DLL RS232 : public PollDevice
 		virtual int32_t getBlockingReadUntilCharacterArrives();
 
 	protected :
-		virtual int32_t actionIn();
-		virtual int32_t actionOut();
-		virtual int32_t actionError();
-
-	protected :
 		struct termios _oldios, _newios;
 };
 

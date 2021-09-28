@@ -26,6 +26,7 @@ clean:
 
 rsclb : $(BIN_PWD)/rsclb.o
 	$(MAKE) liblog.so
+	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
@@ -64,6 +65,13 @@ dump.exe : $(BIN_PWD)/dump.o
 
 $(BIN_PWD)/dump.o: test/dump.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
+
+echo : $(BIN_PWD)/echo.o
+	$(MAKE) libutil.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
 
 echo.exe : $(BIN_PWD)/echo.o
 	$(MAKE) libutil.dll
