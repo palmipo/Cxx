@@ -14,4 +14,5 @@ uint8_t AT24C32::read(uint16_t addr)
 {
 	uint8_t value = 0;
 	_twi->transfert(_address, (uint8_t *)&addr, 2, &value, 1);
+	return value;
 }

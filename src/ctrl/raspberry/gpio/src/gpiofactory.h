@@ -32,10 +32,6 @@ class GpioFactory : public PollFactory
 		virtual void info();
 	
 	protected:
-		// GPIOEVENT_EVENT_RISING_EDGE
-		// GPIOEVENT_EVENT_FALLING_EDGE
-
-	protected:
 		int32_t _handler;
 		std::map < int32_t, int32_t > _event_map;
 		std::map < int32_t, Gpio * > _io_map;

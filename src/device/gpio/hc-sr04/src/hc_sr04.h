@@ -1,10 +1,11 @@
 #ifndef HC_SR04_H
 #define HC_SR04_H
 
-#include "gpiofactory.h"
 #include <thread>
+#include "gpiofactory.h"
 
 class Gpio;
+class PollDevice;
 class HC_SR04 : public GpioFactory
 {
 	public:
@@ -18,13 +19,13 @@ class HC_SR04 : public GpioFactory
 
 	protected:
 		static void run(HC_SR04 *);
-		virtual int32_t actionIn(PollDevice * device);
-		virtual int32_t actionOut(PollDevice * device);
-		virtual int32_t actionError(PollDevice * device);
+		int32_t actionIn(PollDevice * device);
 		
 		// nanosecond
 		std::chrono::time_point<std::chrono::high_resolution_clock> _timestamp_rising;
 		std::chrono::time_point<std::chrono::high_resolution_clock> _timestamp_falling;
+
+		//~ GpioFactory * _factory;
 		Gpio * _out;
 		Gpio * _in;
 		std::thread * _thread;

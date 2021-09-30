@@ -58,7 +58,7 @@ int32_t Gpio::read(uint8_t * data, int32_t length)
 	return input_values.values[0];
 }
 
-int32_t Gpio::readEvent()
+int32_t Gpio::readEvent(uint32_t *id, uint64_t *timestamp)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
@@ -68,6 +68,8 @@ int32_t Gpio::readEvent()
 		throw GpioException(__FILE__, __LINE__, errno);
 	}
 
-	//~ _evnt->set(input_event_data.id, input_event_data.timestamp);
-	return input_event_data.id;
+	*timestamp = input_event_data.timestamp;
+	*id = input_event_data.id;
+	
+	return 0;
 }

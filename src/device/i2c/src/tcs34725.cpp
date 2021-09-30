@@ -245,6 +245,15 @@ uint16_t TCS34725::blueChannel()
 	return buffer[0] | (buffer[1] << 8);
 }
 
+uint64_t TCS34725::rgb()
+{
+	uint64_t rgb = 0;
+	uint16_t c, r, g, b;
+	readChannels(&c, &r, &g, &b);
+	rgb = (c << 48) | (r << 32) | (g << 16) | b;
+	return rgb;
+}
+
 /*
  * type :
  * 00 Repeated byte protocol transaction

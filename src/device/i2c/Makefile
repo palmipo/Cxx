@@ -1,6 +1,7 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
+	$(BIN_PWD)/phat_enviro.o \
 	$(BIN_PWD)/at24c32.o \
 	$(BIN_PWD)/bmp280.o \
 	$(BIN_PWD)/bme280.o \
@@ -35,7 +36,7 @@ GPIO_PWD = $(RASPI_PWD)/gpio
 CC = g++
 MAKE = make
 INCLUDE = -I$(UTIL_PWD)/src -I$(CTRL_PWD)/interface -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -llog -li2cdevice -lpoll -lutil
+LIBS = -L. -llog -li2cdevice -lpoll -lutil -lgpio
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -65,11 +66,6 @@ bmp280: $(BIN_PWD)/test_bmp280.o
 	$(MAKE) libgpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
-$(BIN_PWD)/test_bmp280.o: test/test_bmp280.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-#
-#
 ph_hd: $(BIN_PWD)/ph_hd.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
@@ -78,7 +74,21 @@ ph_hd: $(BIN_PWD)/ph_hd.o
 	$(MAKE) libgpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
+#
+#
+ph_enviro: $(BIN_PWD)/test_phat_enviro.o
+	$(MAKE) liblog.so
+	$(MAKE) libutil.so
+	$(MAKE) libpoll.so
+	$(MAKE) libi2cdevice.so
+	$(MAKE) libraspii2c.so
+	$(MAKE) libgpio.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
+
 $(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+$(BIN_PWD)/test_phat_enviro.o: test/test_phat_enviro.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 #

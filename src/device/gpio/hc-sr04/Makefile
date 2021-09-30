@@ -4,12 +4,13 @@ OBJECTS = \
 	$(BIN_PWD)/hc_sr04.o
 
 POLL_PWD = ../../../ctrl/raspberry/poll
+UTIL_PWD = ../../../util
 LOG_PWD = ../../../ctrl/raspberry/log
 GPIO_PWD = ../../../ctrl/raspberry/gpio
 CC = g++
 MAKE = make
-INCLUDE = -Isrc -I$(POLL_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -llog -lgpio -lpoll
+INCLUDE = -Isrc -I$(POLL_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src -I$(UTIL_PWD)/src
+LIBS = -L. -llog -lgpio -lpoll -lutil
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS) -lpthread
@@ -28,6 +29,7 @@ clean:
 #
 telemetre: $(BIN_PWD)/test_telemetre.o
 	$(MAKE) liblog.so
+	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) libgpio.so
 	$(MAKE) libhcsr04.so
@@ -47,6 +49,12 @@ libgpio.so:
 liblog.so:
 	$(MAKE) -C $(LOG_PWD) $@
 	ln -s $(LOG_PWD)/$@
+
+#
+#
+libutil.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	ln -s $(UTIL_PWD)/$@
 
 #
 #

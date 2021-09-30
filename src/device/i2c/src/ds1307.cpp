@@ -34,6 +34,8 @@ uint8_t DS1307::haltClock(uint8_t halt)
 	buffer[0] = 0x00;
 	buffer[1] = halt ? 0x80 : 0x00;
 	_twi->set(_address, buffer, 2);
+	
+	return 0;
 }
 
 uint8_t DS1307::clockHalted()

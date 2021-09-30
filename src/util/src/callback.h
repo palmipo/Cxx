@@ -5,9 +5,6 @@ template <class T, class U, class V>
 class Callback
 {
 	public:
-		Callback()
-		{}
-
 		Callback(T cb, U ctx)
 		: _callback(cb)
 		, _ctx(ctx)
@@ -15,12 +12,6 @@ class Callback
 
 		virtual ~Callback()
 		{}
-
-		void set(T cb, U ctx)
-		{
-			_callback=cb;
-			_ctx=ctx;
-		}
 
 		void call(V data)
 		{

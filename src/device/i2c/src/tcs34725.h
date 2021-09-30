@@ -21,6 +21,7 @@ class TCS34725 : public DeviceI2C
 		virtual uint16_t redChannel();
 		virtual uint16_t greenChannel();
 		virtual uint16_t blueChannel();
+		virtual uint64_t rgb();
 
 	protected:
 		/*

@@ -3,7 +3,7 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/device.o
 
-LOG_PWD = ../src/ctrl/raspberry/log
+LOG_PWD = ../../src/ctrl/raspberry/log
 MAKE = make
 MKDIR = mkdir -p
 CC = g++

@@ -1,6 +1,6 @@
 #include "hc_sr04.h"
 #include "gpio.h"
-#include "gpioevent.h"
+#include "gpiofactory.h"
 #include "log.h"
 #include <sstream>
 #include <chrono>
@@ -32,23 +32,24 @@ void HC_SR04::start(int32_t intervalle_500ms)
 	_intervalle_500ms = (intervalle_500ms > 0) ? intervalle_500ms : 1;
 	_thread = new std::thread(run, this);
 	_thread->detach();
+
+	uint8_t valeur;
+	valeur = 1;
+	_out->write(&valeur, 1);
+
+	std::this_thread::sleep_for(std::chrono::microseconds(10));
+
+	valeur = 0;
+	_out->write(&valeur, 1);
+
+	//~ std::this_thread::sleep_for(std::chrono::milliseconds(500 * obj->_intervalle_500ms));
 }
 
 void HC_SR04::run(HC_SR04 * obj)
 {
-	uint8_t valeur;
-
 	while (!obj->_fin)
 	{
-		valeur = 1;
-		obj->_out->write(&valeur, 1);
-
-		std::this_thread::sleep_for(std::chrono::microseconds(10));
-
-		valeur = 0;
-		obj->_out->write(&valeur, 1);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(500 * obj->_intervalle_500ms));
+		obj->scrute(1000);
 	}
 }
 
@@ -68,15 +69,14 @@ int32_t HC_SR04::actionIn(PollDevice * device)
 	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	Gpio * io = (Gpio *)device;
-	int32_t etat = io->actionIn();
-	if (etat)
+	if (io)
 	{
-		GpioEvent * evnt = io->getEvent();
-		if (evnt->id() == GPIOEVENT_EVENT_RISING_EDGE)
+		int32_t evnt = io->readEvent();
+		if (evnt == GPIOEVENT_EVENT_RISING_EDGE)
 		{
 			_timestamp_rising = std::chrono::high_resolution_clock::now();
 		}
-		else if (evnt->id() == GPIOEVENT_EVENT_FALLING_EDGE)
+		else if (evnt == GPIOEVENT_EVENT_FALLING_EDGE)
 		{
 			_timestamp_falling = std::chrono::high_resolution_clock::now();
 
@@ -88,19 +88,6 @@ int32_t HC_SR04::actionIn(PollDevice * device)
 		}
 	}
 	
-	return etat;
+	return 0;
 }
 
-int32_t HC_SR04::actionOut(PollDevice * device)
-{
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
-
-	return device->actionOut();
-}
-
-int32_t HC_SR04::actionError(PollDevice * device)
-{
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionError");
-
-	return device->actionError();
-}

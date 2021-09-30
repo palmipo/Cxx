@@ -1,46 +1,32 @@
 #include "gpiofifo.h"
+#include "gpio.h"
 #include "gpioevent.h"
 #include "gpioexception.h"
 
-#include <linux/gpio.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
 #include "log.h"
 
-GpioFifo::GpioFifo(int32_t pin_number, int32_t handler)
-:Gpio(pin_number, handler)
-{}
+GpioFifo::GpioFifo(const std::string & device_p)
+: GpioFactory(device_p)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "GpioFifo");
+}
 
 GpioFifo::~GpioFifo()
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "~Gpio");
+	Log::getLogger()->debug(__FILE__, __LINE__, "~GpioFifo");
 }
 
-GpioEvent * GpioFifo::getEvent()
+int32_t GpioFifo::actionIn(PollDevice* dev)
 {
-	if (_fifo.empty())
-	{
-		throw GpioException(__FILE__, __LINE__, "fifo vide !");
-	}
+	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
-	GpioEvent * buffer = _fifo.front();
-	_fifo.pop();
-
-	return buffer;
-}
-
-int32_t GpioFifo::actionIn()
-{
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
-
-	struct gpioevent_data input_event_data;
-	if (::read(_handler, &input_event_data, sizeof(struct gpioevent_data)) <= 0)
-	{
-		throw GpioException(__FILE__, __LINE__, errno);
-	}
+	Gpio * io = (Gpio*)dev;
+	uint32_t id;
+	uint64_t timestamp;
+	io->readEvent(&id, &timestamp);
 	
-	GpioEvent * event = new GpioEvent(input_event_data.id, input_event_data.timestamp);
+	GpioEvent * event = new GpioEvent(id, timestamp);
 	_fifo.push(event);
 
-	return input_event_data.id;
+	return 0;
 }

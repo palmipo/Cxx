@@ -4,20 +4,9 @@
 #include <thread>
 #include <chrono>
 
-void scrute(HC_SR04 * telemetre, int32_t * fin)
-{
-	while(! *fin)
-	{
-		telemetre->scrute(1000);
-	}
-}
-
 int main(int argc,char **argv)
 {
-	int32_t fin = 0;
 	HC_SR04 telemetre(17, 18);
-	std::thread t(scrute, &telemetre, &fin);
-	t.detach();
 	telemetre.start(2);
 
 	for (int32_t i=0; i<1000; ++i)
@@ -35,6 +24,6 @@ int main(int argc,char **argv)
 		}
 	}
 	telemetre.stop();
-	fin = 1;
+
 	return 0;
 }

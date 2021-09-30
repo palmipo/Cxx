@@ -29,8 +29,6 @@ class BatmintonFactory : public GpioFactory
 		
 	protected:
 		virtual int32_t actionIn(PollDevice*);
-		virtual int32_t actionOut(PollDevice*);
-		virtual int32_t actionError(PollDevice*);
 
 		int32_t _status;
 		HC1632 * _matrix;

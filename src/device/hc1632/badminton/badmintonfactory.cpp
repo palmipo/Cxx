@@ -87,7 +87,6 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	Gpio * bt = (Gpio *)device;
-	bt->actionIn();
 
 	std::chrono::time_point<std::chrono::high_resolution_clock> new_irq = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = new_irq - _last_valid_irq;
@@ -144,16 +143,6 @@ int32_t BatmintonFactory::actionIn(PollDevice * device)
 int32_t BatmintonFactory::status()
 {
 	return _status;
-}
-
-int32_t BatmintonFactory::actionOut(PollDevice * device)
-{
-	return device->actionOut();
-}
-
-int32_t BatmintonFactory::actionError(PollDevice * device)
-{
-	return device->actionError();
 }
 
 void BatmintonFactory::majAffichage()
