@@ -114,16 +114,16 @@ int32_t ANT::Profile::dataPageRequestRecv(uint8_t * msg, int32_t length)
 	1 Reserved // 1 Byte // Value = 0xFF N/A
 	2 Reserved // 1 Byte // Value = 0xFF N/A
 	3 Descriptor Byte 1 // 1 Byte // Allows subpages to be requested within the requested data page.
-		Valid Values: 0 â€“ 254
+		Valid Values: 0 â 254
 		Invalid: 255 (0xFF) N/A
 	4 Descriptor Byte 2 // 1 Byte // Allows subpages to be requested within the requested data page.
-		Valid Values: 0 â€“ 254
+		Valid Values: 0 â 254
 		Invalid: 255 (0xFF) N/A
 	5 Requested Transmission Response // 1 Byte // Describes transmission characteristics of the data requested.
 		Bit 0-6: Number of times to transmit requested page.
 		Bit 7: Setting the MSB means the device replies using acknowledged messages if possible.
 		Special Values: 0x80 - Transmit until a successful acknowledge is received.
-		0x00 â€“ Invalid N/A
+		0x00 â Invalid N/A
 	6 Requested Page Number // 1 Byte // Page number to transmit. N/A
 	7 Command Type // 1 Byte // Value = 1 (0x01) for Request Data Page Value = 2 (0x02) for Request ANT-FS session N/A
 	*/

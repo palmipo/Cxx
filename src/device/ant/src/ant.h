@@ -65,8 +65,8 @@ namespace ANT
 			/*
 			 * NOTIFICATIONS
 			 */
-			virtual void startupMessageRecv(uint8_t) = 0; // 0x6f
-			virtual void serialErrorMessageRecv(uint8_t) = 0; // 0xae
+			virtual int32_t startupMessageRecv(uint8_t*, int32_t) = 0; // 0x6f
+			virtual int32_t serialErrorMessageRecv(uint8_t*, int32_t) = 0; // 0xae
 			 
 			/*
 			 * CONTROL MESSAGES
@@ -82,12 +82,12 @@ namespace ANT
 			 * DATA MESSAGES
 			 */
 			virtual void broadcastData(uint8_t, uint8_t*, uint16_t);
-			virtual int32_t broadcastDataRecv(uint8_t*, int32_t) = 0;
 			virtual void acknowledgedData(uint8_t, uint8_t *, uint16_t);
-			virtual int32_t acknowledgedDataRecv(uint8_t*, int32_t) = 0;
 			virtual void burstTransferData(uint8_t, uint8_t *, uint16_t);
-			virtual int32_t burstTransfertDataRecv(uint8_t*, int32_t) = 0;
 			virtual void advancedBurstData(uint8_t, uint8_t *, uint8_t);
+			virtual int32_t broadcastDataRecv(uint8_t*, int32_t) = 0;
+			virtual int32_t acknowledgedDataRecv(uint8_t*, int32_t) = 0;
+			virtual int32_t burstTransfertDataRecv(uint8_t*, int32_t) = 0;
 			virtual int32_t advancedBurstDataRecv(uint8_t*, int32_t) = 0;
 
 			/*
@@ -98,18 +98,18 @@ namespace ANT
 			/*
 			 * REQUESTED RESPONSE MESSAGES
 			 */
-			virtual void channelStatusRecv(uint8_t, uint8_t) = 0;
-			virtual void channelIdRecv(uint8_t, uint16_t, uint8_t, uint8_t) = 0;
-			virtual void antVersionRecv(uint8_t *, int32_t) = 0;
-			virtual void capabilitiesRecv(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t) = 0; // 0x54
-			virtual void serialNumberRecv(uint32_t) = 0;
-			virtual void eventBufferConfigurationRecv(uint8_t, uint16_t, uint16_t) = 0; // 0x74
-			virtual void advancedBurstCapabilitiesRecv(uint8_t, uint32_t) = 0; // 0x78
-			virtual void advancedBurstCurrentConfigurationRecv(uint8_t, uint8_t, uint32_t, uint32_t, uint8_t) = 0; // 0x78
-			virtual void eventFilterRecv(uint16_t) = 0; // 0x79
-			virtual void selectiveDataUpdateMaskSettingRecv(uint8_t, uint8_t *) = 0; // 0x7b
-			virtual void userNvmRecv(uint8_t*) = 0; // 0x7c
-			virtual void encryptionModeParametersRecv(uint8_t, uint8_t*) = 0; // 0x7d
+			virtual int32_t channelStatusRecv(uint8_t*, int32_t) = 0;
+			virtual int32_t channelIdRecv(uint8_t*, int32_t) = 0;
+			virtual int32_t antVersionRecv(uint8_t*, int32_t) = 0;
+			virtual int32_t capabilitiesRecv(uint8_t*, int32_t) = 0; // 0x54
+			virtual int32_t serialNumberRecv(uint8_t*, int32_t) = 0;
+			virtual int32_t eventBufferConfigurationRecv(uint8_t*, int32_t) = 0; // 0x74
+			virtual int32_t advancedBurstCapabilitiesRecv(uint8_t*, int32_t) = 0; // 0x78
+			virtual int32_t advancedBurstCurrentConfigurationRecv(uint8_t*, int32_t) = 0; // 0x78
+			virtual int32_t eventFilterRecv(uint8_t*, int32_t) = 0; // 0x79
+			virtual int32_t selectiveDataUpdateMaskSettingRecv(uint8_t*, int32_t) = 0; // 0x7b
+			virtual int32_t userNvmRecv(uint8_t*, int32_t) = 0; // 0x7c
+			virtual int32_t encryptionModeParametersRecv(uint8_t*, int32_t) = 0; // 0x7d
 			
 			/*
 			 * TEST MODE
@@ -121,22 +121,25 @@ namespace ANT
 			 * EXTENDED DATA MESSAGES
 			 */
 			virtual void extendedBroadcastData(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*);
-			virtual int32_t extendedBroadcastDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*) = 0; // 0x5d
 			virtual void extendedAcknowledgedData(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*);
-			virtual int32_t extendedAcknowledgedDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*) = 0; // 0x5e
 			virtual void extendedBurstData(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*);
-			virtual int32_t extendedBurstDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*) = 0; // 0x5f
+			virtual int32_t extendedBroadcastDataRecv(uint8_t*, int32_t) = 0; // 0x5d
+			virtual int32_t extendedAcknowledgedDataRecv(uint8_t*, int32_t) = 0; // 0x5e
+			virtual int32_t extendedBurstDataRecv(uint8_t*, int32_t) = 0; // 0x5f
 
+		protected:
+			virtual void networkKeyRecv(uint8_t) = 0;
+			virtual void transmitPowerEventRecv(uint8_t) = 0;
 
 		protected:
 			virtual int32_t send(uint8_t, uint8_t *, int32_t);
 			virtual int32_t recv(const uint8_t *, int32_t);
 			virtual uint8_t checksum(uint8_t *, uint8_t);
 
-			int32_t _handler;
 			virtual int32_t actionIn(PollDevice*);
-			virtual int32_t actionOut(PollDevice*);
-			virtual int32_t actionError(PollDevice*);
+
+			uint8_t _network_number;
+			int32_t _handler;
 	};
 }
 

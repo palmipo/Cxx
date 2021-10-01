@@ -9,7 +9,6 @@
 ANT::AntFactory::AntFactory(const std::string & device)
 : ANT::Ant(device)
 , _last_chanel_number(1)
-, _network_number(1)
 {
 	resetSystem();
 }
@@ -88,12 +87,6 @@ void ANT::AntFactory::close(uint8_t channel_number)
 	}
 }
 
-void ANT::AntFactory::networkKeyRecv(uint8_t)
-{
-}
-
-void ANT::AntFactory::transmitPowerEventRecv(uint8_t)
-{}
 
 int32_t ANT::AntFactory::broadcastDataRecv(uint8_t * msg, int32_t length)
 {
@@ -127,23 +120,183 @@ int32_t ANT::AntFactory::advancedBurstDataRecv(uint8_t * msg, int32_t length)
 	return cpt;
 }
 
-int32_t ANT::AntFactory::extendedBroadcastDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*)
-{}
-
-int32_t ANT::AntFactory::extendedAcknowledgedDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*)
-{}
-
-int32_t ANT::AntFactory::extendedBurstDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*h)
-{}
-
-void ANT::AntFactory::startupMessageRecv(uint8_t startup_message)
+int32_t ANT::AntFactory::extendedBroadcastDataRecv(uint8_t * msg, int32_t length)
 {
-	uint8_t netkey[] = {0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45};
-	setNetworkKey(_network_number, netkey);
+	int32_t cpt = 0;
+	uint8_t a;
+	uint16_t b;
+	uint8_t c;
+	uint8_t d;
+	uint8_t* e;
+	return cpt;
 }
 
-void ANT::AntFactory::serialErrorMessageRecv(uint8_t error_number)
-{}
+int32_t ANT::AntFactory::extendedAcknowledgedDataRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t a;
+	uint16_t b;
+	uint8_t c;
+	uint8_t d;
+	uint8_t* e;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::extendedBurstDataRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t a;
+	uint16_t b;
+	uint8_t c;
+	uint8_t d;
+	uint8_t* e;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::startupMessageRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t startup_message = msg[cpt]; cpt += 1;
+	uint8_t netkey[] = {0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45};
+	setNetworkKey(_network_number, netkey);
+	return cpt;
+}
+
+int32_t ANT::AntFactory::serialErrorMessageRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t error_number = msg[cpt]; ++cpt;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::channelStatusRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t channel_number = msg[cpt]; cpt += 1;
+	uint8_t channel_status = msg[cpt]; cpt += 1;
+	get(channel_number)->channelStatusRecv(channel_status);
+	return cpt;
+}
+
+int32_t ANT::AntFactory::channelIdRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t channel_number = msg[cpt]; cpt += 1;
+	uint16_t device_number = msg[cpt]; ++cpt;
+	device_number |= (msg[cpt] << 8); ++cpt;
+	uint8_t device_type_id = msg[cpt]; ++cpt;
+	uint8_t transmission_type = msg[cpt]; ++cpt;
+	get(channel_number)->channelIdRecv(device_number, device_type_id, transmission_type);
+	return cpt;
+}
+
+int32_t ANT::AntFactory::antVersionRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	return 0;
+}
+
+int32_t ANT::AntFactory::capabilitiesRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t max_channel = msg[cpt]; cpt += 1;
+	uint8_t max_network = msg[cpt]; cpt += 1;
+	uint8_t standard_options = msg[cpt]; cpt += 1;
+	uint8_t advanced_options = msg[cpt]; cpt += 1;
+	uint8_t advanced_options_2 = msg[cpt]; cpt += 1;
+	uint8_t advanced_options_3 = msg[cpt]; cpt += 1;
+	uint8_t advanced_options_4 = msg[cpt]; cpt += 1;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::serialNumberRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint32_t serial_number = msg[cpt] << 24; cpt += 1;
+	serial_number |= msg[cpt] << 16; cpt += 1;
+	serial_number |= msg[cpt] << 8; cpt += 1;
+	serial_number |= msg[cpt]; cpt += 1;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::eventBufferConfigurationRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	cpt += 1;
+	uint8_t buffer_config = msg[cpt]; cpt += 1;
+	uint16_t buffer_size = msg[cpt] << 8; cpt += 1;
+	buffer_size |= msg[cpt]; cpt += 1;
+	uint16_t buffer_time = msg[cpt] << 8; cpt += 1;
+	buffer_time |= msg[cpt]; cpt += 1;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::advancedBurstCapabilitiesRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t supported_max_packed_length = msg[cpt]; cpt += 1;
+	uint32_t supported_feature = msg[cpt] << 16; cpt += 1;
+	supported_feature |= msg[cpt] << 8; cpt += 1;
+	supported_feature |= msg[cpt]; cpt += 1;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::advancedBurstCurrentConfigurationRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t enable = msg[cpt]; cpt += 1;
+	uint8_t max_packed_length = msg[cpt]; cpt += 1;
+	uint32_t required_features = msg[cpt] << 16; cpt += 1;
+	required_features |= msg[cpt] << 8; cpt += 1;
+	required_features |= msg[cpt]; cpt += 1;
+	uint32_t optional_features = msg[cpt] << 16; cpt += 1;
+	optional_features |= msg[cpt] << 8; cpt += 1;
+	optional_features |= msg[cpt]; cpt += 1;
+	uint8_t optional_stall_count = msg[cpt]; cpt += 1;
+	return cpt;
+}
+
+int32_t ANT::AntFactory::eventFilterRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	cpt += 1;
+	uint16_t event_filter = msg[cpt] << 8; cpt += 1;
+	event_filter |= msg[cpt]; cpt += 1;
+
+	return cpt;
+}
+
+int32_t ANT::AntFactory::selectiveDataUpdateMaskSettingRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t sdu_mask_number = msg[cpt]; ++cpt;
+	uint8_t sdu_mask[8];
+	for (int32_t i=0; i<8; ++i)
+		sdu_mask[i] = msg[cpt]; ++cpt;
+
+	return cpt;
+}
+
+int32_t ANT::AntFactory::userNvmRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	cpt += 1;
+	uint8_t data[512];
+	for (int32_t i=0; msg[cpt]; ++i)
+	{
+		data[i] = msg[cpt];
+		cpt += 1;
+	}
+	return cpt;
+}
+
+int32_t ANT::AntFactory::encryptionModeParametersRecv(uint8_t * msg, int32_t length)
+{
+	int32_t cpt = 0;
+	uint8_t a;
+	uint8_t * b;
+	return cpt;
+}
 
 int32_t ANT::AntFactory::channelMessagesRecv(uint8_t * msg, int32_t length)
 {
@@ -248,43 +401,8 @@ int32_t ANT::AntFactory::channelMessagesRecv(uint8_t * msg, int32_t length)
 	return cpt;
 }
 
-void ANT::AntFactory::channelStatusRecv(uint8_t channel_number, uint8_t channel_status)
-{
-	get(channel_number)->channelStatusRecv(channel_status);
-}
-
-void ANT::AntFactory::channelIdRecv(uint8_t channel_number, uint16_t device_number, uint8_t device_type_id, uint8_t transmission_type)
-{
-	get(channel_number)->channelIdRecv(device_number, device_type_id, transmission_type);
-}
-
-void ANT::AntFactory::antVersionRecv(uint8_t * msg, int32_t length)
+void ANT::AntFactory::networkKeyRecv(uint8_t Response_Code)
 {}
 
-void ANT::AntFactory::capabilitiesRecv(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)
+void ANT::AntFactory::transmitPowerEventRecv(uint8_t Response_Code)
 {}
-
-void ANT::AntFactory::serialNumberRecv(uint32_t)
-{}
-
-void ANT::AntFactory::eventBufferConfigurationRecv(uint8_t, uint16_t, uint16_t)
-{}
-
-void ANT::AntFactory::advancedBurstCapabilitiesRecv(uint8_t, uint32_t)
-{}
-
-void ANT::AntFactory::advancedBurstCurrentConfigurationRecv(uint8_t, uint8_t, uint32_t, uint32_t, uint8_t)
-{}
-
-void ANT::AntFactory::eventFilterRecv(uint16_t)
-{}
-
-void ANT::AntFactory::selectiveDataUpdateMaskSettingRecv(uint8_t, uint8_t *)
-{}
-
-void ANT::AntFactory::userNvmRecv(uint8_t*)
-{}
-
-void ANT::AntFactory::encryptionModeParametersRecv(uint8_t, uint8_t*)
-{}
-

@@ -6,20 +6,21 @@
 ANT::Ant::Ant(const std::string & device_p)
 : PollFactory()
 , _handler(-1)
+, _network_number(1)
 {
-    RS232 * serial = new RS232(device_p);
-    if (serial)
-    {
+	RS232 * serial = new RS232(device_p);
+	if (serial)
+	{
 		serial->setConfig(B57600, 8, 'N', 1);
 		serial->setInterCharacterTimer(1);
-        _handler = serial->handler();
+		_handler = serial->handler();
 		add(serial);
-    }
+	}
 }
 
 ANT::Ant::~Ant()
 {
-	// del(_handler);
+	del(_handler);
 }
 
 void ANT::Ant::unassignChannel(uint8_t channel_number)
@@ -512,6 +513,7 @@ uint8_t ANT::Ant::checksum(uint8_t *msg, uint8_t length)
 	return sum;
 }
 
+
 int32_t ANT::Ant::actionIn(PollDevice * device)
 {
 	uint8_t data[512];
@@ -527,19 +529,6 @@ int32_t ANT::Ant::actionIn(PollDevice * device)
 	
 	return nb;
 }
-
-
-int32_t ANT::Ant::actionOut(PollDevice * device)
-{
-	return device->actionOut();
-}
-
-
-int32_t ANT::Ant::actionError(PollDevice * device)
-{
-	return device->actionError();
-}
-
 
 int32_t ANT::Ant::recv(const uint8_t * msg, int32_t length)
 {
@@ -564,133 +553,91 @@ int32_t ANT::Ant::recv(const uint8_t * msg, int32_t length)
 		// ANT version
 		if (msg_id == 0x3E)
 		{
-			uint8_t * msg;
-			int32_t length;
-			antVersionRecv(msg, len);
+			cpt += antVersionRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Channel Messsage
 		else if (msg_id == 0x40)
 		{
-			cpt += channelMessagesRecv((uint8_t*)(msg+cpt), len);
+			cpt += channelMessagesRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// broadcast data
 		else if (msg_id == 0x4E)
 		{
-			cpt += broadcastDataRecv((uint8_t*)(msg+cpt), len);
+			cpt += broadcastDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Acknowledged data
 		else if (msg_id == 0x4F)
 		{
-			cpt += acknowledgedDataRecv((uint8_t*)(msg+cpt), len);
+			cpt += acknowledgedDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Burst Transfer Data
 		else if (msg_id == 0x50)
 		{
-			cpt += burstTransfertDataRecv((uint8_t*)(msg+cpt), len);
+			cpt += burstTransfertDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Channel ID
 		else if (msg_id == 0x51)
 		{
-			uint8_t channel_number = msg[cpt]; cpt += 1;
-			uint16_t device_number = msg[cpt]; ++cpt;
-			device_number |= (msg[cpt] << 8); ++cpt;
-			uint8_t device_type_id = msg[cpt]; ++cpt;
-			uint8_t transmission_type = msg[cpt]; ++cpt;
-			channelIdRecv(channel_number, device_number, device_type_id, transmission_type);
+			cpt += channelIdRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Channel Status
 		else if (msg_id == 0x52)
 		{
-			uint8_t channel_number = msg[cpt]; cpt += 1;
-			uint8_t channel_status = msg[cpt]; cpt += 1;
-			channelStatusRecv(channel_number, channel_status);
+			cpt += channelStatusRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Capabilities
 		else if (msg_id == 0x54)
 		{
-			uint8_t max_channel = msg[cpt]; cpt += 1;
-			uint8_t max_network = msg[cpt]; cpt += 1;
-			uint8_t standard_options = msg[cpt]; cpt += 1;
-			uint8_t advanced_options = msg[cpt]; cpt += 1;
-			uint8_t advanced_options_2 = msg[cpt]; cpt += 1;
-			uint8_t advanced_options_3 = msg[cpt]; cpt += 1;
-			uint8_t advanced_options_4 = msg[cpt]; cpt += 1;
-			capabilitiesRecv(max_channel , max_network, standard_options, advanced_options, advanced_options_2, advanced_options_3, advanced_options_4);
+			cpt += capabilitiesRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Extended Broadcast Data
 		else if (msg_id == 0x5D)
 		{
-			uint8_t a;
-			uint16_t b;
-			uint8_t c;
-			uint8_t d;
-			uint8_t* e;
-			extendedBroadcastDataRecv(a, b, c, d, e);
+			cpt += extendedBroadcastDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Extended Acknowledged Data
 		else if (msg_id == 0x5E)
 		{
-			uint8_t a;
-			uint16_t b;
-			uint8_t c;
-			uint8_t d;
-			uint8_t* e;
-			extendedAcknowledgedDataRecv(a, b, c, d, e);
+			cpt += extendedAcknowledgedDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Extended Burst Data
 		else if (msg_id == 0x5F)
 		{
-			uint8_t a;
-			uint16_t b;
-			uint8_t c;
-			uint8_t d;
-			uint8_t* e;
-			extendedBurstDataRecv(a, b, c, d, e);
+			cpt += extendedBurstDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Serial Number
 		else if (msg_id == 0x61)
 		{
-			uint32_t serial_number = msg[cpt] << 24; cpt += 1;
-			serial_number |= msg[cpt] << 16; cpt += 1;
-			serial_number |= msg[cpt] << 8; cpt += 1;
-			serial_number |= msg[cpt]; cpt += 1;
-			serialNumberRecv(serial_number);
+			cpt += serialNumberRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// startup message
 		else if (msg_id == 0x6F)
 		{
-			uint8_t startup_message = msg[cpt]; cpt += 1;
-			startupMessageRecv(startup_message);
+			cpt += startupMessageRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Advanced Burst Data
 		else if (msg_id == 0x72)
 		{
-			cpt += advancedBurstDataRecv((uint8_t*)(msg+cpt), len);
+			cpt += advancedBurstDataRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Event Buffer Configuration
 		else if (msg_id == 0x74)
 		{
-			cpt += 1;
-			uint8_t buffer_config = msg[cpt]; cpt += 1;
-			uint16_t buffer_size = msg[cpt] << 8; cpt += 1;
-			buffer_size |= msg[cpt]; cpt += 1;
-			uint16_t buffer_time = msg[cpt] << 8; cpt += 1;
-			buffer_time |= msg[cpt]; cpt += 1;
-			eventBufferConfigurationRecv(buffer_config, buffer_size, buffer_time);
+			cpt += eventBufferConfigurationRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Advanced Burst
@@ -699,72 +646,42 @@ int32_t ANT::Ant::recv(const uint8_t * msg, int32_t length)
 			uint8_t switch_id = msg[cpt]; ++cpt;
 			if (switch_id == 0)
 			{
-				uint8_t supported_max_packed_length = msg[cpt]; cpt += 1;
-				uint32_t supported_feature = msg[cpt] << 16; cpt += 1;
-				supported_feature |= msg[cpt] << 8; cpt += 1;
-				supported_feature |= msg[cpt]; cpt += 1;
-				advancedBurstCapabilitiesRecv(supported_max_packed_length, supported_feature);
+				cpt += advancedBurstCapabilitiesRecv((uint8_t*)(msg+cpt), length-cpt);
 			}
 			else
 			{
-				uint8_t enable = msg[cpt]; cpt += 1;
-				uint8_t max_packed_length = msg[cpt]; cpt += 1;
-				uint32_t required_features = msg[cpt] << 16; cpt += 1;
-				required_features |= msg[cpt] << 8; cpt += 1;
-				required_features |= msg[cpt]; cpt += 1;
-				uint32_t optional_features = msg[cpt] << 16; cpt += 1;
-				optional_features |= msg[cpt] << 8; cpt += 1;
-				optional_features |= msg[cpt]; cpt += 1;
-				uint8_t optional_stall_count = msg[cpt]; cpt += 1;
-				advancedBurstCurrentConfigurationRecv(enable, max_packed_length, required_features, optional_features, optional_stall_count);
+				cpt += advancedBurstCurrentConfigurationRecv((uint8_t*)(msg+cpt), length-cpt);
 			}
 		}
 
 		// Event Filter
 		else if (msg_id == 0x79)
 		{
-			cpt += 1;
-			uint16_t event_filter = msg[cpt] << 8; cpt += 1;
-			event_filter |= msg[cpt]; cpt += 1;
-			eventFilterRecv(event_filter);
+			cpt += eventFilterRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Selective Data Update Mask Setting
 		else if (msg_id == 0x7B)
 		{
-			uint8_t sdu_mask_number = msg[cpt]; ++cpt;
-			uint8_t sdu_mask[8];
-			for (int32_t i=0; i<8; ++i)
-				sdu_mask[i] = msg[cpt]; ++cpt;
-			selectiveDataUpdateMaskSettingRecv(sdu_mask_number, sdu_mask);
+			cpt += selectiveDataUpdateMaskSettingRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// User NVM
 		else if (msg_id == 0x7C)
 		{
-			cpt += 1;
-			uint8_t data[512];
-			for (int32_t i=0; msg[cpt]; ++i)
-			{
-				data[i] = msg[cpt];
-				cpt += 1;
-			}
-			userNvmRecv(data);
+			cpt += userNvmRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// Encryption Mode Parameters
 		else if (msg_id == 0x7D)
 		{
-			uint8_t a;
-			uint8_t * b;
-			encryptionModeParametersRecv(a, b);
+			cpt += encryptionModeParametersRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		// error number
 		else if (msg_id == 0xAE)
 		{
-			uint8_t error_number = msg[cpt]; ++cpt;
-			serialErrorMessageRecv(error_number);
+			cpt += serialErrorMessageRecv((uint8_t*)(msg+cpt), length-cpt);
 		}
 
 		else
@@ -773,4 +690,6 @@ int32_t ANT::Ant::recv(const uint8_t * msg, int32_t length)
 
 		uint8_t chksum = msg[cpt]; ++cpt;
 	}
+	
+	return cpt;
 }

@@ -2,8 +2,8 @@
 #include "ant.h"
 #include <iostream>
 
-ANT::Tempe::Tempe(uint8_t channel_id, uint8_t network_key, ANT::Ant * serial)
-: ANT::Slave(channel_id, serial)
+ANT::Tempe::Tempe(uint8_t channel_id, uint8_t network_key, ANT::Ant * protocol)
+: ANT::Slave(channel_id, protocol)
 {
 	_channel_type = 0;
 	_network_number = network_key;

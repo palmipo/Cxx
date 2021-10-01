@@ -28,15 +28,12 @@ namespace ANT
 			void close(uint8_t);
 
 		protected:
-			virtual void networkKeyRecv(uint8_t);
-			virtual void transmitPowerEventRecv(uint8_t);
 
-		protected:
 			/*
 			 * NOTIFICATIONS
 			 */
-			virtual void startupMessageRecv(uint8_t); // 0x6f
-			virtual void serialErrorMessageRecv(uint8_t); // 0xae
+			virtual int32_t startupMessageRecv(uint8_t *, int32_t); // 0x6f
+			virtual int32_t serialErrorMessageRecv(uint8_t *, int32_t); // 0xae
 
 			/*
 			 * DATA MESSAGES
@@ -54,29 +51,33 @@ namespace ANT
 			/*
 			 * REQUESTED RESPONSE MESSAGES
 			 */
-			virtual void channelStatusRecv(uint8_t, uint8_t);
-			virtual void channelIdRecv(uint8_t, uint16_t, uint8_t, uint8_t);
-			virtual void antVersionRecv(uint8_t *, int32_t);
-			virtual void capabilitiesRecv(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t); // 0x54
-			virtual void serialNumberRecv(uint32_t);
-			virtual void eventBufferConfigurationRecv(uint8_t, uint16_t, uint16_t); // 0x74
-			virtual void advancedBurstCapabilitiesRecv(uint8_t, uint32_t); // 0x78
-			virtual void advancedBurstCurrentConfigurationRecv(uint8_t, uint8_t, uint32_t, uint32_t, uint8_t); // 0x78
-			virtual void eventFilterRecv(uint16_t); // 0x79
-			virtual void selectiveDataUpdateMaskSettingRecv(uint8_t, uint8_t *); // 0x7b
-			virtual void userNvmRecv(uint8_t*); // 0x7c
-			virtual void encryptionModeParametersRecv(uint8_t, uint8_t*); // 0x7d
+			virtual int32_t channelStatusRecv(uint8_t *, int32_t);
+			virtual int32_t channelIdRecv(uint8_t *, int32_t);
+			virtual int32_t antVersionRecv(uint8_t *, int32_t);
+			virtual int32_t capabilitiesRecv(uint8_t *, int32_t); // 0x54
+			virtual int32_t serialNumberRecv(uint8_t *, int32_t);
+			virtual int32_t eventBufferConfigurationRecv(uint8_t *, int32_t); // 0x74
+			virtual int32_t advancedBurstCapabilitiesRecv(uint8_t *, int32_t); // 0x78
+			virtual int32_t advancedBurstCurrentConfigurationRecv(uint8_t *, int32_t); // 0x78
+			virtual int32_t eventFilterRecv(uint8_t *, int32_t); // 0x79
+			virtual int32_t selectiveDataUpdateMaskSettingRecv(uint8_t *, int32_t ); // 0x7b
+			virtual int32_t userNvmRecv(uint8_t *, int32_t); // 0x7c
+			virtual int32_t encryptionModeParametersRecv(uint8_t *, int32_t); // 0x7d
 			
 			/*
 			 * EXTENDED DATA MESSAGES
 			 */
-			virtual int32_t extendedBroadcastDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*); // 0x5d
-			virtual int32_t extendedAcknowledgedDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*); // 0x5e
-			virtual int32_t extendedBurstDataRecv(uint8_t, uint16_t, uint8_t, uint8_t, uint8_t*); // 0x5f
+			virtual int32_t extendedBroadcastDataRecv(uint8_t *, int32_t); // 0x5d
+			virtual int32_t extendedAcknowledgedDataRecv(uint8_t *, int32_t); // 0x5e
+			virtual int32_t extendedBurstDataRecv(uint8_t *, int32_t); // 0x5f
+
+
+		protected:
+			virtual void networkKeyRecv(uint8_t);
+			virtual void transmitPowerEventRecv(uint8_t);
 
 		protected:
 			uint8_t _last_chanel_number;
-			uint8_t _network_number;
 			std::map < uint8_t, Profile * > _devices;
 	};
 }

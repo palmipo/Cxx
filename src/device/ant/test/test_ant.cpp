@@ -11,7 +11,7 @@
 #include <sstream>
 
 
-void * thread_poll_start(ANT::AntFactory * factory, int32_t * fin)
+static void thread_poll_start(ANT::AntFactory * factory, int32_t * fin)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "DEBUT thread");
 
