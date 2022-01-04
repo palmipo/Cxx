@@ -1,19 +1,14 @@
 #ifndef ADA772_H
 #define ADA772_H
 
-#include "batratypes.h"
 #include "hd44780io.h"
 
-class I2C;
 class MCP23017;
-class HD44780;
 class ADA772 : public HD44780IO
 {
 public:
-	ADA772(I2C * ctrl);
+	ADA772(MCP23017 * ctrl);
 	virtual ~ADA772();
-
-	virtual HD44780 *LCD();
 
 	virtual void setSelectCallback(void (*callback)(bool));
 	virtual void setUpCallback(void (*callback)(bool));
@@ -37,7 +32,6 @@ private:
 
 private:
 	MCP23017 *_pia;
-	HD44780 *_afficheur;
 	void *_user_data;
 	u8 _backlight;
 

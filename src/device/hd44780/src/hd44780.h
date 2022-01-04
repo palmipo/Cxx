@@ -1,7 +1,7 @@
 #ifndef HD44780_H
 #define HD44780_H
 
-#include "batratypes.h"
+#include <cstdint>
 
 class HD44780IO;
 class HD44780
@@ -10,19 +10,19 @@ public:
 	HD44780(HD44780IO * ctrl);
 	~HD44780();
 
-	void setText(s8 * txt, u8 len);
+	void setText(int8_t * txt, uint8_t len);
 	void clear();
 	void returnHome();
-	void setEntryMode(u8 increment, u8 shift);
-	void setDisplayControl(u8 displayOn, u8 cursorOn, u8 blinkingCursor);
-	void setCursorDisplayShift(u8 displayShift, u8 shiftToRight);
-	void setFunction(u8 dataLength, u8 numberLine, u8 characterFont);
-	void setCGRAMAdrress(u8 address);
-	void setDDRAMAdrress(u8 address);
-	u8   readAddress();
-	void writeData(u8 data);
-	u8 readData();
-	void setPosition(u8 line, u8 column);
+	void setEntryMode(uint8_t increment, uint8_t shift);
+	void setDisplayControl(uint8_t displayOn, uint8_t cursorOn, uint8_t blinkingCursor);
+	void setCursorDisplayShift(uint8_t displayShift, uint8_t shiftToRight);
+	void setFunction(uint8_t dataLength, uint8_t numberLine, uint8_t characterFont);
+	void setCGRAMAdrress(uint8_t address);
+	void setDDRAMAdrress(uint8_t address);
+	uint8_t   readAddress();
+	void writeData(uint8_t data);
+	uint8_t readData();
+	void setPosition(uint8_t line, uint8_t column);
 
 protected:
 	void init ();

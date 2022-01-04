@@ -15,7 +15,5 @@ PHatEnviro::~PHatEnviro()
 
 void PHatEnviro::setLed(uint8_t on)
 {
-	uint8_t data[1];
-	data[0] = on;
-	_gpio_led->write(data, 1);
+	_gpio_led->write(on);
 }

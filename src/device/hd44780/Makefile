@@ -3,6 +3,7 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/hd44780.o
 
+LOG_REP= ../../ctrl/raspberry/log
 I2C_REP = ../../ctrl/raspberry/i2c
 GPIO_REP = ../../ctrl/raspberry/gpio
 USBI2C_REP = ../../ctrl/usb_i2c
@@ -10,7 +11,7 @@ RS232_REP = ../../ctrl/raspberry/rs232
 AR = ar
 CC = g++
 MAKE = make
-INCLUDE = -I../.. -I../../ctrl/interface -Isrc -I$(I2C_REP)/src -I$(USBI2C_REP)/src -I$(RS232_REP)/src -I../i2c/src -I.. -I$(GPIO_REP)/src
+INCLUDE = -I../.. -I../../ctrl/interface -Isrc -I$(I2C_REP)/src -I$(USBI2C_REP)/src -I$(RS232_REP)/src -I../i2c/src -I.. -I$(GPIO_REP)/src -I$(LOG_REP)/src
 LIBS =
 
 CFLAGS = -g $(INCLUDE)
@@ -21,17 +22,21 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.so
 
-test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libi2cdevice.so libraspii2c.so
-	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lada772
+test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libhd44780.so libi2cdevice.so libraspii2c.so liblog.so
+	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lhd44780 -lada772 -llog
 
 $(BIN_PWD)/test_hd44780.o: test/test_hd44780.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-test_2004: $(BIN_PWD)/test_2004.o liblcd2004.so libi2cdevice.so libraspii2c.so
-	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -llcd2004
+test_2004: $(BIN_PWD)/test_2004.o liblcd2004.so libhd44780.so libi2cdevice.so libraspii2c.so liblog.so
+	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lhd44780 -llcd2004 -llog
 
 $(BIN_PWD)/test_2004.o: test/test_2004.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
+
+liblog.so:
+	$(MAKE) -C $(LOG_REP) $@
+	ln -s $(LOG_REP)/$@
 
 librs232.so:
 	$(MAKE) -C $(RS232_REP) $@
@@ -55,10 +60,10 @@ libhd44780.so: $(OBJECTS)
 libhd44780.a: $(OBJECTS)
 	$(AR) r $@ $^
 
-libada772.so: $(BIN_PWD)/ada772.o libhd44780.a
+libada772.so: $(BIN_PWD)/ada772.o
 	$(CC) -shared $^ -o $@
 
-liblcd2004.so: $(BIN_PWD)/lcd2004.o libhd44780.a
+liblcd2004.so: $(BIN_PWD)/lcd2004.o
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp

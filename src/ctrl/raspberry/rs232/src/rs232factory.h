@@ -19,7 +19,6 @@
 #endif
 
 class RS232;
-class RS232Fifo;
 class RS232_DLL RS232Factory : public PollFactory
 {
 	public:
@@ -27,7 +26,6 @@ class RS232_DLL RS232Factory : public PollFactory
 		virtual ~RS232Factory();
 
 		virtual RS232 * add(const std::string &);
-		virtual RS232Fifo * addFifo(const std::string &);
 		virtual RS232 * get(const std::string &);
 		virtual void del(const std::string &);
 

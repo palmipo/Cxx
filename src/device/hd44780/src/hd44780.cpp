@@ -13,9 +13,9 @@ HD44780::HD44780(HD44780IO * ctrl)
 HD44780::~HD44780()
 {}
 
-void HD44780::setText(s8 * txt, u8 len)
+void HD44780::setText(int8_t * txt, uint8_t len)
 {
-	for (u8 i=0; i<len; ++i)
+	for (uint8_t i=0; i<len; ++i)
 	{
 		writeData(txt[i]);
 	}
@@ -31,59 +31,59 @@ void HD44780::returnHome()
 	_ctrl->cmd(0x02);
 }
 
-void HD44780::setEntryMode(u8 increment, u8 shift)
+void HD44780::setEntryMode(uint8_t increment, uint8_t shift)
 {
 	_ctrl->cmd(0x04 | ((increment & 0x01) << 1) | (shift & 0x01));
 }
 
-void HD44780::setDisplayControl(u8 displayOn, u8 cursorOn, u8 blinkingCursor)
+void HD44780::setDisplayControl(uint8_t displayOn, uint8_t cursorOn, uint8_t blinkingCursor)
 {
-	u8 byte = 0x08 | ((displayOn & 0x1) << 2) | ((cursorOn & 0x1) << 1) | (blinkingCursor & 0x1);
+	uint8_t byte = 0x08 | ((displayOn & 0x1) << 2) | ((cursorOn & 0x1) << 1) | (blinkingCursor & 0x1);
 	_ctrl->cmd(byte);
 }
 
-void HD44780::setCursorDisplayShift(u8 displayShift, u8 shiftToRight)
+void HD44780::setCursorDisplayShift(uint8_t displayShift, uint8_t shiftToRight)
 {
-	u8 byte = 0x10 | ((displayShift & 0x1) << 3) | ((shiftToRight & 0x1) << 2);
+	uint8_t byte = 0x10 | ((displayShift & 0x1) << 3) | ((shiftToRight & 0x1) << 2);
 	_ctrl->cmd(byte);
 }
 
-void HD44780::setFunction(u8 dataLength, u8 numberLine, u8 characterFont)
+void HD44780::setFunction(uint8_t dataLength, uint8_t numberLine, uint8_t characterFont)
 {
-	u8 byte = 0x20 | ((dataLength & 0x1) << 4) | ((numberLine & 0x1) << 3) | ((characterFont & 0x1) << 2);
+	uint8_t byte = 0x20 | ((dataLength & 0x1) << 4) | ((numberLine & 0x1) << 3) | ((characterFont & 0x1) << 2);
 	_ctrl->cmd(byte);
 }
 
-void HD44780::setCGRAMAdrress(u8 address)
+void HD44780::setCGRAMAdrress(uint8_t address)
 {
-	u8 byte = 0x40 | (address & 0x3F);
+	uint8_t byte = 0x40 | (address & 0x3F);
 	_ctrl->cmd(byte);
 }
 
-void HD44780::setDDRAMAdrress(u8 address)
+void HD44780::setDDRAMAdrress(uint8_t address)
 {
-	u8 byte = 0x80 | (address & 0x7F);
+	uint8_t byte = 0x80 | (address & 0x7F);
 	_ctrl->cmd(byte);
 }
 
-u8 HD44780::readAddress()
+uint8_t HD44780::readAddress()
 {
 	return _ctrl->readCmd();
 }
 
-void HD44780::writeData(u8 data)
+void HD44780::writeData(uint8_t data)
 {
 	_ctrl->data(data);
 }
 
-u8 HD44780::readData()
+uint8_t HD44780::readData()
 {
 	return _ctrl->readData();
 }
 
-void HD44780::setPosition(u8 line, u8 column)
+void HD44780::setPosition(uint8_t line, uint8_t column)
 {
-	u8 byte = 0;
+	uint8_t byte = 0;
 	switch(line)
 	{
 		case 0: // 0x00

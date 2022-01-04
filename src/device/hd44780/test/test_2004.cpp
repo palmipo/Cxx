@@ -6,6 +6,7 @@
 #include "raspii2c.h"
 #endif
 #include "mcp23017.h"
+#include "pcf8574at.h"
 #include "lcd2004.h"
 #include "hd44780.h"
 #include <poll.h>
@@ -35,8 +36,12 @@ int main(int argc, char **argv)
 //		DS1621 tempe(0, &i2c);
 //		tempe.debut_conversion();
 
-		lcd2004 lcd(&i2c);
-		lcd.setBackLight(1);
+		PCF8574AT pia(0, &i2c);
+
+		LCD2004 lcd_io(&pia);
+		lcd_io.setBackLight(1);
+		
+		HD44780 lcd(&lcd_io);
 
 		std::string str_date, str_heure, str_tempe;
 		struct tm *la_date;
@@ -54,23 +59,23 @@ int main(int argc, char **argv)
 			str_heure = buf2.str();
 			
 			//afficheur.returnHome();
-			lcd.lcd()->setPosition(1, 1);
-			lcd.lcd()->setText((s8*)str_date.c_str(), str_date.length());
+			lcd.setPosition(1, 1);
+			lcd.setText((int8_t*)str_date.c_str(), str_date.length());
 
-			lcd.lcd()->setPosition(2, 1);
-			lcd.lcd()->setText((s8*)str_heure.c_str(), str_heure.length());
+			lcd.setPosition(2, 1);
+			lcd.setText((int8_t*)str_heure.c_str(), str_heure.length());
 
 //			std::stringstream buf3;
 //			buf3 << std::setw(2) << std::setfill('0') << (int)tempe.lecture_temperature() << " C";
 //			str_tempe = buf3.str();
 			
-//			lcd.lcd()->setPosition(3, 1);
-//			lcd.lcd()->setText((s8*)str_tempe.c_str(), str_tempe.length());
+//			lcd.setPosition(3, 1);
+//			lcd.setText((int8_t*)str_tempe.c_str(), str_tempe.length());
 	
 			poll(0, 0, 1000);
 		}
 
-		lcd.setBackLight(0);
+		lcd_io.setBackLight(0);
 
 	}
 	catch(...)

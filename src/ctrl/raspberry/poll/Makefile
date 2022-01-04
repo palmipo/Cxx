@@ -22,6 +22,14 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
 
+
+test_poll: $(BIN_PWD)/test.o
+	$(MAKE) libpoll.so
+	$(CC) -o $@ $< $(LDFLAGS) -lpoll
+
+$(BIN_PWD)/test.o: test/test.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 # LINUX
 libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@
@@ -31,9 +39,7 @@ liblog.so:
 	$(MAKE) -C $(LOG_PWD) $@
 	ln -s $(LOG_PWD)/$@
 
-libpoll.so: $(OBJECTS)
-	$(MAKE) libutil.so
-	$(MAKE) liblog.so
+libpoll.so: $(OBJECTS) libutil.so liblog.so
 	$(CC) -shared $^ -o $@
 
 # WINDOWS

@@ -1,5 +1,6 @@
 #include "gpiofactory.h"
 #include "gpio.h"
+#include "gpioarray.h"
 #include "gpioexception.h"
 
 #include <sys/types.h>
@@ -11,6 +12,7 @@
 #include <sstream>
 #include "log.h"
 
+// /dev/gpiochip0
 GpioFactory::GpioFactory(const std::string & device_p)
 : PollFactory()
 {
@@ -30,15 +32,26 @@ GpioFactory::~GpioFactory()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "~GpioFactory");
 
-	std::map < int32_t, Gpio * >::iterator it = _io_map.begin();
-	while (it != _io_map.end())
+	std::map < int32_t, Gpio * >::iterator it1 = _io_map.begin();
+	while (it1 != _io_map.end())
 	{
-		if (it->second)
+		if (it1->second)
 		{
-			delete it->second;
-			it->second = 0;
+			delete it1->second;
+			it1->second = 0;
 		}
-		it++;
+		it1++;
+	}
+
+	std::map < int32_t, GpioArray * >::iterator it2 = _io_array_map.begin();
+	while (it2 != _io_array_map.end())
+	{
+		if (it2->second)
+		{
+			delete it2->second;
+			it2->second = 0;
+		}
+		it2++;
 	}
 
 	// fermeture du port
@@ -50,6 +63,8 @@ GpioFactory::~GpioFactory()
 
 void GpioFactory::info()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "info");
+
 	struct gpiochip_info cinfo;
 	ioctl(_handler, GPIO_GET_CHIPINFO_IOCTL, &cinfo);
 	{
@@ -136,6 +151,30 @@ Gpio * GpioFactory::input(int32_t input_offset)
 	return in;
 }
 
+GpioArray * GpioFactory::inputs(int32_t * input_offset, int32_t length)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "inputs");
+
+	struct gpiohandle_request input_event_request;
+	memset(&input_event_request, 0, sizeof(struct gpiohandle_request));
+	input_event_request.flags = GPIOHANDLE_REQUEST_INPUT;
+	input_event_request.lines = 0;
+	for (int32_t i=0; i<length; ++i)
+	{
+		input_event_request.lineoffsets[input_event_request.lines] = input_offset[i];
+		input_event_request.lines += 1;
+	}
+
+	if (ioctl(_handler, GPIO_GET_LINEHANDLE_IOCTL, &input_event_request) < 0)
+	{
+		throw GpioException(__FILE__, __LINE__, errno);
+	}
+
+	GpioArray * in = new GpioArray(input_event_request.fd);
+	_io_array_map[input_offset[0]] = in;
+	return in;
+}
+
 Gpio * GpioFactory::output(int32_t output_offset)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "output");
@@ -163,5 +202,29 @@ Gpio * GpioFactory::output(int32_t output_offset)
 		_io_map[output_offset] = out;
 	}
 
+	return out;
+}
+
+GpioArray * GpioFactory::outputs(int32_t * output_offset, int32_t length)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "outputs");
+
+	struct gpiohandle_request output_request;
+	memset(&output_request, 0, sizeof(struct gpiohandle_request));
+	output_request.flags = GPIOHANDLE_REQUEST_OUTPUT;
+	output_request.lines = 0;
+	for (int32_t i=0; i<length; ++i)
+	{
+		output_request.lineoffsets[output_request.lines] = output_offset[i];
+		output_request.lines += 1;
+	}
+
+	if (ioctl(_handler, GPIO_GET_LINEHANDLE_IOCTL, &output_request) < 0)
+	{
+		throw GpioException(__FILE__, __LINE__, errno);
+	}
+
+	GpioArray * out = new GpioArray(output_request.fd);
+	_io_array_map[output_offset[0]] = out;
 	return out;
 }

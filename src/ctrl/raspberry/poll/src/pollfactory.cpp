@@ -9,7 +9,9 @@ PollFactory::PollFactory()
 : _clb_in(0)
 , _clb_out(0)
 , _clb_error(0)
-{}
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "PollFactory");
+}
 
 PollFactory::~PollFactory()
 {

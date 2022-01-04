@@ -2,6 +2,7 @@ BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
 	$(BIN_PWD)/gpio.o \
+	$(BIN_PWD)/gpioarray.o \
 	$(BIN_PWD)/gpiofifo.o \
 	$(BIN_PWD)/gpioevent.o \
 	$(BIN_PWD)/gpiofactory.o
@@ -23,12 +24,12 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll out
 
-out: $(BIN_PWD)/out.o
+out: $(BIN_PWD)/out.o libgpio.so libpoll.so libutil.so liblog.so 
 	$(MAKE) liblog.so
 	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) libgpio.so
-	$(CC) -o $@ $< -L. $(LDFLAGS) -lgpio
+	$(CC) -o $@ $< $(LDFLAGS) -lgpio
 
 $(BIN_PWD)/out.o: test/out.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -46,9 +47,7 @@ libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@
 	ln -s $(UTIL_PWD)/$@
 
-libgpio.so: $(OBJECTS)
-	$(MAKE) liblog.so
-	$(MAKE) libpoll.so
+libgpio.so: $(OBJECTS) libpoll.so libutil.so liblog.so
 	$(CC) -shared $^ -o $@
 
 # GLOBAL

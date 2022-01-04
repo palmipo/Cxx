@@ -19,10 +19,9 @@ union ST_LCD
 	u8 octet;
 };
 
-ADA772::ADA772(I2C * ctrl)
+ADA772::ADA772(MCP23017 * ctrl)
 : HD44780IO()
-, _pia(0)
-, _afficheur(0)
+, _pia(ctrl)
 , _selectTriggered(0)
 , _upTriggered(0)
 , _rightTriggered(0)
@@ -31,21 +30,10 @@ ADA772::ADA772(I2C * ctrl)
 , _buttonTriggered(0)
 , _user_data(0)
 , _backlight(0)
-{
-	_pia = new MCP23017(0, ctrl);
-
-	// virtual void init(u8 port, u8 dir=0, u8 pol=0, u8 pullup=0, u8 irq=0, u8 defval_pin=0, u8 defval=0);
-	_pia->init(0, 0x1F, 0x1F, 0x1F, 0x1F);
-	_pia->init(1, 0, 0, 0);
-	
-	_afficheur = new HD44780(this);
-}
+{}
 
 ADA772::~ADA772()
-{
-	delete _afficheur;
-	delete _pia;
-}
+{}
 
 void ADA772::setSelectCallback(void (*callback)(bool))
 {
@@ -82,11 +70,6 @@ void ADA772::setBackLight(u8 value)
 {
 	_backlight = value ? 1 : 0;
 	_pia->set(0, value ? 0 : 0xC0);
-}
-
-HD44780 *ADA772::LCD()
-{
-	return _afficheur;
 }
 
 u8 ADA772::scrute()

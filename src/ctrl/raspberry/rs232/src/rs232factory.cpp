@@ -1,6 +1,5 @@
 #include "rs232factory.h"
 #include "rs232.h"
-#include "rs232fifo.h"
 #include "rs232exception.h"
 #include "log.h"
 #include <cerrno>
@@ -15,7 +14,7 @@ RS232Factory::~RS232Factory()
 
 RS232 * RS232Factory::add(const std::string & device_p)
 {
-    try
+	try
 	{
 		return get(device_p);
 	}
@@ -28,28 +27,13 @@ RS232 * RS232Factory::add(const std::string & device_p)
 	}
 }
 
-RS232Fifo * RS232Factory::addFifo(const std::string & device_p)
-{
-    try
-	{
-		return (RS232Fifo *)get(device_p);
-	}
-	catch(...)
-	{
-		RS232Fifo * serial = new RS232Fifo(device_p);
-		_port[device_p] = serial->handler();
-		PollFactory::add(serial);
-		return serial;
-	}
-}
-
 RS232 * RS232Factory::get(const std::string & device_p)
 {
-    std::map<std::string, int32_t>::iterator it = _port.find(device_p);
-    if (it != _port.end())
-    {
-        return (RS232 *)PollFactory::get(it->second);
-    }
+	std::map<std::string, int32_t>::iterator it = _port.find(device_p);
+	if (it != _port.end())
+	{
+		return (RS232 *)PollFactory::get(it->second);
+	}
 
 	std::stringstream ss;
 	ss << "device not known : " << device_p;
@@ -58,12 +42,12 @@ RS232 * RS232Factory::get(const std::string & device_p)
 
 void RS232Factory::del(const std::string & device_p)
 {
-    std::map<std::string, int32_t>::iterator it = _port.find(device_p);
-    if (it != _port.end())
-    {
-        PollFactory::del(it->second);
+	std::map<std::string, int32_t>::iterator it = _port.find(device_p);
+	if (it != _port.end())
+	{
+		PollFactory::del(it->second);
 		_port.erase(it);
-    }
+	}
 
 	std::stringstream ss;
 	ss << "device not find : " << device_p;

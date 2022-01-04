@@ -13,6 +13,7 @@
 #include "raspii2c.h"
 #include "ada772.h"
 #include "hd44780.h"
+#include "mcp23017.h"
 #include "gpio_irq_mod.h"
 
 static void bouton(unsigned char value, void *user_data)
@@ -27,52 +28,46 @@ static void bouton(unsigned char value, void *user_data)
 	}
 }
 
+static int32_t irq(PollDevice *)
+{
+	try
+	{
+		lcd_io.scrute();
+	}
+	catch(...)
+	{
+		std::cout << "erreur ..." << std::endl;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int fd_irq = -1;
 
 	if (argc < 3)
 	{
-		std::cout << argv[0] << " </dev/i2c-1 /dev/gpioirq0>" << std::endl;
+		std::cout << argv[0] << " </dev/i2c-1 /dev/gpiochip0>" << std::endl;
 		return -1;
 	}
 
 	try
 	{
-		fd_irq = open(argv[2], O_RDWR);
-		if (fd_irq < 0)
-		{
-			std::cout << "open error" << std::endl;
-			return -1;
-		}
-
-		// entree
-		struct gpio_irq_ioctl ctrl;
-		ctrl.cmd = GPIO_IRQ_INPUT;
-		ctrl.port = 17;
-		ctrl.value = 1;
-		if (ioctl(fd_irq, GPIO_IRQ_RDWR, &ctrl) < 0)
-		{
-			std::cout << "port " << ctrl.port << " ioctl error" << std::endl;
-			return -1;
-		}
-		std::cout << "lecture port " << ctrl.port << " : " << ctrl.value << std::endl;
-
-		ctrl.cmd = GPIO_IRQ_INPUT | GPIO_IRQ_FALLING_INTERRUPT;
-		ctrl.port = 4;
-		ctrl.value = 1;
-		if (ioctl(fd_irq, GPIO_IRQ_RDWR, &ctrl) < 0)
-		{
-			std::cout << "port " << ctrl.port << " ioctl error" << std::endl;
-			return -1;
-		}
-		std::cout << "lecture port " << ctrl.port << " : " << ctrl.value << std::endl;
-
 		RaspiI2C i2c(argv[1]);
+		MCP23017 pia(0, &i2c);
 
-		ADA772 afficheur(&i2c);
-		afficheur.setBackLight(1);
-		afficheur.setButtonsCallback(bouton, 0);
+		// virtual void init(u8 port, u8 dir=0, u8 pol=0, u8 pullup=0, u8 irq=0, u8 defval_pin=0, u8 defval=0);
+		pia.init(0, 0x1F, 0x1F, 0x1F, 0x1F);
+		pia.init(1, 0, 0, 0);
+
+		ADA772 lcd_io(&pia);
+		lcd_io.setBackLight(1);
+		lcd_io.setButtonsCallback(bouton, 0);
+
+		HD44780 lcd(&lcd_io);
+
+		GpioFactory fact(argv[2]);
+		fact.setActionInCallback(irq);
+		Gpio * gpio = fact.event(14, GPIOEVENT_REQUEST_FALLING_EDGE);
 
 		std::string str_date;
 		struct tm *la_date;
@@ -86,27 +81,13 @@ int main(int argc, char **argv)
 			buf_date << std::setw(2) << std::setfill('0') << la_date->tm_mday << "-" << std::setw(2) << std::setfill('0') << 1 + la_date->tm_mon << "-" << std::setw(4) << std::setfill('0') << 1900 + la_date->tm_year << " " << std::setw(2) << std::setfill('0') << la_date->tm_hour <<":" << std::setw(2) << std::setfill('0') << la_date->tm_min;
 			str_date = buf_date.str();
 			
-			afficheur.LCD()->setPosition(0, 0);
-			afficheur.LCD()->setText((s8*)str_date.c_str(), str_date.length());
+			lcd.setPosition(0, 0);
+			lcd.setText((s8*)str_date.c_str(), str_date.length());
 
-			afficheur.LCD()->setPosition(1, 0);
-			afficheur.LCD()->setText((s8*)"20 C", 4);
+			lcd.setPosition(1, 0);
+			lcd.setText((s8*)"20 C", 4);
 			
-			struct pollfd pfd;
-			pfd.fd = fd_irq;
-			pfd.events = POLLIN | POLLRDNORM;
-			pfd.revents = 0;
-			
-			if (0 < poll(&pfd, 1, 1000))
-			{
-				ctrl.cmd = GPIO_IRQ_INT;
-				if (ioctl(fd_irq, GPIO_IRQ_RDWR, &ctrl) < 0)
-				{
-					std::cout << "error read" << std::endl;
-				}
-				std::cout << "irq : " << ctrl.port << " ; valeur : " << ctrl.value << std::endl;
-				afficheur.scrute();
-			}
+			fact.scrute(10);
 
 			std::cout << "compteur : " << cpt << std::endl;
 			++cpt;

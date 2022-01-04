@@ -12,8 +12,8 @@ class Gpio : public PollDevice
 
 		virtual int32_t pinNumber() const;
 
-		virtual int32_t write(uint8_t *, int32_t);
-		virtual int32_t read(uint8_t *, int32_t);
+		virtual void write(uint8_t);
+		virtual int32_t read();
 
 		// GPIOEVENT_EVENT_RISING_EDGE
 		// GPIOEVENT_EVENT_FALLING_EDGE

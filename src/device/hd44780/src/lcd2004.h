@@ -1,35 +1,30 @@
-#ifndef lcd2004_H
-#define lcd2004_H
+#ifndef LCD2004_H
+#define LCD2004_H
 
-#include "batratypes.h"
 #include "hd44780io.h"
 
-class I2C;
-class PIA;
-class HD44780;
-class lcd2004 : public HD44780IO
+class PCF8574AT;
+class LCD2004 : public HD44780IO
 {
 public:
-	lcd2004(I2C *i2c);
-	virtual ~lcd2004();
+	LCD2004(PCF8574AT *i2c);
+	virtual ~LCD2004();
 
-	virtual void setBackLight(u8 value);
-	virtual HD44780 * lcd();
-
-private:
-	virtual void cmd (u8 value);
-	virtual void data (u8 value);
-	virtual u8   readCmd ();
-	virtual u8   readData ();
-	virtual void write (u8 value, u8 rs, u8 rw_);
-
-	virtual bool isBusy(u8 *addressCounter = 0);
-	virtual void enableBit(u8);
+	virtual void setBackLight(uint8_t value);
 
 private:
-	PIA *_pia;
-	u8 _backLight;
-	HD44780 *_afficheur;
+	virtual void cmd (uint8_t value);
+	virtual void data (uint8_t value);
+	virtual uint8_t   readCmd ();
+	virtual uint8_t   readData ();
+	virtual void write (uint8_t value, uint8_t rs, uint8_t rw_);
+
+	virtual bool isBusy(uint8_t *addressCounter = 0);
+	virtual void enableBit(uint8_t);
+
+private:
+	PCF8574AT *_pia;
+	uint8_t _backLight;
 };
 
 #endif
