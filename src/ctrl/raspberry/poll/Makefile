@@ -3,8 +3,7 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/pollfactory.o \
 	$(BIN_PWD)/polldevice.o \
-	$(BIN_PWD)/pollmutex.o \
-	$(BIN_PWD)/pollbuffer.o
+	$(BIN_PWD)/pollmutex.o
 
 UTIL_PWD = ../../../util
 LOG_PWD = ../log
