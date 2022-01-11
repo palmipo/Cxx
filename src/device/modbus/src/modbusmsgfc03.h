@@ -1,7 +1,6 @@
 #ifndef MODBUS_MSG_FC03_H
 #define MODBUS_MSG_FC03_H
 
-#include "modbusmsgheader.h"
 #include <map>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
@@ -19,26 +18,19 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgFC03 : public ModbusMsgHeader
 	{
 		public:
-			ModbusMsgFC03();
+			ModbusMsgFC03(uint16_t, uint16_t);
 			virtual ~ModbusMsgFC03();
 
-			// + 40001 offset
+			virtual void set(uint16_t, uint16_t);			
+			virtual uint16_t get(int16_t);
 
-			// question
-			virtual void setRegisterAddr(uint16_t, uint16_t);
-			
-			// reponse
-			virtual uint16_t getRegister(uint16_t);
-			
-			// codec
-			virtual uint16_t encodeQuestion();
-			virtual uint16_t decodeQuestion();
-			virtual uint16_t decodeResponse();
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 
 		protected:
-			uint16_t data_addr;
-			uint16_t nb_registers;
-			std::map<uint16_t, uint16_t> registers;
+			uint16_t _starting_address;
+			uint16_t _coils_quantity;
+			std::vector < uint16_t > _coils_status;
 	};
 }
 

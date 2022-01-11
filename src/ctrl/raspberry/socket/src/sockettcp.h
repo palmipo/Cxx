@@ -24,9 +24,6 @@ namespace Socket
 			virtual ~SocketTcp();
 
 			virtual void connexion(const std::string &, int16_t);
-			virtual void setInterCharacterTimer(int32_t);
-			virtual int32_t getInterCharacterTimer();
-			virtual void setBufferSize(int32_t);
 
 			virtual int32_t write(uint8_t *, int32_t);
 			virtual int32_t read(uint8_t *, int32_t);

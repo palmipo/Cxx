@@ -18,19 +18,18 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgFC06 : public ModbusMsgHeader
 	{
 		public:
-			ModbusMsgFC06();
+			ModbusMsgFC06(uint16_t);
 			virtual ~ModbusMsgFC06();
 			
-			// + 40001 offset
-			virtual void setRegister(uint16_t, uint16_t);
+			virtual void set(uint16_t);			
+			virtual uint16_t get();
 
-			virtual uint16_t encodeQuestion();
-			virtual uint16_t decodeQuestion();
-			virtual uint16_t decodeResponse();
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 
 		protected:
-			uint16_t data_addr;
-			uint16_t status;
+			uint16_t _address;
+			uint16_t _value;
 	};
 }
 

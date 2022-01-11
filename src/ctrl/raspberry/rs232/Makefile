@@ -2,8 +2,6 @@ BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
 	$(BIN_PWD)/rs232unix.o \
-	$(BIN_PWD)/rs232buffer.o \
-	$(BIN_PWD)/rs232fifo.o \
 	$(BIN_PWD)/rs232factory.o
 
 MAKE = make

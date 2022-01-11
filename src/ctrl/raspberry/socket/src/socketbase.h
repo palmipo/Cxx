@@ -26,6 +26,12 @@ namespace Socket
 			virtual int32_t isServerMode() const;
 
 			virtual void connexion(const std::string &, int16_t) = 0;
+			virtual void setReuseAddr(int32_t);
+			virtual void setBroadcast(int32_t);
+			virtual void setInterCharacterTimer(int32_t);
+			virtual int32_t getInterCharacterTimer();
+			virtual void setBufferSize(int32_t);
+
 			virtual int32_t write(uint8_t *, int32_t) = 0;
 			virtual int32_t read(uint8_t *, int32_t) = 0;
 

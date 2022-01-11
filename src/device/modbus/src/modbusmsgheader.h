@@ -19,24 +19,16 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgHeader : public ModbusMsg
 	{
 		public:
-			ModbusMsgHeader(uint8_t = 0);
+			ModbusMsgHeader(uint8_t);
 			virtual ~ModbusMsgHeader();
-
-			virtual uint32_t encodeHeader();
-			virtual uint32_t decodeHeader();
 
 			virtual uint8_t  functionCode() const;
 			virtual uint8_t  errorCode() const;
 
-			virtual void setSlaveAddress(uint8_t );
-			virtual uint8_t slaveAddress() const;
-			
-			virtual uint16_t encodeQuestion() { return 0; }
-			virtual uint16_t decodeQuestion() { return 0; }
-			virtual uint16_t decodeResponse() { return 0; }
+			virtual uint32_t write() = 0;
+			virtual int32_t read() = 0;
 
 		protected:
-			uint8_t  _slave_address;
 			uint8_t  _function_code;
 			uint8_t  _error_code;
 	};

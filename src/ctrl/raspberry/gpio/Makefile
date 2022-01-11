@@ -3,8 +3,6 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/gpio.o \
 	$(BIN_PWD)/gpioarray.o \
-	$(BIN_PWD)/gpiofifo.o \
-	$(BIN_PWD)/gpioevent.o \
 	$(BIN_PWD)/gpiofactory.o
 
 MKDIR = mkdir -p

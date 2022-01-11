@@ -5,7 +5,6 @@
 
 Modbus::ModbusMsgHeader::ModbusMsgHeader(uint8_t fct_code)
 : _error_code(0)
-, _slave_address(0xF8)
 , _function_code(fct_code)
 , ModbusMsg()
 {}
@@ -23,33 +22,22 @@ uint8_t Modbus::ModbusMsgHeader::errorCode() const
 	return _error_code;
 }
 
-void Modbus::ModbusMsgHeader::setSlaveAddress(uint8_t addr)
+int32_t Modbus::ModbusMsgHeader::read(uint8_t * data, int32_t length)
 {
-	_slave_address = addr;
-}
+	if (_function_code != data[0] & 0x7F)
+	{
+		throw ModbusMsgException(__FILE__, __LINE__, "reception d'un message incoherent");
+	}
 
-uint8_t Modbus::ModbusMsgHeader::slaveAddress() const
-{
-	return _slave_address;
-}
+	int32_t cpt = 0;
 
-uint32_t Modbus::ModbusMsgHeader::decodeHeader()
-{
-	uint32_t cpt = 0;
-
-	_buffer_in.read(&_slave_address, 1, cpt);
-	cpt += 1;
-
-	uint8_t t;
-	_buffer_in.read(&t, 1, cpt);
-	_function_code = t & 0x7F;
-	_error_code = t & 0x80;
+	_function_code = data[cpt] & 0x7F;
+	_error_code = data[cpt] & 0x80;
 	cpt += 1;
 
 	if (_error_code)
 	{
-		uint8_t code_erreur;
-		_buffer_in.read(&code_erreur, 1, cpt);
+		uint8_t code_erreur = data[cpt];
 		cpt+=1;
 
 		std::string msg;
@@ -106,15 +94,11 @@ uint32_t Modbus::ModbusMsgHeader::decodeHeader()
 	return cpt;
 }
 
-uint32_t Modbus::ModbusMsgHeader::encodeHeader()
+int32_t Modbus::ModbusMsgHeader::write(uint8_t * data, int32_t length)
 {
 	uint32_t cpt = 0;
 
-	_buffer_out.write(&_slave_address, 1, cpt);
-	cpt += 1;
-
-	uint8_t t = (_function_code & 0x7F) | ((_error_code) ? 0x80 : 0);
-	_buffer_out.write(&t, 1, cpt);
+	data[cpt] = _slave_address;
 	cpt += 1;
 
 	return cpt;

@@ -13,14 +13,14 @@ HC1632::HC1632(Gpio * data, Gpio * write, std::vector < Gpio * > cs)
 , _gpio_chipSelect(cs)
 {
 	uint8_t valeur = 1;
-	_gpio_write->write(&valeur, 1);
-	_gpio_data->write(&valeur, 1);
+	_gpio_write->write(valeur);
+	_gpio_data->write(valeur);
 
 	std::vector < Gpio * >::iterator it = cs.begin();
 	while (it != cs.end())
 	{
 		// _gpio_chipSelect.push_back(*it);
-		(*it)->write(&valeur, 1);
+		(*it)->write(valeur);
 		it++;
 	}
 	
@@ -30,7 +30,7 @@ HC1632::HC1632(Gpio * data, Gpio * write, std::vector < Gpio * > cs)
 void HC1632::write_chipselect(int32_t matrice, uint8_t valeur)
 {
 	uint8_t value = 1 - valeur;
-	_gpio_chipSelect[matrice]->write(&value, 1);
+	_gpio_chipSelect[matrice]->write(value);
 	std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
 }
 
@@ -38,14 +38,14 @@ void HC1632::write_chipselect(int32_t matrice, uint8_t valeur)
 void HC1632::write_bit(uint8_t valeur)
 {
 	uint8_t value = 0;
-	_gpio_write->write(&value, 1);
+	_gpio_write->write(value);
 
 	value = valeur?1:0;
-	_gpio_data->write(&value, 1);
+	_gpio_data->write(value);
 	std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
 
 	value = 1;
-	_gpio_write->write(&value, 1);
+	_gpio_write->write(value);
 	std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
 }
 

@@ -18,21 +18,19 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgFC15 : public ModbusMsgHeader
 	{
 		public:
-			ModbusMsgFC15()
-			: ModbusMsgHeader(0x0F)
-			{}
-
-			virtual ~ModbusMsgFC15()
-			{}
+			ModbusMsgFC15();
+			virtual ~ModbusMsgFC15();
 			
-			virtual uint16_t encodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeResponse(uint8_t*, uint16_t);
+			virtual void set(uint16_t, uint8_t);			
+			virtual uint8_t get(int16_t);
+
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 
 		protected:
-			uint16_t data_addr;
-			uint16_t nb_coils;
-			uint16_t coils[128];
+			uint16_t _starting_address;
+			uint16_t _coils_quantity;
+			std::vector < uint8_t > _coils_status;
 	};
 }
 

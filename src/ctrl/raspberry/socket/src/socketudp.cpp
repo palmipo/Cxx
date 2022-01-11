@@ -52,11 +52,7 @@ Socket::SocketUdp::~SocketUdp()
 
 void Socket::SocketUdp::broadcast(int16_t port)
 {
-	int32_t broadcastEnable = 1;
-	if (::setsockopt(_handler, SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable)) == -1)
-	{
-		throw SocketException(__FILE__, __LINE__,errno);
-	}
+	Socket::SocketUdp::setBroadcast(1);
 
 	memset(&_st_sockaddr_in, 0, sizeof(struct sockaddr_in));
 	_st_sockaddr_in.sin_family = AF_INET;

@@ -18,11 +18,17 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgDirect : public ModbusMsgHeader
 	{
 		public:
-			ModbusMsgDirect(uint8_t = 0);
-			
-			virtual uint16_t encodeQuestion();
-			virtual uint16_t decodeQuestion();
-			virtual uint16_t decodeResponse();
+			ModbusMsgDirect(uint8_t);
+
+			virtual in32_t set(uint8_t *, int32_t);
+			virtual int32_t get(uint8_t *, int32_t);
+
+			virtual in32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
+
+		protected:
+			uint8_t _data[1024];
+			int32_t _length;
 	};
 }
 

@@ -1,8 +1,7 @@
 #ifndef MODBUS_MSG_FC01_H
 #define MODBUS_MSG_FC01_H
 
-#include "modbusmsgheader.h"
-#include <map>
+#include <vector>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
@@ -16,23 +15,22 @@
 
 namespace Modbus
 {
-    class MODBUS_DLL ModbusMsgFC01 : public ModbusMsgHeader
-    {
-        public:
-			ModbusMsgFC01();
+	class MODBUS_DLL ModbusMsgFC01 : public ModbusMsgHeader
+	{
+		public:
+			ModbusMsgFC01(uint16_t);
 			virtual ~ModbusMsgFC01();
 
-			// + 1 offset
-			virtual void readCoilStatus(uint16_t, uint16_t);			
-			virtual uint16_t getCoilStatus(uint16_t);
+			virtual void set(uint8_t);			
+			virtual uint8_t get();
 
-			virtual uint16_t encodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeResponse(uint8_t*, uint16_t);
-				
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
+
 		protected:
-			std::map < uint16_t, uint16_t > _bytes;
-    };
+			uint16_t _address;
+			uint8_t _status;
+	};
 }
 
 #endif

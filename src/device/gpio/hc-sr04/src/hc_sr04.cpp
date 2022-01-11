@@ -33,14 +33,11 @@ void HC_SR04::start(int32_t intervalle_500ms)
 	_thread = new std::thread(run, this);
 	_thread->detach();
 
-	uint8_t valeur;
-	valeur = 1;
-	_out->write(&valeur, 1);
+	_out->write(1);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 
-	valeur = 0;
-	_out->write(&valeur, 1);
+	_out->write(0);
 
 	//~ std::this_thread::sleep_for(std::chrono::milliseconds(500 * obj->_intervalle_500ms));
 }

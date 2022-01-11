@@ -1,13 +1,12 @@
 #include "socketfactory.h"
 #include "socketexception.h"
-#include "sockettcpfifo.h"
+#include "sockettcp.h"
 #include "socketudp.h"
 #include <cerrno>
 
 Socket::SocketFactory::SocketFactory()
 : PollFactory()
-{
-}
+{}
 
 Socket::SocketFactory::~SocketFactory()
 {}
@@ -40,26 +39,6 @@ Socket::SocketTcp * Socket::SocketFactory::addTcpConnection(const std::string & 
 	catch(...)
 	{
 		Socket::SocketTcp * sock = new Socket::SocketTcp();
-		sock->connexion(addr, port);
-
-		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock->handler();
-		add(sock);
-
-		return sock;
-	}
-
-	return 0;
-}
-
-Socket::SocketTcpFifo * Socket::SocketFactory::addTcpFifoConnection(const std::string & addr, uint16_t port)
-{
-	try
-	{
-		return (Socket::SocketTcpFifo *)get(addr, port);
-	}
-	catch(...)
-	{
-		Socket::SocketTcpFifo * sock = new Socket::SocketTcpFifo();
 		sock->connexion(addr, port);
 
 		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock->handler();
@@ -110,7 +89,9 @@ void Socket::SocketFactory::del(const std::string & addr, uint16_t port)
 		PollFactory::del(it->second);
 		_hosts.erase(it);
 	}
-	
-	throw Socket::SocketException(__FILE__, __LINE__, "not find");
+	else
+	{
+		throw Socket::SocketException(__FILE__, __LINE__, "not find");
+	}
 }
 

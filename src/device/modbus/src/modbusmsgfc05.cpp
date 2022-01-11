@@ -1,52 +1,46 @@
 #include "modbusmsgfc05.h"
 #include "modbusmsgexception.h"
 
-void Modbus::ModbusMsgFC05::setStatus(uint16_t value)
+Modbus::ModbusMsgFC05::ModbusMsgFC05(uint16_t address)
+: Modbus::ModbusMsgHeader::ModbusMsgHeader(0x05)
+, _address(address)
+, _value(0)
+{}
+
+Modbus::ModbusMsgFC05::~ModbusMsgFC05()
+{}
+
+void Modbus::ModbusMsgFC05::set(uint16_t value)
 {
-	status = value;
+	_value = value ? 0xFF00 : 0x0000;
 }
 
-uint16_t Modbus::ModbusMsgFC05::getStatus()
+uint16_t Modbus::ModbusMsgFC05::get()
 {
-	return status;
+	return _value ? 1 : 0;
 }
 
-uint16_t Modbus::ModbusMsgFC05::encodeQuestion(uint8_t* data, uint16_t len)
+int32_t Modbus::ModbusMsgFC05::write(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
-    data[cpt] = (data_addr & 0xFF00) >> 8; ++cpt;
-    data[cpt] = data_addr & 0x00FF; ++cpt;
+	data[cpt] = (_address & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _address & 0x00FF; ++cpt;
 
-    data[cpt] = (status & 0xFF00) >> 8; ++cpt;
-    data[cpt] = status & 0x00FF; ++cpt;
-
-	return cpt;
-}
-uint16_t Modbus::ModbusMsgFC05::decodeQuestion(uint8_t* data, uint16_t len)
-{
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
-
-    data_addr = data[cpt] << 8; ++cpt;
-    data_addr |= data[cpt]; ++cpt;
-
-    status = data[cpt] << 8; ++cpt;
-    status |= data[cpt]; ++cpt;
-
+	data[cpt] = (_value & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _value & 0x00FF; ++cpt;
+	
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgFC05::decodeResponse(uint8_t* data, uint16_t len)
+int32_t Modbus::ModbusMsgFC05::read(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
-	{
-		data_addr = data[cpt]; cpt += 1;
-		data_addr |= data[cpt] << 8; cpt += 1;
+	
+	_address = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
+	_value = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
 
-		status = data[cpt]; cpt += 1;
-		status |= data[cpt] << 8; cpt += 1;
-	}
-
+	
 	return cpt;
 }

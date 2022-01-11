@@ -64,7 +64,7 @@ libpoll.so:
 
 #
 #
-libhcsr04.so: $(OBJECTS)
+libhcsr04.so: $(OBJECTS) liblog.so libutil.so libpoll.so libgpio.so
 	$(CC) $(CFLAGS) -shared $^ -o $@
 
 #

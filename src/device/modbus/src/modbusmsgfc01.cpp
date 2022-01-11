@@ -1,94 +1,55 @@
 #include "modbusmsgfc01.h"
-#include "modbusmsgexception.h"
 
-Modbus::ModbusMsgFC01::ModbusMsgFC01()
-: ModbusMsgHeader(0x01)
+Modbus::ModbusMsgFC01::ModbusMsgFC01(uint16_t starting_address, uint16_t coils_quantity)
+: Modbus::ModbusMsgHeader::ModbusMsgHeader(0x01)
+, _starting_address(starting_address)
+, _quantity_coils(coils_quantity & 0x7D0)
+, _coils_status(std::vector < uint8_t > (_coils_status))
 {}
 
 Modbus::ModbusMsgFC01::~ModbusMsgFC01()
 {}
 
-void Modbus::ModbusMsgFC01::readCoilStatus(uint16_t addr, uint16_t nb)
+void Modbus::ModbusMsgFC01::set(uint16_t address, uint8_t value)
 {
-	for (uint16_t i=0; i<nb; ++i)
-	{
-		_bytes[addr + i] = 0;
-	}
+	_coils_status[address] = value;
 }
 
-uint16_t Modbus::ModbusMsgFC01::getCoilStatus(uint16_t addr)
+uint8_t Modbus::ModbusMsgFC01::get(uint16_t address)
 {
-	return _bytes[addr];
+	return _coils_status[address];
 }
 
-uint16_t Modbus::ModbusMsgFC01::encodeQuestion(uint8_t* data, uint16_t len)
+int32_t Modbus::ModbusMsgFC01::write(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = encodeHeader();
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
-	std::map < uint16_t, uint16_t > ::iterator it = _bytes.begin();
-	if (it != _bytes.end())
-	{
-		data[cpt] = (it->first & 0xFF00) >> 8; ++cpt;
-		data[cpt] = it->first & 0x00FF; ++cpt;
+	data[cpt] = (_starting_address & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _starting_address & 0x00FF; ++cpt;
 
-		data[cpt] = (_bytes.size() & 0xFF00) >> 8; ++cpt;
-		data[cpt] = _bytes.size() & 0x00FF; ++cpt;
-	}
-
+	data[cpt] = (_coils_quantity & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _coils_quantity & 0x00FF; ++cpt;
+	
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgFC01::decodeQuestion(uint8_t* data, uint16_t len)
+int32_t Modbus::ModbusMsgFC01::read(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = decodeHeader();
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
-	uint16_t data_addr = data[cpt] << 8; ++cpt;
-	data_addr |= data[cpt]; ++cpt;
+	_byte_count = data[cpt];
+	cpt += 1;
 
-	uint16_t nb_coils = data[cpt] << 8; ++cpt;
-	nb_coils |= data[cpt]; ++cpt;
-
-	for (uint16_t i=0; i<nb_coils; ++i)
+	int32_t k = 0;
+	for (int32_t i=0; ((i<_byte_count) && (j < _coils_quantity)); ++i)
 	{
-		_bytes[data_addr + i] = 0;
-	}
-
-	return cpt;
-}
-
-uint16_t Modbus::ModbusMsgFC01::decodeResponse(uint8_t* data, uint16_t len)
-{
-	uint16_t cpt = decodeHeader();
-
-	{
-		// number of data bytes to follow
-		if (cpt < len)
+		uint8_t octet = data[i+cpt];
+		for (int32_t j=0; j<8; ++j)
 		{
-			uint8_t nb_bytes = data[cpt];
-			cpt+=1;
-			
-			uint16_t nb_coils = nb_bytes << 3;
-			
-			if (nb_coils < _bytes.size())
-			{
-				throw ModbusMsgException(__FILE__, __LINE__, "erreur dans le nombre de coils de la reponse");
-			}
-		}
-		
-		uint16_t i = 0;
-		std::map < uint16_t, uint16_t > ::iterator it = _bytes.begin();
-		while ((it != _bytes.end()) && (cpt < len))
-		{
-			it->second = ((data[cpt] & (1<<i)) ? 0xFF00 : 0);
-			++it;
-			i += 1;
-			if (i == 8)
-			{
-				i = 0;
-				cpt += 1;
-			}
+			_coils_status[k] = (octet & (1 << j)) ? 1 : 0;
+			k += 1;
 		}
 	}
-
+	
 	return cpt;
 }

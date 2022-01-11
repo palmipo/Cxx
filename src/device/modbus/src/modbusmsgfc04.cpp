@@ -1,61 +1,50 @@
 #include "modbusmsgfc04.h"
-#include "modbusmsgexception.h"
 
-void Modbus::ModbusMsgFC04::setRegister(uint16_t num, uint16_t value)
+Modbus::ModbusMsgFC04::ModbusMsgFC04(uint16_t starting_address, uint16_t coils_quantity)
+: Modbus::ModbusMsgHeader::ModbusMsgHeader(0x04)
+, _starting_address(starting_address)
+, _quantity_coils(coils_quantity & 0x7D)
+, _coils_status(std::vector < uint8_t > (_coils_status))
+{}
+
+Modbus::ModbusMsgFC04::~ModbusMsgFC04()
+{}
+
+void Modbus::ModbusMsgFC04::set(uint16_t address, uint16_t value)
 {
-	if (num < 128)
-	{
-		registers[num] = value;
-	}
+	_coils_status[address] = value;
 }
 
-uint16_t Modbus::ModbusMsgFC04::getRegister(uint16_t num_coils)
+uint16_t Modbus::ModbusMsgFC04::get(uint16_t address)
 {
-	return registers[nb_registers];
+	return _coils_status[address];
 }
 
-uint16_t Modbus::ModbusMsgFC04::encodeQuestion(uint8_t* data, uint16_t len)
+int32_t Modbus::ModbusMsgFC04::write(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
-    data[cpt] = (data_addr & 0xFF00) >> 8; ++cpt;
-    data[cpt] = data_addr & 0x00FF; ++cpt;
+	data[cpt] = (_starting_address & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _starting_address & 0x00FF; ++cpt;
 
-    data[cpt] = (nb_registers & 0xFF00) >> 8; ++cpt;
-    data[cpt] = nb_registers & 0x00FF; ++cpt;
-
-	return cpt;
-}
-uint16_t Modbus::ModbusMsgFC04::decodeQuestion(uint8_t* data, uint16_t len)
-{
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
-
-    data_addr = data[cpt] << 8; ++cpt;
-    data_addr |= data[cpt]; ++cpt;
-
-    nb_registers = data[cpt] << 8; ++cpt;
-    nb_registers |= data[cpt]; ++cpt;
-
+	data[cpt] = (_coils_quantity & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _coils_quantity & 0x00FF; ++cpt;
+	
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgFC04::decodeResponse(uint8_t* data, uint16_t len)
+int32_t Modbus::ModbusMsgFC04::read(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
+	_byte_count = data[cpt];
+	cpt += 1;
+
+	for (int32_t i=0; i<_byte_count; ++i)
 	{
-		// number of data bytes to follow
-		uint8_t number_of_byte = data[cpt];
-		cpt+=1;
-
-		nb_registers = number_of_byte >> 1;
-
-		for (uint16_t num_coil=0; num_coil<nb_registers; ++num_coil)
-		{
-			registers[num_coil] = data[cpt] << 8; cpt += 1;
-			registers[num_coil] |= data[cpt]; cpt += 1;
-		}
+		_coils_status[i] = (data[cpt] << 8) | data[cpt+1];
+		cpt += 2;
 	}
-
+	
 	return cpt;
 }

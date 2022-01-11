@@ -3,14 +3,15 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/hc1632.o
 
+UTIL_REP = ../../util
 LOG_REP = ../../ctrl/raspberry/log
 POLL_REP = ../../ctrl/raspberry/poll
 GPIO_REP = ../../ctrl/raspberry/gpio
 AR = ar
 CC = g++
 MAKE = make
-INCLUDE = -I$(LOG_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc -Ibadminton
-LIBS = -L. -lgpio -lpoll -llog -lhc1632 -lm
+INCLUDE = -I$(UTIL_REP)/src -I$(LOG_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc -Ibadminton
+LIBS = -L. -lutil -lgpio -lpoll -llog -lhc1632 -lm
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -24,6 +25,7 @@ clean:
 	rm $(BIN_PWD)/*.o *.so bad
 
 bad: $(BIN_PWD)/badminton.o $(BIN_PWD)/badmintonfactory.o
+	$(MAKE) libutil.so
 	$(MAKE) libgpio.so
 	$(MAKE) libpoll.so
 	$(MAKE) liblog.so
@@ -35,6 +37,10 @@ $(BIN_PWD)/badminton.o: badminton/badminton.cpp
 
 $(BIN_PWD)/badmintonfactory.o: badminton/badmintonfactory.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
+
+libutil.so:
+	$(MAKE) -C $(UTIL_REP) $@
+	ln -s $(UTIL_REP)/$@
 
 libgpio.so:
 	$(MAKE) -C $(GPIO_REP) $@

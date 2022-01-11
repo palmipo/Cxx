@@ -17,7 +17,7 @@ class Gpio : public PollDevice
 
 		// GPIOEVENT_EVENT_RISING_EDGE
 		// GPIOEVENT_EVENT_FALLING_EDGE
-		virtual int32_t readEvent(uint32_t *, uint64_t *);
+		virtual int32_t readEvent(uint32_t * = 0, uint64_t * = 0);
 		
 	protected:
 		int32_t _pin_number;

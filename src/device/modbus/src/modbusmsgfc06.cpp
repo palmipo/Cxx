@@ -2,98 +2,46 @@
 #include "modbusmsgexception.h"
 #include "log.h"
 
-Modbus::ModbusMsgFC06::ModbusMsgFC06()
-: ModbusMsgHeader(0x06)
+Modbus::ModbusMsgFC06::ModbusMsgFC06(uint16_t address)
+: Modbus::ModbusMsgHeader::ModbusMsgHeader(0x06)
+, _address(address)
+, _value(0)
 {}
 
 Modbus::ModbusMsgFC06::~ModbusMsgFC06()
 {}
 
-void Modbus::ModbusMsgFC06::setRegister(uint16_t addr, uint16_t value)
+void Modbus::ModbusMsgFC06::set(uint16_t value)
 {
-	data_addr = addr;
-	status = value;
+	_value = value;
 }
 
-uint16_t Modbus::ModbusMsgFC06::encodeQuestion()
+uint16_t Modbus::ModbusMsgFC06::get()
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "encodeQuestion");
+	return _value;
+}
 
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
+int32_t Modbus::ModbusMsgFC06::write(uint8_t * data, int32_t length)
+{
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
-	uint8_t d;
-	d = (data_addr & 0xFF00) >> 8;
-	cpt += _buffer_out.write(&d, 1, cpt);
+	data[cpt] = (_address & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _address & 0x00FF; ++cpt;
 
-	d = data_addr & 0x00FF;
-	cpt += _buffer_out.write(&d, 1, cpt);
-
-	d = (status & 0xFF00) >> 8;
-	cpt += _buffer_out.write(&d, 1, cpt);
-
-	d = status & 0x00FF;
-	cpt += _buffer_out.write(&d, 1, cpt);
+	data[cpt] = (_value & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _value & 0x00FF; ++cpt;
 	
 	return cpt;
 }
 
-uint16_t Modbus::ModbusMsgFC06::decodeQuestion()
+int32_t Modbus::ModbusMsgFC06::read(uint8_t * data, int32_t length)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
-/*
-	if (cpt < len)
-	{
-		data_addr = data[cpt] << 8;
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		data_addr |= data[cpt];
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		status = data[cpt] << 8;
-		++cpt;
-	}
-	if (cpt < len)
-	{
-		status |= data[cpt];
-		++cpt;
-	}
-*/
-	return cpt;
-}
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
-uint16_t Modbus::ModbusMsgFC06::decodeResponse()
-{
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
+	
+	_address = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
+	_value = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
 
-	if (functionCode() != 0x06)
-	{
-		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "reception taille incorrect.");
-	}
-
-	uint16_t d = 0;
-	uint8_t data;
-	cpt += _buffer_in.read(&data, 1, cpt);
-	d = data << 8;
-	cpt += _buffer_in.read(&data, 1, cpt);
-	d |= data;
-	if (d != data_addr)
-	{
-		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "erreur dans la reponse du register");
-	}
-
-	uint16_t s = 0;
-	cpt += _buffer_in.read(&data, 1, cpt);
-	s = data << 8;
-	cpt += _buffer_in.read(&data, 1, cpt);
-	s |= data;
-	if (s != status)
-	{
-		throw Modbus::ModbusMsgException(__FILE__, __LINE__, "erreur dans la reponse du status");
-	}
-
+	
 	return cpt;
 }

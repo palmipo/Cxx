@@ -1,7 +1,7 @@
 #ifndef MODBUS_MSG_FC05_H
 #define MODBUS_MSG_FC05_H
 
-#include "modbusmsgheader.h"
+#include <map>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
@@ -18,26 +18,18 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgFC05 : public ModbusMsgHeader
 	{
 		public:
-			ModbusMsgFC05()
-			: ModbusMsgHeader(0x05)
-			{}
+			ModbusMsgFC05(uint16_t);
+			virtual ~ModbusMsgFC05();
 
-			virtual ~ModbusMsgFC05()
-			{}
-			
-			// + 1 offset
-			virtual void setDataAddr(uint16_t addr) { data_addr = addr; }
-			
-			virtual void setStatus(uint16_t);
-			virtual uint16_t getStatus();
+			virtual void set(uint16_t);			
+			virtual uint16_t get();
 
-			virtual uint16_t encodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeQuestion(uint8_t*, uint16_t);
-			virtual uint16_t decodeResponse(uint8_t*, uint16_t);
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 
 		protected:
-			uint16_t data_addr;
-			uint16_t status;
+			uint16_t _address;
+			uint16_t _value;
 	};
 }
 

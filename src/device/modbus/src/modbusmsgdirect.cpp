@@ -5,20 +5,28 @@ Modbus::ModbusMsgDirect::ModbusMsgDirect(uint8_t fct_code)
 : ModbusMsgHeader(fct_code)
 {}
 
-uint16_t Modbus::ModbusMsgDirect::encodeQuestion()
+in32_t Modbus::ModbusMsgDirect::set(uint8_t * data, int32_t length)
 {
-	encodeHeader();
-	return 0;
+	_length = std::memcpy(_data, data, length);
+	return _length;
 }
 
-uint16_t Modbus::ModbusMsgDirect::decodeQuestion()
+int32_t Modbus::ModbusMsgDirect::get(uint8_t * data, int32_t length)
 {
-	decodeHeader();
-	return 0;
+	int32_t l = std::memcpy(data, _data, length);
+	return l;
 }
 
-uint16_t Modbus::ModbusMsgDirect::decodeResponse()
+in32_t Modbus::ModbusMsgDirect::read(uint8_t * data, int32_t length)
 {
-	decodeHeader();
-	return 0;
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length)
+	int32_t l = std::memcpy(_data, data+cpt, length-cpt);
+	return l+cpt;
+}
+
+int32_t Modbus::ModbusMsgDirect::write(uint8_t * data, int32_t length)
+{
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
+	int32_t l = std::memcpy(data+cpt, _data, _length);
+	return l+cpt;
 }

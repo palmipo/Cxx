@@ -3,8 +3,8 @@
 
 #include "pollfactory.h"
 #include <map>
-#include <list>
-#include <poll.h>
+//~ #include <list>
+//~ #include <poll.h>
 #include <string>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
@@ -22,7 +22,6 @@ namespace Socket
 	class SocketBase;
 	class SocketUdp;
 	class SocketTcp;
-	class SocketTcpFifo;
 	class SOCKET_DLL SocketFactory : public PollFactory
 	{
 		public:
@@ -31,7 +30,6 @@ namespace Socket
 
 			virtual SocketTcp * addTcpServer(const std::string &, uint16_t);
 			virtual SocketTcp * addTcpConnection(const std::string &, uint16_t);
-			virtual SocketTcpFifo * addTcpFifoConnection(const std::string &, uint16_t);
 
 			virtual SocketUdp * addUdpConnection(const std::string &, uint16_t);
 

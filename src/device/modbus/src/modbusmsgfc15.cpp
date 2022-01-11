@@ -1,63 +1,58 @@
 #include "modbusmsgfc15.h"
-#include "modbuschannel.h"
-#include <iostream>
-#include <cstring>
 
-uint16_t Modbus::ModbusMsgFC15::encodeQuestion(uint8_t* data, uint16_t len)
+Modbus::ModbusMsgFC15::ModbusMsgFC15(uint16_t starting_address, uint16_t coils_quantity)
+: Modbus::ModbusMsgHeader::ModbusMsgHeader(0x0F)
+, _starting_address(starting_address)
+, _quantity_coils(coils_quantity & 0x7B0)
+, _coils_status(std::vector < uint8_t > (_coils_status))
+{}
+
+Modbus::ModbusMsgFC15::~ModbusMsgFC15()
+{}
+
+void Modbus::ModbusMsgFC15::set(uint16_t address, uint8_t value)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::encodeHeader();
-
-    data[cpt] = (data_addr & 0xFF00) >> 8; ++cpt;
-    data[cpt] = data_addr & 0x00FF; ++cpt;
-
-    data[cpt] = (nb_coils & 0xFF00) >> 8; ++cpt;
-    data[cpt] = nb_coils & 0x00FF; ++cpt;
-
-    uint16_t num_bit = 0;
-    uint16_t num_octet = 0;
-    for (uint16_t num_bit=0; num_bit<nb_coils; ++num_bit)
-    {
-        num_octet = num_bit >> 3;
-        data[cpt + num_octet] |= ((coils[num_bit] ? 1 : 0) << (num_bit % 8));
-    }
-    cpt += num_octet + 1;
-
-	return cpt;
-}
-uint16_t Modbus::ModbusMsgFC15::decodeQuestion(uint8_t* data, uint16_t len)
-{
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
-
-    data_addr = data[cpt] << 8; ++cpt;
-    data_addr |= data[cpt]; ++cpt;
-
-    nb_coils = data[cpt] << 8; ++cpt;
-    nb_coils |= data[cpt]; ++cpt;
-
-    uint16_t num_bit = 0;
-    uint16_t num_octet = 0;
-    for (uint16_t num_bit=0; num_bit<nb_coils; ++num_bit)
-    {
-        num_octet = num_bit >> 3;
-        coils[num_bit] = ((data[cpt + num_octet] >> (num_bit % 8)) & 0x01) ? 1 : 0;
-    }
-    cpt += num_octet + 1;
-
-	return cpt;
+	int32_t byte = address >> 3;
+	int32_t bit = address - (byte << 3);
+	_coils_status[byte] = (_coils_status[byte] & ~(1 << bit)) | (value << bit);
 }
 
-uint16_t Modbus::ModbusMsgFC15::decodeResponse(uint8_t* data, uint16_t len)
+uint8_t Modbus::ModbusMsgFC15::get(uint16_t address)
 {
-	uint16_t cpt = Modbus::ModbusMsgHeader::decodeHeader();
+	int32_t byte = address >> 3;
+	int32_t bit = address - (byte << 3);
+	return _coils_status[byte] & (1 << bit);
+}
 
+int32_t Modbus::ModbusMsgFC15::write(uint8_t * data, int32_t length)
+{
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
+
+	data[cpt] = (_starting_address & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _starting_address & 0x00FF; ++cpt;
+
+	data[cpt] = (_coils_quantity & 0xFF00) >> 8; ++cpt;
+	data[cpt] = _coils_quantity & 0x00FF; ++cpt;
+	
+	int32_t byte_count =  (_coils_quantity >> 3) + 1;
+	data[cpt] = byte_count; ++cpt;
+
+	for (int32_t i=0; i<_coils_quantity; ++i)
 	{
-		// number of data bytes to follow
-		data_addr = data[cpt]; cpt += 1;
-		data_addr |= data[cpt] << 8; cpt += 1;
-
-		nb_coils = data[cpt]; cpt += 1;
-		nb_coils |= data[cpt] << 8; cpt += 1;
+		data[cpt] = _coils_status[i];
+		++cpt;
 	}
 
+	return cpt;
+}
+
+int32_t Modbus::ModbusMsgFC15::read(uint8_t * data, int32_t length)
+{
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
+
+	_byte_count = data[cpt];
+	cpt += 1;
+
+	
 	return cpt;
 }

@@ -1,5 +1,5 @@
-#ifndef MODBUS_MSG_H
-#define MODBUS_MSG_H
+#ifndef MODBUSIO_H
+#define MODBUSIO_H
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
@@ -11,19 +11,18 @@
 	#define MODBUS_DLL
 #endif
 
-#include "modbusbuffer.h"
 #include <cstdint>
 
 namespace Modbus
 {
-	class MODBUS_DLL ModbusMsg
+	class MODBUS_DLL ModbusIo
 	{
 		public:
-			ModbusMsg();
-			virtual ~ModbusMsg();
-
-			virtual uint32_t write() = 0;
-			virtual int32_t read() = 0;
+			ModbusIo();
+			virtual ~ModbusIo();
+		
+			virtual void read(uint8_t *, int32_t) = 0;
+			virtual void write(uint8_t *, int32_t) = 0;
 	};
 }
 
