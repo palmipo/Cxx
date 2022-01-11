@@ -1,7 +1,6 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
-	$(BIN_PWD)/modbusbuffer.o \
 	$(BIN_PWD)/modbuschannel.o \
 	$(BIN_PWD)/modbusfactory.o \
 	$(BIN_PWD)/modbusmsg.o \
@@ -12,17 +11,9 @@ OBJECTS = \
 	$(BIN_PWD)/modbusmsgfc04.o \
 	$(BIN_PWD)/modbusmsgfc05.o \
 	$(BIN_PWD)/modbusmsgfc06.o \
-	$(BIN_PWD)/modbusmsgfc08.o \
-	$(BIN_PWD)/modbusmsgfc11.o \
 	$(BIN_PWD)/modbusmsgfc15.o \
 	$(BIN_PWD)/modbusmsgfc16.o \
-	$(BIN_PWD)/modbusmsgfc23.o \
-	$(BIN_PWD)/modbusmsgfc43.o \
-	$(BIN_PWD)/modbusmsgfc71.o \
-	$(BIN_PWD)/modbusmsgfc72.o \
-	$(BIN_PWD)/modbusmsgfc90.o \
 	$(BIN_PWD)/modbusmsgheader.o \
-	$(BIN_PWD)/modbusqueue.o \
 	$(BIN_PWD)/modbusrtu.o \
 	$(BIN_PWD)/modbustcp.o
 
