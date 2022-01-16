@@ -1,6 +1,13 @@
 #include "r4d3b16.h"
+#include "modbusrtu.h"
+#include "modbusmsgfc03.h"
+#include "modbusmsgfc06.h"
+#include "modbusmsgdirect.h"
 
-Modbus::R4D3B16::R4D3B16(ModbusRtu rtu)
+#include <thread>
+
+Modbus::R4D3B16::R4D3B16(Modbus::ModbusRtu *rtu)
+: _rtu(rtu)
 {
 }
 
@@ -13,19 +20,21 @@ void Modbus::R4D3B16::open(uint8_t coils)
 	ModbusMsgFC06 msg(coils);
 	msg.set(0x0100);
 
-	rtu.write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	rtu.read(&msg);
-
+	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ModbusMsgDirect poubelle;
+	_rtu->read(&poubelle);
+}
 
 void Modbus::R4D3B16::close(uint8_t coils)
 {
 	ModbusMsgFC06 msg(coils);
 	msg.set(0x0200);
 
-	rtu.write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	rtu.read(&msg);
+	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ModbusMsgDirect poubelle;
+	_rtu->read(&poubelle);
 }
 
 void Modbus::R4D3B16::toggle(uint8_t coils)
@@ -33,20 +42,47 @@ void Modbus::R4D3B16::toggle(uint8_t coils)
 	ModbusMsgFC06 msg(coils);
 	msg.set(0x0300);
 
-	rtu.write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	rtu.read(&msg);
-
+	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ModbusMsgDirect poubelle;
+	_rtu->read(&poubelle);
 }
 
-uint8_t Modbus::R4D3B16::read(uint8_t coils)
+/** NE FONCTIONNE PAS DANS LE MODULE
+uint16_t Modbus::R4D3B16::read(uint16_t coils)
 {
-	ModbusMsgFC03 msg(0x01, 0x10);
-	msg.set(0x0001);
+	ModbusMsgFC03 msg(coils, 0x0001);
 
-	rtu.write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	rtu.read(&msg);
+	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ModbusMsgDirect poubelle;
+	_rtu->readDirect(&poubelle);
+	//~ _rtu->read(&msg);
 
+	return msg.get(0);
+	//~ return msg.get(coils);
+}
+*/
+
+void Modbus::R4D3B16::openAll()
+{
+	ModbusMsgFC06 msg(0x0000);
+	msg.set(0x0700);
+
+	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ModbusMsgDirect poubelle;
+	_rtu->readDirect(&poubelle);
+}
+
+void Modbus::R4D3B16::closeAll()
+{
+	ModbusMsgFC06 msg(0x0000);
+	msg.set(0x0800);
+
+	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ModbusMsgDirect poubelle;
+	_rtu->readDirect(&poubelle);
 }
 

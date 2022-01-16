@@ -19,9 +19,9 @@ int32_t Modbus::ModbusRtu::read(ModbusMsg * msg)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read");
 
-	RS232 * serial = (RS232 *)_device;
 	uint8_t data[512];
-	int32_t data_length = serial->read(data, 512);
+	int32_t data_length = _device->read(data, 512);
+	//~ RS232 * serial = (RS232 *)_device;
 	//~ int32_t data_length = serial->recvUntilEnd(data, 512);
 
 	if (data_length < 3)

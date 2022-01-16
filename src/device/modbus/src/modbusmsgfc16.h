@@ -23,8 +23,8 @@ namespace Modbus
 			ModbusMsgFC16();
 			virtual ~ModbusMsgFC16();
 
-			virtual void set(uint16_t, uint8_t);			
-			virtual uint8_t get(uint16_t);
+			virtual void set(uint16_t, uint16_t);			
+			virtual uint16_t get(uint16_t);
 
 			virtual int32_t read(uint8_t *, int32_t);
 			virtual int32_t write(uint8_t *, int32_t);
@@ -32,7 +32,7 @@ namespace Modbus
 		protected:
 			uint16_t _starting_address;
 			uint16_t _coils_quantity;
-			std::vector < uint8_t > _coils_status;
+			std::vector < uint16_t > _registers;
 	};
 }
 

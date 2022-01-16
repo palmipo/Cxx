@@ -24,6 +24,9 @@ namespace Modbus
 
 			virtual int32_t read(ModbusMsg *) = 0;
 			virtual int32_t write(ModbusMsg *) = 0;
+
+			virtual int32_t readDirect(ModbusMsg *);
+			virtual int32_t writeDirect(ModbusMsg *);
 		
 		protected:
 			PollDevice * _device;

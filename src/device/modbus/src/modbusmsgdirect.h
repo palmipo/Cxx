@@ -19,7 +19,7 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsgDirect : public ModbusMsgHeader
 	{
 		public:
-			ModbusMsgDirect(uint8_t);
+			ModbusMsgDirect();
 
 			virtual int32_t set(uint8_t *, int32_t);
 			virtual int32_t get(uint8_t *, int32_t);

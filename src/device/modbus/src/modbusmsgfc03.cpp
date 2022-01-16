@@ -3,8 +3,8 @@
 Modbus::ModbusMsgFC03::ModbusMsgFC03(uint16_t starting_address, uint16_t coils_quantity)
 : Modbus::ModbusMsgHeader::ModbusMsgHeader(0x03)
 , _starting_address(starting_address)
-, _coils_quantity(coils_quantity & 0x7D)
-, _coils_status(std::vector < uint16_t > (_coils_status))
+, _coils_quantity(coils_quantity)
+, _coils_status(std::vector < uint16_t > (_coils_quantity))
 {}
 
 Modbus::ModbusMsgFC03::~ModbusMsgFC03()

@@ -1,13 +1,14 @@
 #include "rs232.h"
 #include "rs232factory.h"
 #include "rs232exception.h"
-#include "modbusmsgfc06.h"
+#include "r4d3b16.h"
 #include "modbusrtu.h"
 #include "modbusexception.h"
 #include "log.h"
 #include "polldevice.h"
 #include <cstdint>
 #include <sstream>
+#include <iostream>
 #include <thread>
 
 
@@ -22,6 +23,8 @@ int main(int argc, char **argv)
 
 	try
 	{
+		uint8_t data[1024];
+
 		RS232Factory factory;
 
 		RS232 * serial = factory.add(argv[1]);
@@ -29,20 +32,13 @@ int main(int argc, char **argv)
 		
 		Modbus::ModbusRtu sock(1, serial);
 
-		//~ Modbus::ModbusMsgFC06 msg1(1);
-		//~ msg1.set(0x0200);
-		//~ sock.write(&msg1);
-		//~ std::this_thread::sleep_for(std::chrono::seconds(1));
-		//~ sock.read(&msg1);
+		Modbus::R4D3B16 msg(&sock);
+		msg.openAll();
 
-		//~ std::this_thread::sleep_for(std::chrono::minutes(1));
-		
-		Modbus::ModbusMsgFC06 msg2(2);
-		msg2.set(0x0640);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-		sock.write(&msg2);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-		sock.read(&msg2);
+		msg.closeAll();
+
 
 		return 0;
 	}
