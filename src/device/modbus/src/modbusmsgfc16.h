@@ -2,7 +2,8 @@
 #define MODBUS_MSG_FC16_H
 
 #include "modbusmsgheader.h"
-#include <map>
+#include <cstdint>
+#include <vector>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
@@ -22,16 +23,16 @@ namespace Modbus
 			ModbusMsgFC16();
 			virtual ~ModbusMsgFC16();
 
-			// question
-			virtual void setRegister(uint16_t, uint16_t);
+			virtual void set(uint16_t, uint8_t);			
+			virtual uint8_t get(uint16_t);
 
-			// constitution message
-			virtual uint16_t encodeQuestion();
-			virtual uint16_t decodeQuestion();
-			virtual uint16_t decodeResponse();
+			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t write(uint8_t *, int32_t);
 
 		protected:
-			std::map < uint16_t, uint16_t > registers;
+			uint16_t _starting_address;
+			uint16_t _coils_quantity;
+			std::vector < uint8_t > _coils_status;
 	};
 }
 

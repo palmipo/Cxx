@@ -2,6 +2,7 @@
 #define MODBUS_TCP_H
 
 #include "modbuschannel.h"
+#include <cstdint>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
@@ -23,10 +24,8 @@ namespace Modbus
 			ModbusTcp(PollDevice *);
 			virtual ~ModbusTcp();
 
-		protected:
-			virtual int32_t actionIn();
-			virtual int32_t actionOut();
-			virtual int32_t actionError();
+			virtual int32_t read(ModbusMsg *);
+			virtual int32_t write(ModbusMsg *);
 
         protected:
 			uint16_t _transaction_id;

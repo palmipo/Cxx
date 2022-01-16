@@ -1,6 +1,6 @@
 #include "modbustcp.h"
 #include "sockettcp.h"
-#include "modbusmsgdirect.h"
+#include "modbusmsgheader.h"
 #include "modbusexception.h"
 #include "polldevice.h"
 #include "log.h"
@@ -17,7 +17,7 @@ Modbus::ModbusTcp::ModbusTcp(PollDevice * socket)
 Modbus::ModbusTcp::~ModbusTcp()
 {}
 
-int32_t Modbus::ModbusTcp::actionIn()
+int32_t Modbus::ModbusTcp::read(ModbusMsg * msg)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
@@ -49,53 +49,33 @@ int32_t Modbus::ModbusTcp::actionIn()
 		uint16_t msg_length = trame[cpt] << 8; ++cpt;
 		msg_length |= trame[cpt]; ++cpt;
 
-		Modbus::ModbusMsgHeader * msg = new Modbus::ModbusMsgHeader();
-		len = msg->in()->write(trame+cpt, len-cpt);
-		msg->decodeHeader();
-		uint8_t slave_address = ((Modbus::ModbusMsgHeader *)msg)->slaveAddress();
-		uint8_t function_code = ((Modbus::ModbusMsgHeader *)msg)->functionCode();
-		//~ std::stringstream ss;
-		//~ ss << (int32_t)slave_address << " " << (int32_t)function_code;
-		//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		_fifo_in.add(slave_address, function_code, msg);
+		len = msg->read(trame+cpt, len-cpt);
 	}
 
 	_transaction_id += 1;
 	return len;
 }
 
-int32_t Modbus::ModbusTcp::actionOut()
+int32_t Modbus::ModbusTcp::write(ModbusMsg * msg)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionOut");
 
-	if (!_fifo_out.empty())
-	{
-		ModbusMsg * msg = _fifo_out.front();
-		_fifo_out.pop();
+	uint16_t cpt = 0;
+	uint8_t trame[256];
 
-		uint16_t cpt = 0;
-		uint8_t trame[256];
+	trame[cpt] = (_transaction_id >> 8) & 0xFF; ++cpt;
+	trame[cpt] = _transaction_id & 0xFF; ++cpt;
 
-		trame[cpt] = (_transaction_id >> 8) & 0xFF; ++cpt;
-		trame[cpt] = _transaction_id & 0xFF; ++cpt;
+	trame[cpt] = (_protocol_id >> 8) & 0xFF; ++cpt;
+	trame[cpt] = _protocol_id & 0xFF; ++cpt;
 
-		trame[cpt] = (_protocol_id >> 8) & 0xFF; ++cpt;
-		trame[cpt] = _protocol_id & 0xFF; ++cpt;
+	uint16_t len = msg->write(trame+cpt+2, 256-2-cpt);
 
-		uint16_t len = msg->out()->read(trame+cpt+2, 256-2-cpt);
+	trame[cpt] = (len >> 8) & 0xFF; ++cpt;
+	trame[cpt] = len & 0xFF; ++cpt;
 
-		trame[cpt] = (len >> 8) & 0xFF; ++cpt;
-		trame[cpt] = len & 0xFF; ++cpt;
+	cpt += len;
 
-		cpt += len;
-
-		return ((Socket::SocketTcp *)_device)->write(trame, cpt);
-	}
-	
-	return 0;
+	return ((Socket::SocketTcp *)_device)->write(trame, cpt);
 }
 
-int32_t Modbus::ModbusTcp::actionError()
-{
-	return 0;
-}

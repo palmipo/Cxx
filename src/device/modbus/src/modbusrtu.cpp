@@ -1,13 +1,13 @@
 #include "modbusrtu.h"
 #include "modbusexception.h"
 #include "modbusmsg.h"
-#include "polldevice.h"
+#include "rs232.h"
 #include "log.h"
 #include <iomanip>
 #include <sstream>
 #include <thread>
 
-Modbus::ModbusRtu::ModbusRtu(uint8_t module_address, PollDevice * serial)
+Modbus::ModbusRtu::ModbusRtu(uint8_t module_address, RS232 * serial)
 : ModbusChannel(serial)
 , _module_address(module_address)
 {}
@@ -19,29 +19,40 @@ int32_t Modbus::ModbusRtu::read(ModbusMsg * msg)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read");
 
+	RS232 * serial = (RS232 *)_device;
 	uint8_t data[512];
-	int32_t data_length = _device->read(data, 512);
+	int32_t data_length = serial->read(data, 512);
+	//~ int32_t data_length = serial->recvUntilEnd(data, 512);
 
-	int32_t cpt = 0;
-
-	if (data_length > 3)
+	if (data_length < 3)
 	{
-		// recomposition du crc
-		uint16_t crc = data[data_length-2] << 8 | data[data_length-1];
-
-		// calcul du crc du message
-		uint16_t ccrc = calcul_crc(data+1, data_length-3);
-
-		if (crc != ccrc)
-		{
-			std::stringstream ss;
-			ss << "========> ERREUR CRC <======== " << std::endl;
-			ss << std::hex << "Calcul CRC : " << (int)ccrc << " different de celui recue dans la trame : " << (int)crc << std::endl;
-			throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
-		}
-		
-		msg->read(data+1, data_length-3);
+		std::stringstream ss;
+		ss << "========> ERREUR message incomplet <======== " << std::endl;
+		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
 	}
+
+	if (data[0] != _module_address)
+	{
+		std::stringstream ss;
+		ss << "========> ERREUR adresse module <======== " << std::endl;
+		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
+	}
+
+	// recomposition du crc
+	uint16_t crc = data[data_length-2] << 8 | data[data_length-1];
+
+	// calcul du crc du message
+	uint16_t ccrc = calcul_crc(data, data_length-2);
+
+	if (crc != ccrc)
+	{
+		std::stringstream ss;
+		ss << "========> ERREUR CRC <======== " << std::endl;
+		ss << std::hex << "Calcul CRC : " << (int)ccrc << " different de celui recue dans la trame : " << (int)crc << std::endl;
+		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
+	}
+	
+	msg->write(data+1, data_length-3);
 
 	return data_length;
 }
@@ -56,7 +67,7 @@ int32_t Modbus::ModbusRtu::write(ModbusMsg * msg)
 	data[cpt] = _module_address;
 	cpt += 1;
 
-	cpt += msg->write(data+cpt, 512-cpt);
+	cpt += msg->read(data+cpt, 512-cpt);
 
 	uint16_t crc = calcul_crc(data, cpt);
 	

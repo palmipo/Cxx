@@ -25,8 +25,8 @@ namespace Modbus
 			virtual uint8_t  functionCode() const;
 			virtual uint8_t  errorCode() const;
 
-			virtual uint32_t write() = 0;
-			virtual int32_t read() = 0;
+			virtual int32_t read(uint8_t *, int32_t) = 0;
+			virtual int32_t write(uint8_t *, int32_t) = 0;
 
 		protected:
 			uint8_t  _function_code;

@@ -21,9 +21,9 @@ uint16_t Modbus::ModbusMsgFC06::get()
 	return _value;
 }
 
-int32_t Modbus::ModbusMsgFC06::write(uint8_t * data, int32_t length)
+int32_t Modbus::ModbusMsgFC06::read(uint8_t * data, int32_t length)
 {
-	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
+	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
 	data[cpt] = (_address & 0xFF00) >> 8; ++cpt;
 	data[cpt] = _address & 0x00FF; ++cpt;
@@ -34,9 +34,9 @@ int32_t Modbus::ModbusMsgFC06::write(uint8_t * data, int32_t length)
 	return cpt;
 }
 
-int32_t Modbus::ModbusMsgFC06::read(uint8_t * data, int32_t length)
+int32_t Modbus::ModbusMsgFC06::write(uint8_t * data, int32_t length)
 {
-	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
+	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
 	
 	_address = (data[cpt] << 8) | data[cpt+1]; cpt += 2;

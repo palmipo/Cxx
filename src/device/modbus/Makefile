@@ -57,7 +57,11 @@ $(BIN_PWD)/fwupd.o: test/fwupd.cpp
 	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-modbus_cmd: $(BIN_PWD)/modbus_cmd.o
+modbus_cmd: $(BIN_PWD)/modbus_cmd.o libutil.so liblog.so librs232.so libsocket.so libmodbus.so
+	$(MAKE) liblog.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(MAKE) libsocket.so
 	$(MAKE) libmodbus.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 

@@ -20,8 +20,8 @@ class POLL_FACTORY_DLL PollDevice : public Device
 		PollDevice();
 		PollDevice(int32_t);
 
-		//~ virtual int32_t write(uint8_t *, int32_t) = 0;
-		//~ virtual int32_t read(uint8_t *, int32_t) = 0;
+		virtual int32_t write(uint8_t *, int32_t) = 0;
+		virtual int32_t read(uint8_t *, int32_t) = 0;
 };
 
 #endif

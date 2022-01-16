@@ -1,7 +1,7 @@
 #ifndef MODBUS_MSG_FC05_H
 #define MODBUS_MSG_FC05_H
 
-#include <map>
+#include "modbusmsgheader.h"
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL

@@ -22,7 +22,7 @@ uint8_t Modbus::ModbusMsgHeader::errorCode() const
 	return _error_code;
 }
 
-int32_t Modbus::ModbusMsgHeader::read(uint8_t * data, int32_t length)
+int32_t Modbus::ModbusMsgHeader::write(uint8_t * data, int32_t length)
 {
 	if (_function_code != data[0] & 0x7F)
 	{
@@ -94,11 +94,11 @@ int32_t Modbus::ModbusMsgHeader::read(uint8_t * data, int32_t length)
 	return cpt;
 }
 
-int32_t Modbus::ModbusMsgHeader::write(uint8_t * data, int32_t length)
+int32_t Modbus::ModbusMsgHeader::read(uint8_t * data, int32_t length)
 {
 	uint32_t cpt = 0;
 
-	data[cpt] = _slave_address;
+	data[cpt] = _function_code;
 	cpt += 1;
 
 	return cpt;

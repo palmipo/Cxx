@@ -30,15 +30,6 @@ namespace Modbus
 			virtual ModbusChannel * rtu(const std::string &, int32_t=19200, int32_t=1, int32_t=1);
 			virtual void close(const std::string &);
 
-			virtual int32_t actionIn();
-			virtual int32_t actionOut();
-			virtual int32_t actionError();
-
-		protected:
-			virtual int32_t actionIn(PollDevice*);
-			virtual int32_t actionOut(PollDevice*);
-			virtual int32_t actionError(PollDevice*);
-
 		protected:
 			std::map<std::string, ModbusChannel * > _codec;
 	};

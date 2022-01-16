@@ -11,7 +11,6 @@
 	#define MODBUS_DLL
 #endif
 
-#include "modbusbuffer.h"
 #include <cstdint>
 
 namespace Modbus
@@ -22,8 +21,8 @@ namespace Modbus
 			ModbusMsg();
 			virtual ~ModbusMsg();
 
-			virtual uint32_t write() = 0;
-			virtual int32_t read() = 0;
+			virtual int32_t read(uint8_t *, int32_t) = 0;
+			virtual int32_t write(uint8_t *, int32_t) = 0;
 	};
 }
 

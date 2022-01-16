@@ -2,16 +2,14 @@
 #include "rs232factory.h"
 #include "rs232exception.h"
 #include "log.h"
-#include "callback.h"
 #include "polldevice.h"
-#include "pollbuffer.h"
 #include <cstdint>
 #include <sstream>
 #include <thread>
 
-static int32_t actionIn(PollDevice * device)
+static int32_t callback(PollDevice * device)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
 
 	uint8_t data[256];
 	int32_t len = device->read(data, 256);
@@ -46,12 +44,15 @@ int main (int argc, char **argv)
 	{
 		int32_t fin = 0;
 		RS232Factory factory;
-		factory.setActionInCallback(actionIn);
+		factory.setActionInCallback(callback);
 
 		std::thread t(scrute, &factory, &fin);
 
 		RS232 * serial = factory.add(argv[1]);
-		serial->setConfig(B19200, 8, 'E', 1);
+		serial->setConfig(B9600, 8, 'E', 1);
+
+		uint8_t data[] = {0, 1, 2, 3, 4};
+		serial->write(data, 5); 
 
 		std::this_thread::sleep_for(std::chrono::minutes(2));
 

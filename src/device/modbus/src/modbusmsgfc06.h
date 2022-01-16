@@ -2,6 +2,7 @@
 #define MODBUS_MSG_FC06_H
 
 #include "modbusmsgheader.h"
+#include <cstdint>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
 	#ifdef MAKE_MODBUS_DLL
