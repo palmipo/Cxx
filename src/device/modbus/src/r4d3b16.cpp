@@ -23,7 +23,7 @@ void Modbus::R4D3B16::open(uint8_t coils)
 	_rtu->write(&msg);
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ModbusMsgDirect poubelle;
-	_rtu->read(&poubelle);
+	_rtu->readDirect(&poubelle);
 }
 
 void Modbus::R4D3B16::close(uint8_t coils)
@@ -34,7 +34,7 @@ void Modbus::R4D3B16::close(uint8_t coils)
 	_rtu->write(&msg);
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ModbusMsgDirect poubelle;
-	_rtu->read(&poubelle);
+	_rtu->readDirect(&poubelle);
 }
 
 void Modbus::R4D3B16::toggle(uint8_t coils)
@@ -45,10 +45,9 @@ void Modbus::R4D3B16::toggle(uint8_t coils)
 	_rtu->write(&msg);
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ModbusMsgDirect poubelle;
-	_rtu->read(&poubelle);
+	_rtu->readDirect(&poubelle);
 }
 
-/** NE FONCTIONNE PAS DANS LE MODULE
 uint16_t Modbus::R4D3B16::read(uint16_t coils)
 {
 	ModbusMsgFC03 msg(coils, 0x0001);
@@ -57,12 +56,9 @@ uint16_t Modbus::R4D3B16::read(uint16_t coils)
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ModbusMsgDirect poubelle;
 	_rtu->readDirect(&poubelle);
-	//~ _rtu->read(&msg);
 
-	return msg.get(0);
-	//~ return msg.get(coils);
+	return msg.get(coils);
 }
-*/
 
 void Modbus::R4D3B16::openAll()
 {

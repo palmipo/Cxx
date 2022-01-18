@@ -26,8 +26,8 @@ namespace Modbus
 			virtual ~ModbusFactory();
 
 			virtual ModbusChannel * get(const std::string &);
-			virtual ModbusChannel * tcp(const std::string &);
-			virtual ModbusChannel * rtu(const std::string &, int32_t=19200, int32_t=1, int32_t=1);
+			virtual ModbusChannel * tcp(const std::string &, int8_t = 1);
+			virtual ModbusChannel * rtu(const std::string &, int32_t = 19200, int32_t = 8, int32_t = 'E', int32_t = 1, int8_t = 1);
 			virtual void close(const std::string &);
 
 		protected:

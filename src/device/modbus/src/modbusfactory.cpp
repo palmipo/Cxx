@@ -43,7 +43,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::get(const std::string & host)
     throw Modbus::ModbusException(__FILE__, __LINE__, "i can't get enough");
 }
 
-Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host)
+Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host, int8_t id_slave)
 {
     // recherche de l'existant
     try
@@ -75,7 +75,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host)
     return modbus_tcp;
 }
 
-Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, int32_t baudrate, int32_t stopbits, int32_t parity)
+Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, int32_t baudrate, int32_t data, int32_t parity, int32_t stopbits, int8_t id_slave)
 {
     try
     {
@@ -117,11 +117,11 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
     else
         throw Modbus::ModbusException(__FILE__, __LINE__, " baud rate : bad parameters");
 
-    serial->setConfig(cbaudrate, 8, cparity, stopbits);
+    serial->setConfig(cbaudrate, data, cparity, stopbits);
     serial->setInterCharacterTimer(1);
     add(serial);
 
-    Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(1, serial);
+    Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(id_slave, serial);
     if (modbus_rtu)
     {
 		_codec[device] = modbus_rtu;

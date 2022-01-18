@@ -15,7 +15,7 @@ namespace Modbus
 			void close(uint8_t);
 			void toggle(uint8_t);
 
-/* NE FONCTIONE PAS DANS LE MODULE uint16_t read(uint16_t); */
+			uint16_t read(uint16_t);
 
 			void openAll();
 			void closeAll();
