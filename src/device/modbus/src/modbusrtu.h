@@ -14,6 +14,7 @@
 	#define MODBUS_DLL
 #endif
 
+class Fifo;
 class RS232;
 namespace Modbus
 {
@@ -21,17 +22,22 @@ namespace Modbus
 	class MODBUS_DLL ModbusRtu : public ModbusChannel
 	{
 		public:
-			ModbusRtu(uint8_t, RS232 *);
+			ModbusRtu(RS232 *);
 			virtual ~ModbusRtu();
 
+			virtual int32_t read(uint8_t *, int32_t);
 			virtual int32_t read(ModbusMsg *);
 			virtual int32_t write(ModbusMsg *);
+		
+			virtual int8_t id_slave() const;
+			virtual void set_id_slave(uint8_t);
 
 		protected:
 			virtual uint16_t calcul_crc(uint8_t *, int32_t);
 
 		protected:
 			uint8_t _module_address;
+			Fifo * _fifo;
 	};
 }
 

@@ -40,9 +40,9 @@ int32_t Modbus::ModbusMsgFC03::write(uint8_t * data, int32_t length)
 	uint8_t byte_count = data[cpt];
 	cpt += 1;
 
-	for (int32_t i=0; i<byte_count; ++i)
+	for (int32_t i=0, j=0; i<byte_count; i+=2, j+=1)
 	{
-		_coils_status[i] = (data[cpt] << 8) | data[cpt+1];
+		_coils_status[j] = (data[cpt] << 8) | data[cpt+1];
 		cpt += 2;
 	}
 	

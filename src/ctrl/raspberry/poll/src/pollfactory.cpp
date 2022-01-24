@@ -2,13 +2,16 @@
 #include "polldevice.h"
 #include "pollmutex.h"
 #include "pollexception.h"
-// #include "log.h"
+#include "log.h"
 #include <sstream>
 
 PollFactory::PollFactory()
 : _clb_in(0)
 , _clb_out(0)
 , _clb_error(0)
+, _user_data_in(0)
+, _user_data_out(0)
+, _user_data_err(0)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "PollFactory");
 }
@@ -65,10 +68,9 @@ PollDevice* PollFactory::get(int32_t id)
 	throw PollException(__FILE__, __LINE__, ss.str());
 }
 
-//!\ sous windows POLLOUT gene le POLLIN
 int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut, int32_t scruteError)
 {
-//	Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
+	// Log::getLogger()->debug(__FILE__, __LINE__, "scrute");
 
 	int32_t cpt = 0;
 	int32_t nb = _liste.size();
@@ -79,19 +81,13 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 		while(it != _liste.end())
 		{
 			lst_fd[cpt].fd = it->second->handler();
-			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0);
-			#ifndef __CYGWIN__
-			lst_fd[cpt].events |= (scruteOut ? POLLOUT | POLLWRBAND : 0);
-			#endif
+			lst_fd[cpt].events = (scruteIn ? POLLIN | POLLPRI : 0) | (scruteError ? POLLERR | POLLHUP | POLLNVAL : 0) | (scruteOut ? POLLOUT | POLLWRBAND : 0);
 			lst_fd[cpt].revents = 0;
 			cpt += 1;
 			it++;
 		}
 	}
 
-	// std::stringstream ss;
-	// ss << "scrute nb handlers : " << cpt;
-	// Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	int32_t ret = poll(lst_fd, cpt, timeout);
 	if (ret < 0)
 	{
@@ -111,24 +107,12 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 
 	delete[] lst_fd;
 
-	#ifdef __CYGWIN__
-	if (scruteOut)
-	{
-		std::map<int32_t, PollDevice*>::iterator it = _liste.begin();
-		while(it != _liste.end())
-		{
-			actionOut(it->second);
-			it++;
-		}
-	}
-	#endif
-
 	return ret;
 }
 
 int32_t PollFactory::action(const pollfd & evnt)
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "action");
+	Log::getLogger()->debug(__FILE__, __LINE__, "action");
 
 	std::map<int32_t, PollDevice*>::iterator it = _liste.find(evnt.fd);
 	if (it == _liste.end())
@@ -167,26 +151,29 @@ int32_t PollFactory::action(const pollfd & evnt)
 	throw PollException(__FILE__, __LINE__, ss.str());
 }
 
-void PollFactory::setActionInCallback(int32_t (*clb)(PollDevice*))
+void PollFactory::setActionInCallback(int32_t (*clb)(PollDevice*, void*), void * user_data)
 {
 	_clb_in = clb;
+	_user_data_in = user_data;
 }
 
-void PollFactory::setActionOutCallback(int32_t (*clb)(PollDevice*))
+void PollFactory::setActionOutCallback(int32_t (*clb)(PollDevice*, void*), void * user_data)
 {
 	_clb_out = clb;
+	_user_data_out = user_data;
 }
 
-void PollFactory::setActionErrorCallback(int32_t (*clb)(PollDevice*))
+void PollFactory::setActionErrorCallback(int32_t (*clb)(PollDevice*, void*), void * user_data)
 {
 	_clb_error = clb;
+	_user_data_err = user_data;
 }
 
 int32_t PollFactory::actionIn(PollDevice* dev)
 {
 	if (_clb_in)
 	{
-		return _clb_in(dev);
+		return _clb_in(dev, _user_data_in);
 	}
 	
 	return 0;
@@ -196,7 +183,7 @@ int32_t PollFactory::actionOut(PollDevice* dev)
 {
 	if (_clb_out)
 	{
-		return _clb_out(dev);
+		return _clb_out(dev, _user_data_out);
 	}
 	
 	return 0;
@@ -207,7 +194,7 @@ int32_t PollFactory::actionError(PollDevice* dev)
 {
 	if (_clb_error)
 	{
-		return _clb_error(dev);
+		return _clb_error(dev, _user_data_err);
 	}
 	
 	return 0;

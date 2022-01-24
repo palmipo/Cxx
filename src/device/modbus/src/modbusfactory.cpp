@@ -75,7 +75,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host, int
     return modbus_tcp;
 }
 
-Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, int32_t baudrate, int32_t data, int32_t parity, int32_t stopbits, int8_t id_slave)
+Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, int32_t baudrate, int32_t data, int32_t parity, int32_t stopbits)
 {
     try
     {
@@ -91,14 +91,7 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
         throw Modbus::ModbusException(__FILE__, __LINE__, "i can't rtu enough");
     }
 
-    int32_t cparity;
-    if (parity == 0)
-        cparity = 'N';
-    else if (parity == 1)
-        cparity = 'E';
-    else if (parity == 2)
-        cparity = 'O';
-    else
+    if ((parity != 'N') && (parity == 'E') && (parity == 'O'))
         throw Modbus::ModbusException(__FILE__, __LINE__, " parity : bad parameters");
     
     speed_t cbaudrate;
@@ -117,11 +110,11 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
     else
         throw Modbus::ModbusException(__FILE__, __LINE__, " baud rate : bad parameters");
 
-    serial->setConfig(cbaudrate, data, cparity, stopbits);
+    serial->setConfig(cbaudrate, data, parity, stopbits);
     serial->setInterCharacterTimer(1);
     add(serial);
 
-    Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(id_slave, serial);
+    Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(serial);
     if (modbus_rtu)
     {
 		_codec[device] = modbus_rtu;
@@ -136,7 +129,7 @@ void Modbus::ModbusFactory::close(const std::string & host)
     if (it != _codec.end())
     {
         delete it->second;
-		_codec.erase(it);
+	_codec.erase(it);
     }
 }
 

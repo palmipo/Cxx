@@ -15,7 +15,10 @@ OBJECTS = \
 	$(BIN_PWD)/modbusmsgfc16.o \
 	$(BIN_PWD)/modbusmsgheader.o \
 	$(BIN_PWD)/modbusrtu.o \
-	$(BIN_PWD)/modbustcp.o
+	$(BIN_PWD)/modbustcp.o \
+	$(BIN_PWD)/r4d3b16.o \
+	$(BIN_PWD)/n4dih32.o \
+	$(BIN_PWD)/r4dcb08.o
 
 MAKE = make
 MKDIR = mkdir -p
@@ -27,7 +30,7 @@ POLL_PWD = $(RASPI_CTRL)/poll
 SOCKET_PWD = $(RASPI_CTRL)/socket
 RS232_PWD = $(RASPI_CTRL)/rs232
 INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
-LIBS = -L. -lutil -llog -lpoll -lrs232 -lsocket
+LIBS = -L. -lutil -llog -lrs232 -lpoll -lsocket
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -36,13 +39,28 @@ all:
 
 clean:
 	$(MAKE) -C $(LOG_PWD) $@
+	$(MAKE) -C $(UTIL_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(SOCKET_PWD) $@
 	rm -f $(BIN_PWD)/*.o *.so *.dll fwupd modbus_cmd
 
+cabane: $(BIN_PWD)/cabane.o
+	$(MAKE) liblog.so
+	$(MAKE) libutil.so
+	$(MAKE) libpoll.so
+	$(MAKE) librs232.so
+	$(MAKE) libsocket.so
+	$(MAKE) libmodbus.so
+	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+
+$(BIN_PWD)/cabane.o: domotic/cabane.cpp
+	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -c $^ -o $@
+
 fwupd: $(BIN_PWD)/fwupd.o
 	$(MAKE) liblog.so
+	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(MAKE) libsocket.so
@@ -58,10 +76,11 @@ $(BIN_PWD)/fwupd.o: test/fwupd.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 modbus_cmd: $(BIN_PWD)/modbus_cmd.o libutil.so liblog.so librs232.so libsocket.so libmodbus.so
-	$(MAKE) liblog.so
-	$(MAKE) libpoll.so
-	$(MAKE) librs232.so
-	$(MAKE) libsocket.so
+	$(MAKE) -C $(LOG_PWD) liblog.so
+	$(MAKE) -C $(UTIL_PWD) libutil.so
+	$(MAKE) -C $(POLL_PWD) libpoll.so
+	$(MAKE) -C $(RS232_PWD) librs232.so
+	$(MAKE) -C $(SOCKET_PWD) libsocket.so
 	$(MAKE) libmodbus.so
 	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
 
@@ -97,7 +116,7 @@ libsocket.so:
 	ln -s $(SOCKET_PWD)/$@
 
 libmodbus.so: $(OBJECTS)
-	$(CC) -shared $^ -o $@
+	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 #
 # MINGW

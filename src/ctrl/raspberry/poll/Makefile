@@ -41,21 +41,7 @@ liblog.so:
 libpoll.so: $(OBJECTS) libutil.so liblog.so
 	$(CC) -shared $^ -o $@
 
-# WINDOWS
-libutil.dll:
-	$(MAKE) -C $(UTIL_PWD) $@
-	cp $(UTIL_PWD)/$@ .
-
-liblog.dll:
-	$(MAKE) -C $(LOG_PWD) $@
-	cp $(LOG_PWD)/$@ .
-
-libpoll.dll: $(OBJECTS)
-	$(MAKE) libutil.dll
-	$(MAKE) liblog.dll
-	$(CC) -shared $^ -o $@ $(LDFLAGS)
-
 # GLOBAL
 $(BIN_PWD)/%.o: src/%.cpp
 	$(MKDIR) $(BIN_PWD)
-	$(CC) $(CFLAGS) -DMAKE_POLL_FACTORY_DLL -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@

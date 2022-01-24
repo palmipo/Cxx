@@ -7,17 +7,7 @@
 #include <string>
 #include <cstring>
 
-#if defined __MINGW32__ ||  defined __CYGWIN__
-#ifdef MAKE_POLL_FACTORY_DLL
-#define POLL_FACTORY_DLL __declspec(dllexport)
-#else
-#define POLL_FACTORY_DLL __declspec(dllimport)
-#endif
-#else
-#define POLL_FACTORY_DLL
-#endif
-
-class POLL_FACTORY_DLL PollException : public std::exception
+class PollException : public std::exception
 {
 	public:
 		PollException(const std::string & fichier, int32_t ligne, int32_t numerror, PollDevice * device = 0)

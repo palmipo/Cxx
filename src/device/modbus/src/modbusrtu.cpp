@@ -2,47 +2,93 @@
 #include "modbusexception.h"
 #include "modbusmsg.h"
 #include "rs232.h"
+#include "fifo.h"
 #include "log.h"
 #include <iomanip>
 #include <sstream>
 #include <thread>
 
-Modbus::ModbusRtu::ModbusRtu(uint8_t module_address, RS232 * serial)
+Modbus::ModbusRtu::ModbusRtu(RS232 * serial)
 : ModbusChannel(serial)
-, _module_address(module_address)
+, _module_address(0xF8)
+, _fifo(new Fifo(2048))
 {}
 
 Modbus::ModbusRtu::~ModbusRtu()
-{}
-
-int32_t Modbus::ModbusRtu::read(ModbusMsg * msg)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "read");
+	delete _fifo;
+}
+
+int8_t Modbus::ModbusRtu::id_slave() const
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "id_slave");
+
+	return _module_address;
+}
+
+void Modbus::ModbusRtu::set_id_slave(uint8_t id_slave)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "set_id_slave");
+
+	_module_address = id_slave;
+}
+
+int32_t Modbus::ModbusRtu::read(uint8_t * data, int32_t length)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "read(uint8_t * data, int32_t length)");
+
+	_fifo->write(data, length);
+
+	return length;
+}
+
+int32_t Modbus::ModbusRtu::read(Modbus::ModbusMsg * msg)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "read(Modbus::ModbusMsg * msg)");
 
 	uint8_t data[512];
-	int32_t data_length = _device->read(data, 512);
-	//~ RS232 * serial = (RS232 *)_device;
-	//~ int32_t data_length = serial->recvUntilEnd(data, 512);
 
-	if (data_length < 3)
+	// lecture du id_slave
+	int32_t length = _fifo->read(data, 1);
+	if (data[0] == _module_address)
 	{
-		std::stringstream ss;
-		ss << "========> ERREUR message incomplet <======== " << std::endl;
-		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
+		// lecture de la fonction
+		length += _fifo->read(data+1, 1);
+		int32_t fc = (int32_t)data[1];
+		switch(fc)
+		{
+			case 3:
+			{
+				// lecture du nombre de byte de la reponse
+				length += _fifo->read(data+2, 1);
+				int32_t nb_byte = (int32_t)data[2];
+			
+				// lecture de la reponse
+				length += _fifo->read(data+3, nb_byte);
+			}
+			break;
+
+			case 6:
+			{
+				// lecture data address de la reponse
+				length += _fifo->read(data+2, 2);
+			
+				// lecture de la valeur inscrite
+				length += _fifo->read(data+4, 2);
+			}
+			break;
+		}
 	}
 
-	if (data[0] != _module_address)
-	{
-		std::stringstream ss;
-		ss << "========> ERREUR adresse module <======== " << std::endl;
-		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
-	}
+	// lecture du crc
+	uint8_t data_crc[2];
+	_fifo->read(data_crc, 2);
 
 	// recomposition du crc
-	uint16_t crc = data[data_length-2] << 8 | data[data_length-1];
+	uint16_t crc = data_crc[0] << 8 | data_crc[1];
 
 	// calcul du crc du message
-	uint16_t ccrc = calcul_crc(data, data_length-2);
+	uint16_t ccrc = calcul_crc(data, length);
 
 	if (crc != ccrc)
 	{
@@ -52,9 +98,9 @@ int32_t Modbus::ModbusRtu::read(ModbusMsg * msg)
 		throw Modbus::ModbusException(__FILE__, __LINE__, ss.str());
 	}
 	
-	msg->write(data+1, data_length-3);
+	msg->write(data+1, length-1);
 
-	return data_length;
+	return length+2;
 }
 
 int32_t Modbus::ModbusRtu::write(ModbusMsg * msg)
@@ -64,21 +110,25 @@ int32_t Modbus::ModbusRtu::write(ModbusMsg * msg)
 	uint32_t cpt = 0;
 	uint8_t data[512];
 	
+	std::stringstream ss;
+	ss << "modbus addr : " << (int)_module_address << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+
 	data[cpt] = _module_address;
 	cpt += 1;
 
 	cpt += msg->read(data+cpt, 512-cpt);
 
 	uint16_t crc = calcul_crc(data, cpt);
-	
+
 	data[cpt] = (crc & 0xFF00) >> 8;
 	cpt += 1;
-	
+
 	data[cpt] = crc & 0x00FF;
 	cpt += 1;
 
 	_device->write(data, cpt);
-	
+
 	return cpt;
 }
 

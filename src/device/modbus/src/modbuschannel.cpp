@@ -9,11 +9,10 @@ Modbus::ModbusChannel::ModbusChannel(PollDevice * device)
 
 int32_t Modbus::ModbusChannel::readDirect(Modbus::ModbusMsg * msg)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "read");
+	Log::getLogger()->debug(__FILE__, __LINE__, "readDirect");
 
 	uint8_t data[1024];
 	int32_t data_length = _device->read(data, 1024);
-	//~ int32_t data_length = serial->recvUntilEnd(data, 1024);
 	
 	msg->write(data, data_length);
 
@@ -22,7 +21,7 @@ int32_t Modbus::ModbusChannel::readDirect(Modbus::ModbusMsg * msg)
 
 int32_t Modbus::ModbusChannel::writeDirect(Modbus::ModbusMsg * msg)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "write");
+	Log::getLogger()->debug(__FILE__, __LINE__, "writeDirect");
 
 	uint8_t data[1024];
 	
