@@ -10,6 +10,7 @@ class Fifo
 		virtual ~Fifo();
 	
 		int32_t read(uint8_t *, int32_t);
+		int32_t readOver(int32_t, uint8_t *, int32_t);
 		int32_t write(uint8_t *, int32_t);
 	
 	protected:

@@ -29,8 +29,7 @@ namespace Modbus
 			virtual int32_t write(uint8_t *, int32_t) = 0;
 
 		protected:
-			uint8_t  _function_code;
-			uint8_t  _error_code;
+			uint8_t _error_code;
 	};
 }
 

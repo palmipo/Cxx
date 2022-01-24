@@ -3,6 +3,7 @@
 #include "modbusmsgfc03.h"
 #include "modbusmsgfc06.h"
 #include "modbusmsgdirect.h"
+#include "log.h"
 
 #include <thread>
 
@@ -21,6 +22,8 @@ void Modbus::R4D3B16::open(uint8_t coils)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::R4D3B16::close(uint8_t coils)
@@ -30,6 +33,8 @@ void Modbus::R4D3B16::close(uint8_t coils)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::R4D3B16::toggle(uint8_t coils)
@@ -39,6 +44,8 @@ void Modbus::R4D3B16::toggle(uint8_t coils)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::R4D3B16::get(uint16_t coils)
@@ -47,6 +54,8 @@ void Modbus::R4D3B16::get(uint16_t coils)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::R4D3B16::getAll()
@@ -55,22 +64,32 @@ void Modbus::R4D3B16::getAll()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::R4D3B16::openAll()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "openAll()");
+
 	ModbusMsgFC06 msg(0x0000);
 	msg.set(0x0700);
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::R4D3B16::closeAll()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "closeAll()");
+
 	ModbusMsgFC06 msg(0x0000);
 	msg.set(0x0800);
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }

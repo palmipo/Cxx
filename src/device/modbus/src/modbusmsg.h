@@ -21,8 +21,14 @@ namespace Modbus
 			ModbusMsg();
 			virtual ~ModbusMsg();
 
+			virtual uint8_t getFc() const;
+			virtual void fc(uint8_t);
+
 			virtual int32_t read(uint8_t *, int32_t) = 0;
 			virtual int32_t write(uint8_t *, int32_t) = 0;
+		
+		protected:
+			uint8_t _function_code;
 	};
 }
 

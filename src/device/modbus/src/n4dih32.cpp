@@ -20,6 +20,8 @@ void Modbus::N4DIH32::get()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::N4DIH32::getAll()
@@ -28,6 +30,8 @@ void Modbus::N4DIH32::getAll()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::N4DIH32::setTempoAutomaticReporting(uint8_t secondes)
@@ -37,6 +41,8 @@ void Modbus::N4DIH32::setTempoAutomaticReporting(uint8_t secondes)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::N4DIH32::setAllAutomaticReporting(uint8_t all_input)
@@ -46,6 +52,8 @@ void Modbus::N4DIH32::setAllAutomaticReporting(uint8_t all_input)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::N4DIH32::baudRate()
@@ -54,6 +62,8 @@ void Modbus::N4DIH32::baudRate()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::N4DIH32::setBaudRate(uint16_t br)
@@ -63,6 +73,8 @@ void Modbus::N4DIH32::setBaudRate(uint16_t br)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }
 
 void Modbus::N4DIH32::resetFactory()
@@ -72,4 +84,6 @@ void Modbus::N4DIH32::resetFactory()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	_rtu->read(&msg);
 }

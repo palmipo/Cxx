@@ -38,7 +38,8 @@ namespace Modbus
 		protected:
 			uint8_t _module_address;
 			Fifo * _fifo;
-	};
+			ModbusFifo * _lst;
+		};
 }
 
 #endif

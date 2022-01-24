@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 		Modbus::R4D3B16 msg_out(4, rtu);
 		//~ msg_out.closeAll();
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		msg_out.openAll();
+		//~ msg_out.openAll();
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		//~ msg_out.toggle(1);
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -74,8 +74,8 @@ int main(int argc, char **argv)
 
 		Modbus::N4DIH32 msg_in(8, rtu);
 		//~ msg_in.getAll();
-		//~ msg_in.setTempoAutomaticReporting(1);
-		//~ msg_in.setAllAutomaticReporting(0);
+		msg_in.setTempoAutomaticReporting(1);
+		msg_in.setAllAutomaticReporting(0);
 		//~ std::this_thread::sleep_for(std::chrono::seconds(10));
 		//~ msg_in.setAutomaticReporting(1, 0);
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		std::this_thread::sleep_for(std::chrono::minutes(1));
-		msg_out.closeAll();
+		//~ msg_out.closeAll();
 		//~ msg_in.setTempoAutomaticReporting(0);
 		//~ msg_brd.setAutomaticTemperatureReport(0);
 		//~ msg_temp.setAutomaticTemperatureReport(0);

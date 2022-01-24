@@ -1,6 +1,7 @@
 #include "modbusmsgfc06.h"
 #include "modbusmsgexception.h"
 #include "log.h"
+#include <sstream>
 
 Modbus::ModbusMsgFC06::ModbusMsgFC06(uint16_t address)
 : Modbus::ModbusMsgHeader::ModbusMsgHeader(0x06)
@@ -23,6 +24,8 @@ uint16_t Modbus::ModbusMsgFC06::get()
 
 int32_t Modbus::ModbusMsgFC06::read(uint8_t * data, int32_t length)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "read()");
+
 	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
 	data[cpt] = (_address & 0xFF00) >> 8; ++cpt;
@@ -36,12 +39,18 @@ int32_t Modbus::ModbusMsgFC06::read(uint8_t * data, int32_t length)
 
 int32_t Modbus::ModbusMsgFC06::write(uint8_t * data, int32_t length)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "write()");
+
 	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
 	
 	_address = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
 	_value = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
 
-	
+	//~ std::stringstream ss;
+	//~ ss << "address : " << std::hex << _address << std::dec << std::endl;
+	//~ ss << "value: " << std::hex << _value << std::dec << std::endl;
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+
 	return cpt;
 }
