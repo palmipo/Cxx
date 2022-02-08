@@ -4,9 +4,8 @@
 #include <sstream>
 
 Modbus::ModbusMsgHeader::ModbusMsgHeader(uint8_t fct_code)
-: _error_code(0)
-, _function_code(fct_code)
-, ModbusMsg()
+: ModbusMsg(fct_code)
+, _error_code(0)
 {}
 
 Modbus::ModbusMsgHeader::~ModbusMsgHeader()

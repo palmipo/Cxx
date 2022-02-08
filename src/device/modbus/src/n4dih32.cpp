@@ -4,6 +4,7 @@
 #include "modbusmsgdirect.h"
 #include "modbusmsgfc03.h"
 #include "modbusmsgfc06.h"
+#include "log.h"
 #include <thread>
 
 Modbus::N4DIH32::N4DIH32(uint8_t addr_slave, Modbus::ModbusRtu * rtu)
@@ -16,6 +17,8 @@ Modbus::N4DIH32::~N4DIH32()
 
 void Modbus::N4DIH32::get()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "get");
+
 	Modbus::ModbusMsgFC03 msg(0x0080, 0x010);
 
 	_rtu->set_id_slave(_module_address);
@@ -26,6 +29,8 @@ void Modbus::N4DIH32::get()
 
 void Modbus::N4DIH32::getAll()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "getAll");
+
 	Modbus::ModbusMsgFC03 msg(0x00C0, 0x002);
 
 	_rtu->set_id_slave(_module_address);
@@ -36,6 +41,8 @@ void Modbus::N4DIH32::getAll()
 
 void Modbus::N4DIH32::setTempoAutomaticReporting(uint8_t secondes)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "setTempoAutomaticReporting");
+
 	Modbus::ModbusMsgFC06 msg(0x00FD);
 	msg.set(secondes);
 
@@ -47,6 +54,8 @@ void Modbus::N4DIH32::setTempoAutomaticReporting(uint8_t secondes)
 
 void Modbus::N4DIH32::setAllAutomaticReporting(uint8_t all_input)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "setAllAutomaticReporting");
+
 	Modbus::ModbusMsgFC06 msg(0x00FE);
 	msg.set(all_input);
 
@@ -58,6 +67,8 @@ void Modbus::N4DIH32::setAllAutomaticReporting(uint8_t all_input)
 
 void Modbus::N4DIH32::baudRate()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "baudRate");
+
 	Modbus::ModbusMsgFC03 msg(0x00FF, 1);
 
 	_rtu->set_id_slave(_module_address);
@@ -68,6 +79,8 @@ void Modbus::N4DIH32::baudRate()
 
 void Modbus::N4DIH32::setBaudRate(uint16_t br)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "setBaudRate");
+
 	Modbus::ModbusMsgFC06 msg(0x00FF);
 	msg.set(br);
 
@@ -79,6 +92,8 @@ void Modbus::N4DIH32::setBaudRate(uint16_t br)
 
 void Modbus::N4DIH32::resetFactory()
 {
+	Log::getLogger()->debug(__FILE__, __LINE__,"resetFactory");
+
 	Modbus::ModbusMsgFC06 msg(0x00FF);
 	msg.set(0x0005);
 

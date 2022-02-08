@@ -18,6 +18,7 @@ class Fifo;
 class RS232;
 namespace Modbus
 {
+	class ModbusFifo;
 	class ModbusMsg;
 	class MODBUS_DLL ModbusRtu : public ModbusChannel
 	{
@@ -26,6 +27,8 @@ namespace Modbus
 			virtual ~ModbusRtu();
 
 			virtual int32_t read(uint8_t *, int32_t);
+			virtual int32_t read();
+
 			virtual int32_t read(ModbusMsg *);
 			virtual int32_t write(ModbusMsg *);
 		

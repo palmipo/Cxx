@@ -18,7 +18,7 @@ namespace Modbus
 	class MODBUS_DLL ModbusMsg
 	{
 		public:
-			ModbusMsg();
+			ModbusMsg(uint8_t);
 			virtual ~ModbusMsg();
 
 			virtual uint8_t getFc() const;

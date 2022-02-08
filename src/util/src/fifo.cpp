@@ -46,6 +46,28 @@ int32_t Fifo::readOver(int32_t offset, uint8_t *data, int32_t length)
 	}
 	return length;
 }
+	
+int32_t Fifo::getUnread(uint8_t * data, int32_t length)
+{
+	int32_t taille = _i_write - _i_read;
+	if (_i_write < _i_read) taille = _max_buffer + _i_write - _i_read;
+	if (taille > length) taille = length;
+
+	int32_t j = _i_read;
+	for (int32_t i=0; i<taille; i+=1)
+	{
+		data[i] = _buffer[j];
+		if (j < _max_buffer)
+		{
+			j += 1;
+		}
+		else
+		{
+			j = 0;
+		}
+	}
+	return taille;
+}
 
 int32_t Fifo::write(uint8_t *data, int32_t length)
 {

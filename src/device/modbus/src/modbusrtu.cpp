@@ -1,6 +1,8 @@
 #include "modbusrtu.h"
 #include "modbusexception.h"
-#include "modbusmsg.h"
+#include "modbusfifo.h"
+#include "modbusmsgfc03.h"
+#include "modbusmsgfc06.h"
 #include "rs232.h"
 #include "fifo.h"
 #include "log.h"
@@ -46,97 +48,151 @@ int32_t Modbus::ModbusRtu::read()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read()");
 
-	Modbus::ModbusMsg * msg = 0;
 
-	int32_t offset = 0;
 	uint8_t data[512];
-
-	// lecture du id_slave
-	int32_t length = _fifo->readOver(offset, data, 1);
-	offset += 1;
-
-	if (data[0] == _module_address)
+	int32_t length = _fifo->getUnread(data, 512);
+	while ((data[1] != 3) && (data[1] != 6) && (length > 1))
 	{
-		// lecture de la fonction
-		length += _fifo->readOver(offset, data+1, 1);
-		offset += 1;
-		
-		int32_t fc = (int32_t)data[1];
-		switch(fc)
-		{
-			case 3:
-			{
-				// lecture du nombre de byte de la reponse
-				length += _fifo->readOver(offset, data+2, 1);
-				offset += 1;
-
-				int32_t nb_byte = (int32_t)data[2];
-			
-				// lecture de la reponse
-				length += _fifo->readOver(offset, data+3, nb_byte);
-				offset += nb_byte;
-
-				msg = new Modbus::ModbusMsgFC03();
-			}
-			break;
-
-			case 6:
-			{
-				// lecture data address de la reponse
-				length += _fifo->readOver(offset, data+2, 2);
-				offset += 2;
-			
-				// lecture de la valeur inscrite
-				length += _fifo->readOver(offset, data+4, 2);
-				offset += 2;
-
-				msg = new Modbus::ModbusMsgFC06();
-			}
-			break;
-		}
-
-		// lecture du crc
-		uint8_t data_crc[2];
-		_fifo->readOver(offset, data_crc, 2);
-		offset += 2;
-
-		// recomposition du crc
-		uint16_t crc = data_crc[0] << 8 | data_crc[1];
-
-		// calcul du crc du message
-		uint16_t ccrc = calcul_crc(data, length);
-
-		if (crc == ccrc)
-		{
-			// libere la fifo
-			_fifo->read(data, length+2);
-
-			// sauvegarde le message
-			msg->write(data+1, length-1);
-
-			// enregistre le message
-			_lst->add(_module_address, msg);
-
-			return length+2;
-		}
-
-		delete msg;
+		_fifo->read(data, 1); // poubelle
+		length = _fifo->getUnread(data, 512);
 	}
+	{
+		std::stringstream ss;
+		ss << "getUnread() = " << length << " caratères.";
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	}
+	if (length>4)
+	{
+		{
+			int32_t trouve = 0;
+			//~ while (!trouve)
+			{
+				for (int32_t i=4; (!trouve && (i<length)); i++)
+				{
+					// recomposition du crc
+					uint16_t crc = data[i-2] << 8 | data[i-1];
 
-	return 0;
+					// calcul du crc du message
+					uint16_t ccrc = calcul_crc(data, i-2);
+
+					if (crc == ccrc)
+					{
+						std::stringstream ss;
+						ss << "CRC OK ********************* " << i << " caratères.";
+						Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+						 _fifo->read(data, i);
+						 _fifo->read(data, 2); // poubelle
+						trouve = 1;
+					}
+				}
+				//~ if (!trouve)
+				{
+					//~ depart += 1;
+					//~ Log::getLogger()->debug(__FILE__, __LINE__, "suppression 1 caracterer");
+					//~ _fifo->read(data, 1);
+				}
+			}
+		}
+	}
+	return length;
 }
+
+//~ int32_t Modbus::ModbusRtu::read()
+//~ {
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "read()");
+
+	//~ Modbus::ModbusMsg * msg = 0;
+
+	//~ int32_t offset = 0;
+	//~ uint8_t data[512];
+
+	//~ // lecture du id_slave
+	//~ int32_t length = _fifo->readOver(offset, data, 1);
+	//~ offset += 1;
+
+	//~ if (data[0] == _module_address)
+	//~ {
+		//~ // lecture de la fonction
+		//~ length += _fifo->readOver(offset, data+1, 1);
+		//~ offset += 1;
+		
+		//~ int32_t fc = (int32_t)data[1];
+		//~ switch(fc)
+		//~ {
+			//~ case 3:
+			//~ {
+				//~ // lecture du nombre de byte de la reponse
+				//~ length += _fifo->readOver(offset, data+2, 1);
+				//~ offset += 1;
+
+				//~ int32_t nb_byte = (int32_t)data[2];
+			
+				//~ // lecture de la reponse
+				//~ length += _fifo->readOver(offset, data+3, nb_byte);
+				//~ offset += nb_byte;
+
+				//~ msg = new Modbus::ModbusMsgFC03(0, 0);
+			//~ }
+			//~ break;
+
+			//~ case 6:
+			//~ {
+				//~ // lecture data address de la reponse
+				//~ length += _fifo->readOver(offset, data+2, 2);
+				//~ offset += 2;
+			
+				//~ // lecture de la valeur inscrite
+				//~ length += _fifo->readOver(offset, data+4, 2);
+				//~ offset += 2;
+
+				//~ msg = new Modbus::ModbusMsgFC06();
+			//~ }
+			//~ break;
+		//~ }
+
+		//~ // lecture du crc
+		//~ uint8_t data_crc[2];
+		//~ _fifo->readOver(offset, data_crc, 2);
+		//~ offset += 2;
+
+		//~ // recomposition du crc
+		//~ uint16_t crc = data_crc[0] << 8 | data_crc[1];
+
+		//~ // calcul du crc du message
+		//~ uint16_t ccrc = calcul_crc(data, length);
+
+		//~ if (crc == ccrc)
+		//~ {
+			//~ // libere la fifo
+			//~ _fifo->read(data, length+2);
+
+			//~ // sauvegarde le message
+			//~ msg->write(data+1, length-1);
+
+			//~ // enregistre le message
+			//~ _lst->add(fc, msg);
+
+			//~ return length+2;
+		//~ }
+
+		//~ delete msg;
+	//~ }
+
+	//~ return 0;
+//~ }
 
 int32_t Modbus::ModbusRtu::read(Modbus::ModbusMsg * msg)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read(ModbusMsg *)");
 
-	Modbus::ModbusMsg * m = _lst->get(_module_address, msg->getFc());
+	//~ Modbus::ModbusMsg * m = _lst.get(msg->getFc());
 
-	uint8_t data[1024];
-	int32_t length = m->write(data, 1024);
-	msg->read(data, length);
+	//~ uint8_t data[1024];
+	//~ int32_t length = m->write(data, 1024);
+	//~ msg->read(data, length);
 
-	return length;
+	//~ return length;
+	return 0;
 }
 
 int32_t Modbus::ModbusRtu::write(ModbusMsg * msg)

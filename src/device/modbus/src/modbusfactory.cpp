@@ -1,5 +1,4 @@
 #include "modbusfactory.h"
-#include "modbuschannel.h"
 #include "modbustcp.h"
 #include "modbusrtu.h"
 #include "modbusexception.h"
@@ -111,7 +110,8 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, i
         throw Modbus::ModbusException(__FILE__, __LINE__, " baud rate : bad parameters");
 
     serial->setConfig(cbaudrate, data, parity, stopbits);
-    serial->setInterCharacterTimer(1);
+    serial->setInterCharacterTimer(5);
+    serial->setBlockingReadUntilCharacterArrives(5);
     add(serial);
 
     Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(serial);

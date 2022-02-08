@@ -1,7 +1,8 @@
 #include "modbusmsg.h"
 #include "log.h"
 
-Modbus::ModbusMsg::ModbusMsg()
+Modbus::ModbusMsg::ModbusMsg(uint8_t fc)
+: _function_code(fc)
 {}
 
 Modbus::ModbusMsg::~ModbusMsg()

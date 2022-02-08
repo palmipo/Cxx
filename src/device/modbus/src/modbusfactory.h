@@ -15,7 +15,6 @@
 	#define MODBUS_DLL
 #endif
 
-class ModbusChannel;
 namespace Modbus
 {
 	class ModbusChannel;

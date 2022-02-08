@@ -14,6 +14,7 @@ OBJECTS = \
 	$(BIN_PWD)/modbusmsgfc15.o \
 	$(BIN_PWD)/modbusmsgfc16.o \
 	$(BIN_PWD)/modbusmsgheader.o \
+	$(BIN_PWD)/modbusfifo.o \
 	$(BIN_PWD)/modbusrtu.o \
 	$(BIN_PWD)/modbustcp.o \
 	$(BIN_PWD)/r4d3b16.o \
