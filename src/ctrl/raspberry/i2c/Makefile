@@ -11,7 +11,7 @@ IFACE_PWD = ../../interface
 INCLUDE = -I$(IFACE_PWD) -Isrc -I$(LOG_PWD)/src
 LIBS = -L. -llog
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all:

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iomanip>
 
-static int32_t actionIn(PollDevice * device)
+static int32_t actionIn(PollDevice * device, void * user_data)
 {
 	uint8_t data[4];
 	int32_t len = device->read(data, 4);
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 		ForceFeedback ff(argv[2]);
 
 		PollFactory factory;
-		factory.setActionInCallback(actionIn);
+		factory.setActionInCallback(actionIn, 0);
 		factory.add(&manette);
 		factory.add(&ff);
 

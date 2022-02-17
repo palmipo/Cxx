@@ -1,19 +1,9 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#if defined __MINGW32__ ||  defined __CYGWIN__
-#ifdef MAKE_UTIL_DLL
-#define UTIL_DLL __declspec(dllexport)
-#else
-#define UTIL_DLL __declspec(dllimport)
-#endif
-#else
-#define UTIL_DLL
-#endif
-
 #include <cstdint>
 
-class UTIL_DLL Device
+class Device
 {
 	public:
 		Device();

@@ -13,7 +13,7 @@ CC = g++
 INCLUDE = -Isrc -I$(UTIL_PWD)/src -I$(LOG_PWD)/src
 LIBS = -L. -lutil -llog
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all:

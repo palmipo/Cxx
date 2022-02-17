@@ -1,6 +1,6 @@
 #include "gpiofactory.h"
 #include "gpio.h"
-#include "gpioarray.h"
+//~ #include "gpioarray.h"
 #include "gpioexception.h"
 
 #include <sys/types.h>
@@ -43,16 +43,16 @@ GpioFactory::~GpioFactory()
 		it1++;
 	}
 
-	std::map < int32_t, GpioArray * >::iterator it2 = _io_array_map.begin();
-	while (it2 != _io_array_map.end())
-	{
-		if (it2->second)
-		{
-			delete it2->second;
-			it2->second = 0;
-		}
-		it2++;
-	}
+	//~ std::map < int32_t, GpioArray * >::iterator it2 = _io_array_map.begin();
+	//~ while (it2 != _io_array_map.end())
+	//~ {
+		//~ if (it2->second)
+		//~ {
+			//~ delete it2->second;
+			//~ it2->second = 0;
+		//~ }
+		//~ it2++;
+	//~ }
 
 	// fermeture du port
 	if (::close(_handler))
@@ -151,29 +151,29 @@ Gpio * GpioFactory::input(int32_t input_offset)
 	return in;
 }
 
-GpioArray * GpioFactory::inputs(int32_t * input_offset, int32_t length)
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "inputs");
+//~ GpioArray * GpioFactory::inputs(int32_t * input_offset, int32_t length)
+//~ {
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "inputs");
 
-	struct gpiohandle_request input_event_request;
-	memset(&input_event_request, 0, sizeof(struct gpiohandle_request));
-	input_event_request.flags = GPIOHANDLE_REQUEST_INPUT;
-	input_event_request.lines = 0;
-	for (int32_t i=0; i<length; ++i)
-	{
-		input_event_request.lineoffsets[input_event_request.lines] = input_offset[i];
-		input_event_request.lines += 1;
-	}
+	//~ struct gpiohandle_request input_event_request;
+	//~ memset(&input_event_request, 0, sizeof(struct gpiohandle_request));
+	//~ input_event_request.flags = GPIOHANDLE_REQUEST_INPUT;
+	//~ input_event_request.lines = 0;
+	//~ for (int32_t i=0; i<length; ++i)
+	//~ {
+		//~ input_event_request.lineoffsets[input_event_request.lines] = input_offset[i];
+		//~ input_event_request.lines += 1;
+	//~ }
 
-	if (ioctl(_handler, GPIO_GET_LINEHANDLE_IOCTL, &input_event_request) < 0)
-	{
-		throw GpioException(__FILE__, __LINE__, errno);
-	}
+	//~ if (ioctl(_handler, GPIO_GET_LINEHANDLE_IOCTL, &input_event_request) < 0)
+	//~ {
+		//~ throw GpioException(__FILE__, __LINE__, errno);
+	//~ }
 
-	GpioArray * in = new GpioArray(input_event_request.fd);
-	_io_array_map[input_offset[0]] = in;
-	return in;
-}
+	//~ GpioArray * in = new GpioArray(input_event_request.fd);
+	//~ _io_array_map[input_offset[0]] = in;
+	//~ return in;
+//~ }
 
 Gpio * GpioFactory::output(int32_t output_offset)
 {
@@ -205,26 +205,26 @@ Gpio * GpioFactory::output(int32_t output_offset)
 	return out;
 }
 
-GpioArray * GpioFactory::outputs(int32_t * output_offset, int32_t length)
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "outputs");
+//~ GpioArray * GpioFactory::outputs(int32_t * output_offset, int32_t length)
+//~ {
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "outputs");
 
-	struct gpiohandle_request output_request;
-	memset(&output_request, 0, sizeof(struct gpiohandle_request));
-	output_request.flags = GPIOHANDLE_REQUEST_OUTPUT;
-	output_request.lines = 0;
-	for (int32_t i=0; i<length; ++i)
-	{
-		output_request.lineoffsets[output_request.lines] = output_offset[i];
-		output_request.lines += 1;
-	}
+	//~ struct gpiohandle_request output_request;
+	//~ memset(&output_request, 0, sizeof(struct gpiohandle_request));
+	//~ output_request.flags = GPIOHANDLE_REQUEST_OUTPUT;
+	//~ output_request.lines = 0;
+	//~ for (int32_t i=0; i<length; ++i)
+	//~ {
+		//~ output_request.lineoffsets[output_request.lines] = output_offset[i];
+		//~ output_request.lines += 1;
+	//~ }
 
-	if (ioctl(_handler, GPIO_GET_LINEHANDLE_IOCTL, &output_request) < 0)
-	{
-		throw GpioException(__FILE__, __LINE__, errno);
-	}
+	//~ if (ioctl(_handler, GPIO_GET_LINEHANDLE_IOCTL, &output_request) < 0)
+	//~ {
+		//~ throw GpioException(__FILE__, __LINE__, errno);
+	//~ }
 
-	GpioArray * out = new GpioArray(output_request.fd);
-	_io_array_map[output_offset[0]] = out;
-	return out;
-}
+	//~ GpioArray * out = new GpioArray(output_request.fd);
+	//~ _io_array_map[output_offset[0]] = out;
+	//~ return out;
+//~ }

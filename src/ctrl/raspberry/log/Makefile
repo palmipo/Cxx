@@ -9,7 +9,7 @@ CC = g++
 INCLUDE = -Isrc
 LIBS =
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all:

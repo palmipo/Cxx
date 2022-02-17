@@ -33,7 +33,7 @@ RS232_PWD = $(RASPI_CTRL)/rs232
 INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
 LIBS = -L. -lutil -llog -lrs232 -lpoll -lsocket
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all:

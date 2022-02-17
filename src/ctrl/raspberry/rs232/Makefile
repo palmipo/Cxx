@@ -119,4 +119,4 @@ librs232.dll: $(OBJECTS)
 # GLOBAL
 $(BIN_PWD)/%.o: src/%.cpp
 	$(MKDIR) $(BIN_PWD)
-	$(CC) $(CFLAGS) -DMAKE_RS232_DLL -c $^ -o $@
+	$(CC) $(CFLAGS) -fPIC -DMAKE_RS232_DLL -c $^ -o $@

@@ -1,12 +1,13 @@
 #ifndef SPI_H
 #define SPI_H
 
-#include "batratypes.h"
+#include <cstdint>
+#include <string>
 
 class SPI
 {
 public:
-	SPI(const s8 *);
+	SPI(const std::string &);
 	~SPI();
 
 	//~ SPI_CPOL    - Clock polarity
@@ -14,7 +15,7 @@ public:
 	//~ SPI_CS_HIGH - Chip Select active high
 	//~ SPI_NO_CS   - 1 device per bus, no Chip Select
 	//~ SPI_3WIRE   - Bidirectional mode, data in and out pin shared
-	virtual void setMode(u32);
+	virtual void setMode(uint32_t);
 
 	//~ cdiv    speed
 	//~ 2    125.0 MHz
@@ -32,20 +33,20 @@ public:
 	//~ 8192     30.5 kHz
 	//~ 16384     15.2 kHz
 	//~ 32768     7629 Hz
-	virtual void setClockRate(u32);
+	virtual void setClockRate(uint32_t);
 
 	//~ 8 - Normal
 	//~ 9 - This is supported using LoSSI mode.
-	virtual void setBitPerWord(u32);
+	virtual void setBitPerWord(uint32_t);
 
-	virtual void set(u8 *, u32);
-	virtual void get(u8 *, u32);
-	virtual void transfer(u8 *, u8 *, u32);
+	virtual void set(uint8_t *, uint32_t);
+	virtual void get(uint8_t *, uint32_t);
+	virtual void transfer(uint8_t *, uint8_t *, uint32_t);
 
 protected:
-	s32 _fd;
-	u32 _speed;
-	u32 _bit_per_word;
+	int32_t _fd;
+	uint32_t _speed;
+	uint32_t _bit_per_word;
 };
 
 #endif /* SPI_H */

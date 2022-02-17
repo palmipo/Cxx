@@ -29,10 +29,10 @@ class GpioFactory : public PollFactory
 		virtual Gpio * event(int32_t, int32_t = GPIOEVENT_REQUEST_BOTH_EDGES, int32_t = GPIOHANDLE_REQUEST_INPUT);
 
 		virtual Gpio * input(int32_t);
-		virtual GpioArray *  inputs(int32_t*, int32_t);
+		//~ virtual GpioArray *  inputs(int32_t*, int32_t);
 
 		virtual Gpio * output(int32_t);
-		virtual GpioArray *  outputs(int32_t*, int32_t);
+		//~ virtual GpioArray *  outpquts(int32_t*, int32_t);
 
 		virtual void info();
 	
@@ -40,7 +40,7 @@ class GpioFactory : public PollFactory
 		int32_t _handler;
 		std::map < int32_t, int32_t > _event_map;
 		std::map < int32_t, Gpio * > _io_map;
-		std::map < int32_t, GpioArray * > _io_array_map;
+		//~ std::map < int32_t, GpioArray * > _io_array_map;
 };
 
 #endif /* GPIO_FACTORY_H */

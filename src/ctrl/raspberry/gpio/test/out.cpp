@@ -1,5 +1,5 @@
 #include "gpiofactory.h"
-#include "gpioarray.h"
+#include "gpio.h"
 #include "gpioexception.h"
 #include "log.h"
 
@@ -12,25 +12,19 @@ int main(int argc, char **argv)
 		GpioFactory factory("/dev/gpiochip0");
 
 		int32_t PIN[] = { 18, 17, 27, 23, 22, 24, 10, 25, 9, 8, 11, 7, 5, 12, 6, 13 };
-		GpioArray * out = factory.outputs(PIN, 16);
+		Gpio * out = factory.outputs(PIN, 16);
 
 		uint8_t valeur[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		for (int32_t i=0; i<16; ++i)
-		{
-			out->set(i, 0);
-		}
-		out->write();
+		out->write(valeur, 16);
 
 		int32_t i=0;
 		while(i<10)
 		{
 			uint8_t val = random() % 7;
-			out->set(1, val & 1);
-			out->set(2, val & 2);
-			out->set(3, val & 4);
-			out->write();
+			valeur[val%16] = val % 1;
+			out->write(valeur, 16);
 			std::this_thread::sleep_for(std::chrono::milliseconds(250));
-			i+=1;
+			i += 1;
 		}
 	}
 	catch(GpioException e)

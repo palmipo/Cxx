@@ -1,7 +1,7 @@
 #include "rs232factory.h"
 #include "rs232.h"
 #include "usb_i2c.h"
-#include "raspii2c.h"
+//#include "raspii2c.h"
 #include "i2cexception.h"
 #include "ds1307.h"
 #include <iostream>

@@ -13,7 +13,7 @@ POLL_PWD = ../poll
 INCLUDE = -I$(LOG_PWD)/src -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -Isrc
 LIBS = -L. -ljoystick -lutil -lpoll -llog
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 clean:

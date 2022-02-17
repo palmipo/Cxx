@@ -11,7 +11,7 @@ UTIL_PWD = ../../../util
 INCLUDE = -Isrc -I$(UTIL_PWD)/src
 LIBS =
 
-CFLAGS = -g $(INCLUDE)
+CFLAGS = -g $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all: libspi.so

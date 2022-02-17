@@ -28,19 +28,25 @@ int32_t Gpio::pinNumber() const
 	return _pin_number;
 }
 
-void Gpio::write(uint8_t data)
+int32_t Gpio::write(uint8_t * data, int32_t length)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "write");
 
 	struct gpiohandle_data output_values;
-	output_values.values[0] = data;
+	for (int32_t i=0; i<length; i++)
+	{
+		output_values.values[i] = data[i];
+	}
+	
 	if (ioctl(_handler, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &output_values) < 0)
 	{
 		throw GpioException(__FILE__, __LINE__, errno);
 	}
+
+	return length;
 }
 
-int32_t Gpio::read()
+int32_t Gpio::read(uint8_t * data, int32_t length)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read");
 
@@ -50,10 +56,15 @@ int32_t Gpio::read()
 		throw GpioException(__FILE__, __LINE__, errno);
 	}
 
-	return input_values.values[0];
+	for (int32_t i=0; i<length; i++)
+	{
+		data[i] = input_values.values[i];
+	}
+
+	return length;
 }
 
-int32_t Gpio::readEvent(uint32_t *id, uint64_t *timestamp)
+int32_t Gpio::readEvent(uint32_t * id, uint64_t * timestamp)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 

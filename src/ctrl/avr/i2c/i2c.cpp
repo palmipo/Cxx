@@ -45,7 +45,7 @@ u8 I2C::get(u8 twi_address, u8 * twi_rcv_buffer, u8 twi_nb_rcv)
 	return action(twi_address, 0, 0, twi_snd_buffer, twi_nb_snd);
 }
 	
-u8 I2C::action(
+u8 I2C::transfert(
 u8 twi_address,
 u8 *twi_snd_buffer,
 u8 twi_nb_snd,

@@ -20,7 +20,7 @@ public:
 		u8 * twi_rcv_buffer,
 		u8 twi_nb_rcv);
 
-	u8 action(
+	u8 transfert(
 		u8 twi_address,
 		u8 *twi_snd_buffer,
 		u8 twi_nb_snd,

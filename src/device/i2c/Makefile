@@ -36,9 +36,9 @@ GPIO_PWD = $(RASPI_PWD)/gpio
 CC = g++
 MAKE = make
 INCLUDE = -I$(UTIL_PWD)/src -I$(CTRL_PWD)/interface -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -llog -li2cdevice -lpoll -lutil -lgpio
+LIBS = -L. -llog -li2cdevice -lpoll -lutil
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all: libi2cdevice.so
@@ -72,7 +72,7 @@ ph_hd: $(BIN_PWD)/ph_hd.o
 	$(MAKE) libi2cdevice.so
 	$(MAKE) libraspii2c.so
 	$(MAKE) libgpio.so
-	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -lgpio
 
 #
 #
@@ -145,9 +145,11 @@ $(BIN_PWD)/test_pca9685.o: test/test_pca9685.cpp
 test_ds1307: $(BIN_PWD)/test_ds1307.o
 	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
+	$(MAKE) libutil.so
 	$(MAKE) libi2cdevice.so
-	$(MAKE) libraspii2c.so
-	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
+	$(MAKE) libusbi2c.so
+	$(MAKE) librs232.so
+	$(CC) -o $@ $< $(LDFLAGS) -lrs232 -lusbi2c
 
 $(BIN_PWD)/test_ds1307.o: test/test_ds1307.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -191,18 +193,27 @@ libutil.so:
 #
 #
 libpoll.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	$(MAKE) -C $(LOG_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	ln -s $(POLL_PWD)/$@
 
 #
 #
 librs232.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	$(MAKE) -C $(LOG_PWD) $@
+	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	ln -s $(RS232_PWD)/$@
 
 #
 #
 libusbi2c.so:
+	$(MAKE) -C $(UTIL_PWD) $@
+	$(MAKE) -C $(LOG_PWD) $@
+	$(MAKE) -C $(POLL_PWD) $@
+	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(USBI2C_PWD) $@
 	ln -s $(USBI2C_PWD)/$@
 

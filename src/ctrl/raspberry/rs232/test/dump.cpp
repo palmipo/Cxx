@@ -2,26 +2,28 @@
 #include "rs232factory.h"
 #include "rs232exception.h"
 #include "log.h"
-#include "polldevice.h"
-#include "pollbuffer.h"
+//~ #include "polldevice.h"
+//~ #include "pollbuffer.h"
 #include <cstdint>
 #include <sstream>
 #include <thread>
 
 
-static int32_t actionIn(PollDevice * device)
+int32_t actionIn(PollDevice * device, void *)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t data[256];
 	int32_t len = device->read(data, 256);
 
-	std::stringstream ss;
-	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	//~ std::stringstream ss;
+	//~ ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
+	//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	
+	return len;
+}
 
-
-void scrute(Factory * factory, int32_t * fin)
+void examiner(Factory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
@@ -41,10 +43,10 @@ int main (int argc, char **argv)
 
 	int32_t fin = 0;
 	RS232Factory factory;
-	factory.setActionInCallback(fct);
+	factory.setActionInCallback(actionIn, 0);
 
 	// creation du thread secondaire
-	std::thread t(scrute, &factory, &fin);
+	std::thread t(examiner, &factory, &fin);
 
 	try
 	{
@@ -62,5 +64,5 @@ int main (int argc, char **argv)
 	fin = 1;
 	t.join();
 
-    return 0;
+	return 0;
 }

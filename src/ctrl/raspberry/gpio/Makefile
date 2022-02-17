@@ -2,7 +2,6 @@ BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
 	$(BIN_PWD)/gpio.o \
-	$(BIN_PWD)/gpioarray.o \
 	$(BIN_PWD)/gpiofactory.o
 
 MKDIR = mkdir -p
@@ -14,7 +13,7 @@ UTIL_PWD = ../../../util
 INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -I$(UTIL_PWD)/src -Isrc
 LIBS = -L. -lpoll -llog -lutil
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
 all:
