@@ -12,7 +12,7 @@ LIBS =
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
-all:
+all: liblog.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll

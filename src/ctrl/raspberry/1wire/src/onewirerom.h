@@ -1,7 +1,7 @@
 #ifndef ONE_WIRE_ROM_H
 #define ONE_WIRE_ROM_H
 
-#include "batratypes.h"
+#include <cstdint>
 
 class OneWireRom
 {

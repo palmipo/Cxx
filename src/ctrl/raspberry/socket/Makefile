@@ -19,7 +19,7 @@ LIBS = -L. -lutil -lpoll -llog
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
-all:
+all: libsocket.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.dll *.so

@@ -12,7 +12,7 @@ LOG_PWD = ../raspberry/log
 POLL_PWD = ../raspberry/poll
 RS232_PWD = ../raspberry/rs232
 IFACE_PWD = ../interface
-INCLUDE = -I$(IFACE_PWD) -I$(POLL_PWD)/src -Isrc -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(UTIL_PWD)/src
+INCLUDE = -I$(IFACE_PWD)/src -I$(POLL_PWD)/src -Isrc -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(UTIL_PWD)/src
 LIBS = -L. -lusbi2c -lrs232 -lpoll -llog -lutil
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC

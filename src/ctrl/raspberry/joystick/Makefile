@@ -16,8 +16,11 @@ LIBS = -L. -ljoystick -lutil -lpoll -llog
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
+all: libjoystick.so
+	$(MAKE) libjoystick.so
+
 clean:
-	rm $(BIN_PWD)/*.o *.so test_joystick
+	rm -f $(BIN_PWD)/*.o *.so test_joystick
 
 test_joystick: $(BIN_PWD)/test_joystick.o
 	$(MAKE) libutil.so

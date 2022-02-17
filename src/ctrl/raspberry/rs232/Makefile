@@ -17,7 +17,7 @@ LIBS = -L. -lutil -lpoll -llog
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
-all:
+all: librs232.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll fwup* dump*

@@ -17,7 +17,7 @@ LDFLAGS = $(LIBS)
 all: libspi.so
 
 clean:
-	rm $(BIN_PWD)/*.o *.so *.dll
+	rm -f $(BIN_PWD)/*.o *.so *.dll
 
 libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@

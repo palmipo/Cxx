@@ -13,10 +13,10 @@ I2C_PWD = ../i2c
 INCLUDE = -I$(IFACE_PWD) -I$(I2C_PWD)/src -Isrc
 LIBS = -L. -li2c
 
-CFLAGS = -g -std=c++11 $(INCLUDE)
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
-all:
+all:libonewire.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll

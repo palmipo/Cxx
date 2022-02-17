@@ -171,6 +171,7 @@ OneWireRom OneWire::rom(uint8_t num_rom)
 	{
 		return _rom[num_rom];
 	}
+	return OneWireRom();
 }
 
 void OneWire::writeBroadcast(uint8_t *cmd, uint8_t cmd_length)

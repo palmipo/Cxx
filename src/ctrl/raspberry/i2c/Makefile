@@ -8,13 +8,13 @@ MKDIR = mkdir -p
 CC = g++
 LOG_PWD = ../log
 IFACE_PWD = ../../interface
-INCLUDE = -I$(IFACE_PWD) -Isrc -I$(LOG_PWD)/src
+INCLUDE = -I$(IFACE_PWD)/src -Isrc -I$(LOG_PWD)/src
 LIBS = -L. -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
-all:
+all: libraspii2c.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll

@@ -16,7 +16,7 @@ LIBS = -L. -lutil -llog
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
-all:
+all: libpoll.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
