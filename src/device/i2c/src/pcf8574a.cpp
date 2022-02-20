@@ -6,6 +6,8 @@ PCF8574A::PCF8574A(uint8_t address, I2C * i2c)
 , _direction(0)
 {}
 
+// 1 : INPUT
+// 0 : OUTPUT
 void PCF8574A::setDirection(uint8_t port, uint8_t direction)
 {
 	_direction = direction;
