@@ -5,12 +5,10 @@
 #else
 #include "raspii2c.h"
 #endif
-#include "mcp23017.h"
 #include "pcf8574at.h"
 #include "lcd2004.h"
 #include "hd44780.h"
-#include <poll.h>
-#include <time.h>
+#include "tempo.h"
 #include <sstream>
 #include <iostream>
 #include <iomanip>
@@ -41,7 +39,7 @@ int main(int argc, char **argv)
 		LCD2004 lcd_io(&pia);
 		lcd_io.setBackLight(1);
 		
-		HD44780 lcd(&lcd_io);
+		HD44780 lcd(&lcd_io, 20, 4);
 
 		std::string str_date, str_heure, str_tempe;
 		struct tm *la_date;
@@ -72,7 +70,7 @@ int main(int argc, char **argv)
 //			lcd.setPosition(3, 1);
 //			lcd.setText((int8_t*)str_tempe.c_str(), str_tempe.length());
 	
-			poll(0, 0, 1000);
+			Tempo::minutes(1);
 		}
 
 		lcd_io.setBackLight(0);
