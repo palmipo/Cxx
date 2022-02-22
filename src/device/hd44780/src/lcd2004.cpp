@@ -1,6 +1,6 @@
 #include "lcd2004.h"
 #include "pcf8574at.h"
-#include <poll.h>
+#include "tempo.h"
 #include <iostream>
 
 const uint8_t DB7  = 7;
@@ -78,17 +78,17 @@ void LCD2004::enableBit(uint8_t msg)
 	// ecriture des donnees
 	octet = msg & ~(1<<EN);
 	_pia->set(0, octet);
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 
 	// debut validation des donnees
 	octet = msg | (1<<EN);
 	_pia->set(0, octet);
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 
 	// fin validation des donnees
 	octet = msg & ~(1<<EN);
 	_pia->set(0, octet);
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 }
 
 bool LCD2004::isBusy(uint8_t *addressCounter)
@@ -106,7 +106,7 @@ bool LCD2004::isBusy(uint8_t *addressCounter)
 uint8_t LCD2004::readData()
 {
 	_pia->set(0, _backLight | (1<<RS) | (1<<RW_));
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 
 	uint8_t octet = _pia->get(0) & 0xF0;
 	octet |= (_pia->get(0) & 0xF0) >> 4;
@@ -116,7 +116,7 @@ uint8_t LCD2004::readData()
 uint8_t LCD2004::readCmd()
 {
 	_pia->set(0, _backLight | (1<<RW_));
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 
 	uint8_t octet = _pia->get(0) & 0xF0;
 	octet |= (_pia->get(0) & 0xF0) >> 4;
