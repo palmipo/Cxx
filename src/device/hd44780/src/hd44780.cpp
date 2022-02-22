@@ -4,8 +4,10 @@
 //#include <poll.h>
 #include <thread>
 
-HD44780::HD44780(HD44780IO * ctrl)
+HD44780::HD44780(HD44780IO * ctrl, uint32_t ligne, uint32_t colonne)
 : _ctrl(ctrl)
+, _nb_ligne(ligne)
+, _nb_colonne(colonne)
 {
 	init();
 	clear();
@@ -94,10 +96,10 @@ void HD44780::setPosition(uint8_t line, uint8_t column)
 			byte = 0X40 | column;
 			break;
 		case 2: // 0x14
-			byte = 0x14 | column;
+			byte = _nb_colonne | column;
 			break;
 		case 3: // 0x54
-			byte = 0X54 | column;
+			byte = 0X40 | _nb_colonne | column;
 			break;
 	}
 	setDDRAMAdrress(byte);
