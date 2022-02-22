@@ -1,7 +1,8 @@
 #include "hd44780.h"
 #include "hd44780io.h"
 #include <iostream>
-#include <poll.h>
+//#include <poll.h>
+#include <thread>
 
 HD44780::HD44780(HD44780IO * ctrl)
 : _ctrl(ctrl)
@@ -113,23 +114,25 @@ void HD44780::init ()
 
 void HD44780::reset()
 {
-	//_ctrl->cmd(3);
-	_ctrl->write(3, 0, 0);
-	//poll(0, 0, 45);
-	std::this_thread::sleep_for(std::chrono::milliseconds(5));
+std::this_thread::sleep_for(std::chrono::milliseconds(15));
 
 	//_ctrl->cmd(3);
 	_ctrl->write(3, 0, 0);
 	//poll(0, 0, 45);
-	std::this_thread::sleep_for(std::chrono::microseconds(100));
+	std::this_thread::sleep_for(std::chrono::milliseconds(45));
+
+	//_ctrl->cmd(3);
+	_ctrl->write(3, 0, 0);
+	//poll(0, 0, 45);
+	std::this_thread::sleep_for(std::chrono::milliseconds(45));
 
 	//_ctrl->cmd(3);
 	_ctrl->write(3, 0, 0);
 	//poll(0, 0, 15);
-	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	std::this_thread::sleep_for(std::chrono::milliseconds(15));
 
 	//_ctrl->cmd(2);
 	_ctrl->write(2, 0, 0);
 	//poll(0, 0, 15);
-std::this_thread::sleep_for(std::chrono::milliseconds(500))
+std::this_thread::sleep_for(std::chrono::milliseconds(15))
 }
