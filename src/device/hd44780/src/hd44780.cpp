@@ -115,17 +115,21 @@ void HD44780::reset()
 {
 	//_ctrl->cmd(3);
 	_ctrl->write(3, 0, 0);
-	poll(0, 0, 45);
-	
+	//poll(0, 0, 45);
+	std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
 	//_ctrl->cmd(3);
 	_ctrl->write(3, 0, 0);
-	poll(0, 0, 45);
-	
+	//poll(0, 0, 45);
+	std::this_thread::sleep_for(std::chrono::microseconds(100));
+
 	//_ctrl->cmd(3);
 	_ctrl->write(3, 0, 0);
-	poll(0, 0, 15);
-	
+	//poll(0, 0, 15);
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
 	//_ctrl->cmd(2);
 	_ctrl->write(2, 0, 0);
-	poll(0, 0, 15);
+	//poll(0, 0, 15);
+std::this_thread::sleep_for(std::chrono::milliseconds(500))
 }
