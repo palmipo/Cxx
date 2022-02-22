@@ -7,7 +7,7 @@ class HD44780IO;
 class HD44780
 {
 public:
-	HD44780(HD44780IO * ctrl);
+	HD44780(HD44780IO * ctrl, uint32_t ligne, uint32_t colonne);
 	~HD44780();
 
 	void setText(int8_t * txt, uint8_t len);
@@ -19,7 +19,7 @@ public:
 	void setFunction(uint8_t dataLength, uint8_t numberLine, uint8_t characterFont);
 	void setCGRAMAdrress(uint8_t address);
 	void setDDRAMAdrress(uint8_t address);
-	uint8_t   readAddress();
+	uint8_t readAddress();
 	void writeData(uint8_t data);
 	uint8_t readData();
 	void setPosition(uint8_t line, uint8_t column);
