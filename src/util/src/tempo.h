@@ -3,6 +3,8 @@
 
 #ifdef RASPI
 #include <thread>
+#else
+#include <hardware/timer.h>
 #endif
 
 class Tempo
