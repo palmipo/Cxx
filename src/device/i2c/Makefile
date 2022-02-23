@@ -39,7 +39,7 @@ MAKE = make
 INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
 LIBS = -L. -llog -li2cdevice -lpoll -lutil
 
-CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASP
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASPI
 LDFLAGS = $(LIBS)
 
 all: libi2cdevice.so

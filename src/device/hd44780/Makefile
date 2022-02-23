@@ -23,6 +23,11 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
+	$(MAKE) -C $(LOG_REP) $@
+	$(MAKE) -C $(RS232_REP) $@
+	$(MAKE) -C $(USBI2C_REP) $@
+	$(MAKE) -C $(I2C_REP) $@
+	$(MAKE) -C $(I2CDEV_REP) $@
 	rm -f $(BIN_PWD)/*.o *.so
 
 test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libhd44780.so libi2cdevice.so libraspii2c.so liblog.so
@@ -54,7 +59,7 @@ libraspii2c.so:
 	ln -s $(I2C_REP)/$@
 
 libi2cdevice.so:
-	$(MAKE) -C ../i2c $@
+	$(MAKE) -C $(I2CDEV_REP) $@
 	ln -s ../i2c/$@
 
 libhd44780.so: $(OBJECTS)
