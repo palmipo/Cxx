@@ -15,6 +15,7 @@
 GpioFactory::GpioFactory(const std::string & device_p)
 : PollFactory()
 {
+    stdio_init_all();
 }
 
 GpioFactory::~GpioFactory()

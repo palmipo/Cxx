@@ -1,7 +1,7 @@
 #include "ada772.h"
 #include "mcp23017.h"
 #include "hd44780.h"
-#include <poll.h>
+#include "tempo.h"
 
 union ST_LCD
 {
@@ -165,17 +165,17 @@ void ADA772::enableBit(u8 octet)
 	// ecriture des donnees
 	lcd.bit.EN=0;
 	_pia->set(1, lcd.octet);
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 
 	// debut validation des donnees
 	lcd.bit.EN=1;
 	_pia->set(1, lcd.octet);
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 
 	// fin validation des donnees
 	lcd.bit.EN=0;
 	_pia->set(1, lcd.octet);
-	poll(0, 0, 1);
+	Tempo::millisecondes(1);
 }
 
 bool ADA772::isBusy(u8 *addressCounter)

@@ -30,8 +30,8 @@ protected:
 
 protected:
 	HD44780IO * _ctrl;
-uint32_t _nb_ligne;
-uint32_t _nb_colonne;
+	uint32_t _nb_ligne;
+	uint32_t _nb_colonne;
 };
 
 #endif
