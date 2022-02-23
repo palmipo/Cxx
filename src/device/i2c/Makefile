@@ -24,6 +24,7 @@ OBJECTS = \
 	$(BIN_PWD)/tda8440.o
 
 
+INTERFACE_PWD = ../../ctrl/interface
 UTIL_PWD = ../../util
 CTRL_PWD = ../../ctrl
 RASPI_PWD = $(CTRL_PWD)/raspberry
@@ -35,10 +36,10 @@ LOG_PWD = $(RASPI_PWD)/log
 GPIO_PWD = $(RASPI_PWD)/gpio
 CC = g++
 MAKE = make
-INCLUDE = -I$(UTIL_PWD)/src -I$(CTRL_PWD)/interface -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
+INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -Isrc -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
 LIBS = -L. -llog -li2cdevice -lpoll -lutil
 
-CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASP
 LDFLAGS = $(LIBS)
 
 all: libi2cdevice.so

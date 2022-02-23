@@ -3,31 +3,45 @@
 
 #ifdef RASPI
 #include <thread>
-#else
-#include <>
 #endif
 
-Class Tempo
+class Tempo
 {
-	Public:
-		static void minute(uint32_t duree)
+	public:
+		static void minutes(uint32_t duree)
 		{
+#ifdef RASPI
+			std::this_thread::sleep_for(std::chrono::minutes(duree));
+#else
 			busy_wait_ms(duree * 60000);
+#endif
 		}
 
-		static void seconde(uint32_t duree)
+		static void secondes(uint32_t duree)
 		{
+#ifdef RASPI
+			std::this_thread::sleep_for(std::chrono::seconds(duree));
+#else
 			busy_wait_ms(duree * 1000);
+#endif
 		}
 
-		static void milliseconde(uint32_t duree)
+		static void millisecondes(uint32_t duree)
 		{
+#ifdef RASPI
+			std::this_thread::sleep_for(std::chrono::milliseconds(duree));
+#else
 			busy_wait_ms(duree);
+#endif
 		}
 
-		static void microseconde(uint32_t duree)
+		static void microsecondes(uint32_t duree)
 		{
+#ifdef RASPI
+			std::this_thread::sleep_for(std::chrono::microseconds(duree));
+#else
 			busy_wait_us(duree);
+#endif
 		}
 };
 

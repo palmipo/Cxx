@@ -3,18 +3,21 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/hd44780.o
 
+UTIL_REP= ../../util
+INTERFACE_REP= ../../ctrl/interface
 LOG_REP= ../../ctrl/raspberry/log
 I2C_REP = ../../ctrl/raspberry/i2c
 GPIO_REP = ../../ctrl/raspberry/gpio
 USBI2C_REP = ../../ctrl/usb_i2c
 RS232_REP = ../../ctrl/raspberry/rs232
+I2CDEV_REP = ../i2c
 AR = ar
 CC = g++
 MAKE = make
-INCLUDE = -I../.. -I../../ctrl/interface -Isrc -I$(I2C_REP)/src -I$(USBI2C_REP)/src -I$(RS232_REP)/src -I../i2c/src -I.. -I$(GPIO_REP)/src -I$(LOG_REP)/src
+INCLUDE = -I$(INTERFACE_REP)/src -I$(UTIL_REP)/src -Isrc -I$(I2C_REP)/src -I$(USBI2C_REP)/src -I$(RS232_REP)/src -I$(I2CDEV_REP)/src -I$(GPIO_REP)/src -I$(LOG_REP)/src
 LIBS =
 
-CFLAGS = -g $(INCLUDE)
+CFLAGS = -g $(INCLUDE) -DRASPI
 LDFLAGS = $(LIBS)
 
 all:
@@ -67,4 +70,4 @@ liblcd2004.so: $(BIN_PWD)/lcd2004.o
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -fPIC -o $@
