@@ -4,6 +4,7 @@
 #include "pcf8574at.h"
 #include "lcd2004.h"
 #include "hd44780.h"
+#include "tempo.h"
 #include <sstream>
 
 // I2C defines
@@ -35,8 +36,8 @@ int main()
 
 		lcd.setPosition(1, 1);
 		lcd.setText((int8_t*)ss.str().c_str(), ss.str().length());
-		busy_wait_ms(500);
-		
+		Tempo:: millisecondes (500);
+
 		i++;
 	}
 
