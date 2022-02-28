@@ -1,8 +1,8 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
-	$(BIN_PWD)/gpio.o \
-	$(BIN_PWD)/gpiofactory.o
+	$(BIN_PWD)/raspigpio.o \
+	$(BIN_PWD)/raspigpiofactory.o
 
 MKDIR = mkdir -p
 MAKE = make
@@ -21,12 +21,12 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll out
 
-out: $(BIN_PWD)/out.o libgpio.so libpoll.so libutil.so liblog.so 
+out: $(BIN_PWD)/out.o libraspigpio.so libpoll.so libutil.so liblog.so 
 	$(MAKE) liblog.so
 	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
-	$(MAKE) libgpio.so
-	$(CC) -o $@ $< $(LDFLAGS) -lgpio
+	$(MAKE) libraspigpio.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspigpio
 
 $(BIN_PWD)/out.o: test/out.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -44,7 +44,7 @@ libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@
 	ln -s $(UTIL_PWD)/$@
 
-libgpio.so: $(OBJECTS) libpoll.so libutil.so liblog.so
+libraspigpio.so: $(OBJECTS) libpoll.so libutil.so liblog.so
 	$(CC) -shared $^ -o $@
 
 # GLOBAL
