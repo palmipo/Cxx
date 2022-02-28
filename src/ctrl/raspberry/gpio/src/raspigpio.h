@@ -1,14 +1,13 @@
-#ifndef GPIO_H
-#define GPIO_H
+#ifndef RASPIGPIO_H
+#define RASPIGPIO_H
 
 #include "polldevice.h"
 
-class GpioEvent;
-class Gpio : public PollDevice
+class RaspiGpio : public PollDevice
 {
 	public :
-		Gpio(int32_t, int32_t);
-		virtual ~Gpio();
+		RaspiGpio(int32_t *, int32_t, int32_t);
+		virtual ~RaspiGpio();
 
 		virtual int32_t pinNumber() const;
 
@@ -18,9 +17,10 @@ class Gpio : public PollDevice
 		// GPIOEVENT_EVENT_RISING_EDGE
 		// GPIOEVENT_EVENT_FALLING_EDGE
 		virtual int32_t readEvent(uint32_t * = 0, uint64_t * = 0);
-		
+
 	protected:
-		int32_t _pin_number;
+		int32_t * _pins_number;
+		int32_t _pins_length;
 };
 
-#endif /* GPIO_H */
+#endif /* RASPIGPIO_H */

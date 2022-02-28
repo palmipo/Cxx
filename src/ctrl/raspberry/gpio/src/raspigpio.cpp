@@ -1,20 +1,27 @@
-#include "gpio.h"
-//~ #include "gpioevent.h"
-#include "gpioexception.h"
+#include "raspigpio.h"
+#include "raspigpioexception.h"
 
 #include <linux/gpio.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include "log.h"
 
-Gpio::Gpio(int32_t pin_number, int32_t handler)
+RaspiGpio::RaspiGpio(int32_t * pins, int32_t length, int32_t handler)
 : PollDevice(handler)
-, _pin_number(pin_number)
-{}
-
-Gpio::~Gpio()
+, _pins_number(new int32_t[length])
+, _pins_length(length)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "~Gpio");
+	for (int32_t i=0; i<length; ++i)
+	{
+		_pins_number[i] = pins[i];
+	}
+}
+
+RaspiGpio::~RaspiGpio()
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "~RaspiGpio");
+
+	delete[] _pins_number;
 
 	// fermeture du port
 	if (::close(_handler))
@@ -23,12 +30,12 @@ Gpio::~Gpio()
 	}
 }
 
-int32_t Gpio::pinNumber() const
+int32_t RaspiGpio::pinNumber() const
 {
-	return _pin_number;
+	return _pins_number[0];
 }
 
-int32_t Gpio::write(uint8_t * data, int32_t length)
+int32_t RaspiGpio::write(uint8_t * data, int32_t length)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "write");
 
@@ -40,20 +47,20 @@ int32_t Gpio::write(uint8_t * data, int32_t length)
 	
 	if (ioctl(_handler, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &output_values) < 0)
 	{
-		throw GpioException(__FILE__, __LINE__, errno);
+		throw RaspiGpioException(__FILE__, __LINE__, errno);
 	}
 
 	return length;
 }
 
-int32_t Gpio::read(uint8_t * data, int32_t length)
+int32_t RaspiGpio::read(uint8_t * data, int32_t length)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read");
 
 	struct gpiohandle_data input_values;
 	if (ioctl(_handler, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &input_values) < 0)
 	{
-		throw GpioException(__FILE__, __LINE__, errno);
+		throw RaspiGpioException(__FILE__, __LINE__, errno);
 	}
 
 	for (int32_t i=0; i<length; i++)
@@ -64,14 +71,14 @@ int32_t Gpio::read(uint8_t * data, int32_t length)
 	return length;
 }
 
-int32_t Gpio::readEvent(uint32_t * id, uint64_t * timestamp)
+int32_t RaspiGpio::readEvent(uint32_t * id, uint64_t * timestamp)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	struct gpioevent_data input_event_data;
 	if (::read(_handler, &input_event_data, sizeof(struct gpioevent_data)) <= 0)
 	{
-		throw GpioException(__FILE__, __LINE__, errno);
+		throw RaspiGpioException(__FILE__, __LINE__, errno);
 	}
 
 	*timestamp = input_event_data.timestamp;

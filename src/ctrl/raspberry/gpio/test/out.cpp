@@ -1,6 +1,6 @@
-#include "gpiofactory.h"
-#include "gpio.h"
-#include "gpioexception.h"
+#include "raspigpiofactory.h"
+#include "raspigpio.h"
+#include "raspigpioexception.h"
 #include "log.h"
 
 #include <thread>
@@ -9,10 +9,10 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		GpioFactory factory("/dev/gpiochip0");
+		RaspiGpioFactory factory("/dev/gpiochip0");
 
 		int32_t PIN[] = { 18, 17, 27, 23, 22, 24, 10, 25, 9, 8, 11, 7, 5, 12, 6, 13 };
-		Gpio * out = factory.outputs(PIN, 16);
+		RaspiGpio * out = factory.outputs(PIN, 16);
 
 		uint8_t valeur[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		out->write(valeur, 16);
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 			i += 1;
 		}
 	}
-	catch(GpioException e)
+	catch(RaspiGpioException e)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, e.what());
 	}
