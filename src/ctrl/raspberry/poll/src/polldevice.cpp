@@ -1,9 +1,9 @@
 #include "polldevice.h"
 
-PollDevice::PollDevice()
-: Device()
+PollDevice::PollDevice(PollDevice::DeviceType type)
+: Device(type)
 {}
 
-PollDevice::PollDevice(int32_t handler)
-: Device(handler)
+PollDevice::PollDevice(PollDevice::DeviceType type, int32_t handler)
+: Device(type, handler)
 {}
