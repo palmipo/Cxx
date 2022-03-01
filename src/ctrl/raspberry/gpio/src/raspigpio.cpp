@@ -11,6 +11,8 @@ RaspiGpio::RaspiGpio(int32_t * pins, int32_t length, int32_t handler)
 , _pins_number(new int32_t[length])
 , _pins_length(length)
 {
+	Log::getLogger()->debug(__FILE__, __LINE__, "RaspiGpio");
+
 	for (int32_t i=0; i<length; ++i)
 	{
 		_pins_number[i] = pins[i];
@@ -73,7 +75,7 @@ int32_t RaspiGpio::read(uint8_t * data, int32_t length)
 
 int32_t RaspiGpio::readEvent(uint32_t * id, uint64_t * timestamp)
 {
-	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
+	Log::getLogger()->debug(__FILE__, __LINE__, "readEvent");
 
 	struct gpioevent_data input_event_data;
 	if (::read(_handler, &input_event_data, sizeof(struct gpioevent_data)) <= 0)

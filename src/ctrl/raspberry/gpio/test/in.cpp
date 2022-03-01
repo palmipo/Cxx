@@ -1,6 +1,6 @@
-#include "rs232.h"
-#include "rs232factory.h"
-#include "rs232exception.h"
+#include "raspigpio.h"
+#include "raspigpiofactory.h"
+#include "raspigpioexception.h"
 #include "log.h"
 #include "tempo.h"
 #include "polldevice.h"
@@ -13,15 +13,17 @@ int32_t callback(PollDevice * device, void *)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
 
-	uint8_t data[256];
-	int32_t len = device->read(data, 256);
-	device->write(data, len);
+        // GPIOEVENT_EVENT_RISING_EDGE
+        // GPIOEVENT_EVENT_FALLING_EDGE
+	uint32_t id;
+	uint64_t time;
+        int32_t res = ((RaspiGpio *)device)->readEvent(&id, &time);
 
 	std::stringstream ss;
-	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
+	ss << "callback : device->readEvent() id=" << id << " time=" << time << std::endl;
 	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
-	return 0;
+	return res;
 }
 
 void scrute(PollFactory * factory, int32_t * fin)
@@ -34,37 +36,25 @@ void scrute(PollFactory * factory, int32_t * fin)
 
 int main (int argc, char **argv)
 {
-	if (argc != 2)
-	{
-		std::stringstream ss;
-		ss << argv[0] << " </dev/ttyUSB0>";
-		Log::getLogger()->error(__FILE__, __LINE__, ss.str());
-		return -1;
-	}
-
 	try
 	{
 		int32_t fin = 0;
-		
-		RS232Factory uart_factory;
-		RS232 * serial = uart_factory.add(argv[1]);
-		serial->setConfig(B9600, 8, 'E', 1);
+
+		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
+		RaspiGpio * gpio = gpio_factory.event(17);
 
 		PollFactory poll_factory;
 		poll_factory.setActionInCallback(callback, 0);
-		poll_factory.add(serial);
+		poll_factory.add(gpio);
 
 		std::thread t(scrute, &poll_factory, &fin);
 
-		uint8_t data[] = {0, 1, 2, 3, 4};
-		serial->write(data, 5); 
-
-		Tempo::minutes(2);
+		Tempo::minutes(10);
 
 		fin = 1;
 		t.join();
 	}
-	catch(RS232Exception & e)
+	catch(RaspiGpioException & e)
 	{
 		Log::getLogger()->debug(__FILE__, __LINE__, e.what());
 	}

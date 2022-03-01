@@ -9,7 +9,12 @@ Socket::SocketFactory::SocketFactory()
 
 Socket::SocketFactory::~SocketFactory()
 {
-// TODO delete it->second;
+	std::map<std::pair<std::string, uint16_t>, Socket::SocketBase *>::iterator it = _hosts.begin();
+	while (it != _hosts.end())
+	{
+		delete it->second;
+		it++;
+	}
 }
 
 Socket::SocketTcp * Socket::SocketFactory::addTcpServer(const std::string & addr, uint16_t port)
@@ -70,7 +75,7 @@ Socket::SocketUdp * Socket::SocketFactory::addUdpConnection(const std::string & 
 
 Socket::SocketBase * Socket::SocketFactory::get(const std::string & addr, uint16_t port)
 {
-	std::map<std::pair<std::string, uint16_t>, SocketBase *>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
+	std::map<std::pair<std::string, uint16_t>, Socket::SocketBase *>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
 	if (it != _hosts.end())
 	{
 		return it->second;
@@ -81,7 +86,7 @@ Socket::SocketBase * Socket::SocketFactory::get(const std::string & addr, uint16
 
 void Socket::SocketFactory::del(const std::string & addr, uint16_t port)
 {
-	std::map<std::pair<std::string, uint16_t>, SocketBase *>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
+	std::map<std::pair<std::string, uint16_t>, Socket::SocketBase *>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
 	if (it != _hosts.end())
 	{
 		delete it->second;

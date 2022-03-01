@@ -15,7 +15,7 @@
 
 /* constructeur socket client */
 Socket::SocketCan::SocketCan()
-: PollDevice()
+: PollDevice(Device::CAN)
 {}
 
 

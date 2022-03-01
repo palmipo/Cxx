@@ -30,15 +30,15 @@ RaspiGpioFactory::~RaspiGpioFactory()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "~RaspiGpioFactory");
 
-	std::map < int32_t, RaspiGpio * >::iterator it1 = _io_map.begin();
-	while (it1 != _io_map.end())
+	std::map < int32_t, RaspiGpio * >::iterator it = _io_map.begin();
+	while (it != _io_map.end())
 	{
-		if (it1->second)
+		if (it->second)
 		{
-			delete it1->second;
-			it1->second = 0;
+			delete it->second;
+			it->second = 0;
 		}
-		it1++;
+		it++;
 	}
 
 	// fermeture du port
@@ -83,10 +83,10 @@ RaspiGpio * RaspiGpioFactory::event(int32_t input_offset, int32_t event_flags, i
 	Log::getLogger()->debug(__FILE__, __LINE__, "event");
 
 	RaspiGpio * in = 0;
-	std::map < int32_t, int32_t >::iterator it = _event_map.find(input_offset);
-	if (it != _event_map.end())
+	std::map < int32_t, RaspiGpio * >::iterator it = _io_map.find(input_offset);
+	if (it != _io_map.end())
 	{
-		in = (RaspiGpio *)get(it->second);
+		in = it->second;
 	}
 	else
 	{
@@ -101,7 +101,7 @@ RaspiGpio * RaspiGpioFactory::event(int32_t input_offset, int32_t event_flags, i
 		}
 
 		in = new RaspiGpio(&input_offset, 1, input_event_request.fd);
-		_event_map[input_offset] = input_event_request.fd;
+		_io_map[input_offset] = in;
 	}
 
 	return in;

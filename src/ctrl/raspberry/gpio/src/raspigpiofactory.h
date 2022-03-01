@@ -3,6 +3,7 @@
 
 #include <linux/gpio.h>
 #include <string>
+#include <map>
 
 class RaspiGpio;
 class RaspiGpioFactory
@@ -33,7 +34,6 @@ class RaspiGpioFactory
 	
 	protected:
 		int32_t _handler;
-		std::map < int32_t, int32_t > _event_map;
 		std::map < int32_t, RaspiGpio * > _io_map;
 };
 

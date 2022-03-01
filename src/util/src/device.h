@@ -6,13 +6,13 @@
 class Device
 {
 	public:
-		Device(Type);
-		Device(Type, int32_t);
+		enum DeviceType { GPIO = 1, I2C, SPI, UART, SOCKET, JOYSTICK, CAN } DeviceType;
 
-		enum { GPIO = 1, I2C, SPI, UART, SOCKET, JOYSTICK, CAN } Type;
+		Device(enum DeviceType);
+		Device(enum DeviceType, int32_t);
 
 		virtual int32_t handler();
-		virtual Type type();
+		virtual enum DeviceType type();
 
 		bool operator==(const Device &) const;
 
@@ -20,7 +20,7 @@ class Device
 		int32_t _handler;
 		int32_t _max_retry;
 		int32_t _timeout;
-		Type _type;
+		enum DeviceType _type;
 };
 
 #endif

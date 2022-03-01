@@ -13,13 +13,23 @@ UTIL_PWD = ../../../util
 INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -I$(UTIL_PWD)/src -Isrc
 LIBS = -L. -lpoll -llog -lutil
 
-CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC
+CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASPI
 LDFLAGS = $(LIBS)
 
 all:
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll out
+
+in: $(BIN_PWD)/in.o libraspigpio.so libpoll.so libutil.so liblog.so 
+	$(MAKE) liblog.so
+	$(MAKE) libutil.so
+	$(MAKE) libpoll.so
+	$(MAKE) libraspigpio.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspigpio -pthread
+
+$(BIN_PWD)/in.o: test/in.cpp
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 out: $(BIN_PWD)/out.o libraspigpio.so libpoll.so libutil.so liblog.so 
 	$(MAKE) liblog.so

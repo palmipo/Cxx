@@ -9,7 +9,14 @@ RS232Factory::RS232Factory()
 {}
 
 RS232Factory::~RS232Factory()
-{}
+{
+	std::map<std::string, RS232 *>::iterator it = _port.begin();
+	while (it != _port.end())
+	{
+		delete it->second;
+		it++;
+	}
+}
 
 RS232 * RS232Factory::add(const std::string & device_p)
 {
@@ -27,7 +34,7 @@ RS232 * RS232Factory::add(const std::string & device_p)
 
 RS232 * RS232Factory::get(const std::string & device_p)
 {
-	std::map<std::string, int32_t>::iterator it = _port.find(device_p);
+	std::map<std::string, RS232 *>::iterator it = _port.find(device_p);
 	if (it != _port.end())
 	{
 		return it->second;
@@ -40,9 +47,10 @@ RS232 * RS232Factory::get(const std::string & device_p)
 
 void RS232Factory::del(const std::string & device_p)
 {
-	std::map<std::string, int32_t>::iterator it = _port.find(device_p);
+	std::map<std::string, RS232 *>::iterator it = _port.find(device_p);
 	if (it != _port.end())
 	{
+		delete it->second;
 		_port.erase(it);
 	}
 

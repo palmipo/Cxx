@@ -34,7 +34,7 @@ namespace Socket
 			virtual void del(const std::string &, uint16_t);
 
 			/* ip:port => handler */
-			std::map < std::pair < std::string, int16_t> , SocketBase * > _hosts;
+			std::map < std::pair < std::string, uint16_t> , SocketBase * > _hosts;
 	};
 }
 
