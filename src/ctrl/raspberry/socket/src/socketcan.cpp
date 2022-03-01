@@ -83,18 +83,3 @@ int32_t Socket::SocketCan::read(uint8_t * data, int32_t length)
 	return len;
 }
 
-int32_t Socket::SocketCan::actionError()
-{
-	return 0;
-}
-
-int32_t Socket::SocketCan::actionIn()
-{
-	return 0;
-}
-
-int32_t Socket::SocketCan::actionOut()
-{
-	return 0;
-}
-
