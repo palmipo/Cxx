@@ -9,17 +9,17 @@ class Device
 		Device(DeviceType);
 		Device(DeviceType, int32_t);
 
-enum { GPIO, I2C, SPI, UART, JOYSTICK } DeviceType;
+		enum { GPIO, I2C, SPI, UART, JOYSTICK } DeviceType;
+
 		virtual int32_t handler();
 
 		bool operator==(const Device &) const;
 
 	protected:
 		int32_t _handler;
-
-	protected:
 		int32_t _max_retry;
 		int32_t _timeout;
+		DeviceType _type;
 };
 
 #endif
