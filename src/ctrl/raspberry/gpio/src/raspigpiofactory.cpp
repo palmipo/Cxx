@@ -101,7 +101,6 @@ RaspiGpio * RaspiGpioFactory::event(int32_t input_offset, int32_t event_flags, i
 		}
 
 		in = new RaspiGpio(&input_offset, 1, input_event_request.fd);
-		add(in);
 		_event_map[input_offset] = input_event_request.fd;
 	}
 
