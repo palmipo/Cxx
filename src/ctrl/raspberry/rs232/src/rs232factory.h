@@ -28,7 +28,7 @@ class RS232_DLL RS232Factory
 		virtual void del(const std::string &);
 
 	protected:
-		std::map<std::string, int32_t> _port;
+		std::map<std::string, RS232 *> _port;
 };
 
 #endif
