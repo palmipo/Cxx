@@ -1,7 +1,6 @@
 #ifndef MODBUS_FACTORY_H
 #define MODBUS_FACTORY_H
 
-#include "pollfactory.h"
 #include <string>
 #include <map>
 
@@ -18,7 +17,7 @@
 namespace Modbus
 {
 	class ModbusChannel;
-	class MODBUS_DLL ModbusFactory : public PollFactory
+	class MODBUS_DLL ModbusFactory
 	{
 		public:
 			ModbusFactory();
