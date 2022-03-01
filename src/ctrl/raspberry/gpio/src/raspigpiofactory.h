@@ -1,13 +1,11 @@
 #ifndef RASPIGPIO_FACTORY_H
 #define RASPIGPIO_FACTORY_H
 
-#include "pollfactory.h"
 #include <linux/gpio.h>
-// #include <termios.h>
 #include <string>
 
 class RaspiGpio;
-class RaspiGpioFactory : public PollFactory
+class RaspiGpioFactory
 {
 	public :
 		/*
