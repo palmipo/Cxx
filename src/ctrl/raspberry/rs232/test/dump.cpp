@@ -2,8 +2,8 @@
 #include "rs232factory.h"
 #include "rs232exception.h"
 #include "log.h"
-//~ #include "polldevice.h"
-//~ #include "pollbuffer.h"
+#include "tempo.h"
+#include "pollfactory.h"
 #include <cstdint>
 #include <sstream>
 #include <thread>
@@ -16,14 +16,14 @@ int32_t actionIn(PollDevice * device, void *)
 	uint8_t data[256];
 	int32_t len = device->read(data, 256);
 
-	//~ std::stringstream ss;
-	//~ ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
-	//~ Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	std::stringstream ss;
+	ss << "callback : " << device->handler() << " (" << len << ") " << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 	
 	return len;
 }
 
-void examiner(Factory * factory, int32_t * fin)
+void examiner(PollFactory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
@@ -41,28 +41,32 @@ int main (int argc, char **argv)
 		return -1;
 	}
 
-	int32_t fin = 0;
-	RS232Factory factory;
-	factory.setActionInCallback(actionIn, 0);
-
-	// creation du thread secondaire
-	std::thread t(examiner, &factory, &fin);
 
 	try
 	{
-		RS232 * serial = factory.add(argv[1]);
+
+		RS232Factory uart_factory;
+		RS232 * serial = uart_factory.add(argv[1]);
 		serial->setConfig(B19200, 8, 'E', 1);
-		
+
+		PollFactory poll_factory;
+		poll_factory.setActionInCallback(actionIn, 0);
+		poll_factory.add(serial);
+
+		// creation du thread secondaire
+		int32_t fin = 0;
+		std::thread t(examiner, &poll_factory, &fin);
+
 		// endort le thread principal pour 2 minutes
-		std::this_thread::sleep_for(std::chrono::minutes(2));
+		Tempo::minutes(2);
+
+		fin = 1;
+		t.join();
 	}
 	catch(RS232Exception & e)
 	{
 		Log::getLogger()->debug(__FILE__, __LINE__, e.what());
 	}
-
-	fin = 1;
-	t.join();
 
 	return 0;
 }
