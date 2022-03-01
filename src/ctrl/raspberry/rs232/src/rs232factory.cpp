@@ -20,7 +20,7 @@ RS232 * RS232Factory::add(const std::string & device_p)
 	catch(...)
 	{
 		RS232 * serial = new RS232(device_p);
-		_port[device_p] = serial->handler();
+		_port[device_p] = serial;
 		return serial;
 	}
 }
