@@ -13,7 +13,6 @@
 
 // /dev/gpiochip0
 RaspiGpioFactory::RaspiGpioFactory(const std::string & device_p)
-: PollFactory()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "RaspiGpioFactory");
 
