@@ -6,10 +6,10 @@
 class Device
 {
 	public:
-		Device(DeviceType);
-		Device(DeviceType, int32_t);
+		Device(Type);
+		Device(Type, int32_t);
 
-		enum { GPIO, I2C, SPI, UART, JOYSTICK } DeviceType;
+		enum { GPIO, I2C, SPI, UART, JOYSTICK } Type;
 
 		virtual int32_t handler();
 
@@ -19,7 +19,7 @@ class Device
 		int32_t _handler;
 		int32_t _max_retry;
 		int32_t _timeout;
-		DeviceType _type;
+		Type _type;
 };
 
 #endif
