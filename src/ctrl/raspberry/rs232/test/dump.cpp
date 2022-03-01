@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 
 		PollFactory poll_factory;
 		poll_factory.setActionInCallback(actionIn, 0);
-		poll_factory.add(serial);
+		poll_factory.add(serial->handle());
 
 		// creation du thread secondaire
 		int32_t fin = 0;
