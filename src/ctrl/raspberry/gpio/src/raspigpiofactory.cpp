@@ -135,7 +135,10 @@ RaspiGpio * RaspiGpioFactory::inputs(int32_t * pins, int32_t length)
 		}
 
 		in = new RaspiGpio(pins, length, input_event_request.fd);
-		_io_map[pins[0]] = in;
+		for (int32_t i=0; i<length; ++i)
+		{
+			_io_map[pins[i]] = in;
+		}
 	}
 
 	return in;
@@ -168,7 +171,10 @@ RaspiGpio * RaspiGpioFactory::outputs(int32_t * pins, int32_t length)
 		}
 
 		out = new RaspiGpio(pins, length, output_request.fd);
-		_io_map[pins[0]] = out;
+		for (int32_t i=0; i<length; ++i)
+		{
+			_io_map[pins[i]] = out;
+		}
 	}
 
 	return out;
