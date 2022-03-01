@@ -1,10 +1,7 @@
 #ifndef SOCKETFACTORY_H
 #define SOCKETFACTORY_H
 
-#include "pollfactory.h"
 #include <map>
-//~ #include <list>
-//~ #include <poll.h>
 #include <string>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
@@ -22,7 +19,7 @@ namespace Socket
 	class SocketBase;
 	class SocketUdp;
 	class SocketTcp;
-	class SOCKET_DLL SocketFactory : public PollFactory
+	class SOCKET_DLL SocketFactory
 	{
 		public:
 			SocketFactory();
@@ -37,7 +34,7 @@ namespace Socket
 			virtual void del(const std::string &, uint16_t);
 
 			/* ip:port => handler */
-			std::map < std::pair < std::string, uint16_t > , int32_t > _hosts;
+			std::map < std::pair < std::string, int32_t> , SocketBase * > _hosts;
 	};
 }
 
