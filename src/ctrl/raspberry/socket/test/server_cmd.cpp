@@ -2,9 +2,6 @@
 #include "socketexception.h"
 #include "sockettcp.h"
 #include <iostream>
-//~ #include <log4cxx/logger.h>
-//~ #include <log4cxx/basicconfigurator.h>
-//~ #include <log4cxx/helpers/exception.h>
 
 static int32_t actionIn(PollDevice* dev, void *)
 {
@@ -20,7 +17,6 @@ static int32_t actionIn(PollDevice* dev, void *)
 	}
 	catch (Socket::SocketException & e)
 	{
-		// LOG4CXX_ERROR(logger, e.what());
 	}
 
 	return 0;
@@ -28,23 +24,22 @@ static int32_t actionIn(PollDevice* dev, void *)
 
 int main (int argc, char **argv)
 {
- 	//~ log4cxx::BasicConfigurator::configure();
-	//~ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger( "main"));
-
-	try
+ 	try
 	{
-		Socket::SocketFactory factory;
-		factory.setActionInCallback(actionIn);
-		factory.addTcpServer("0.0.0.0", 502);
-		
+		Socket::SocketFactory socket_factory;
+		Socket::SocketTcp * socket = socket_factory.addTcpServer("0.0.0.0", 502);
+
+PollFactory poll_factory;
+		poll_factory.setActionInCallback(actionIn);
+poll_factory.add(socket);
+
 		while(1)
 		{
-			factory.scrute(60000);
+			poll_factory.scrute(60000);
 		}
 	}
 	catch (Socket::SocketException & e)
 	{
-		//~ LOG4CXX_ERROR(logger, e.what());
 	}
 
 	return 0;
