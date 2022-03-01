@@ -6,7 +6,7 @@
 //~ #include <log4cxx/basicconfigurator.h>
 //~ #include <log4cxx/helpers/exception.h>
 
-static int32_t actionIn(PollDevice* dev)
+static int32_t actionIn(PollDevice* dev, void *)
 {
 	Socket::SocketTcp * server = (Socket::SocketTcp *)dev;
 
