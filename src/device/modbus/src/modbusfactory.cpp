@@ -42,27 +42,16 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::get(const std::string & host)
     throw Modbus::ModbusException(__FILE__, __LINE__, "i can't get enough");
 }
 
-Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host, int8_t id_slave)
+Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(Socket::SocketTcp * tcp, int8_t id_slave)
 {
     // recherche de l'existant
     try
     {
-        Modbus::ModbusChannel * res = get(host);
+        Modbus::ModbusChannel * res = get(tcp);
         return res;
     }
     catch(...)
     {}
-    
-    // creation de la socket
-    Socket::SocketTcp * tcp = new Socket::SocketTcp();
-    if (!tcp)
-    {
-        throw Modbus::ModbusException(__FILE__, __LINE__, "i can't tcp enough");
-    }
-
-    // connexion a device
-    tcp->connexion(host, TCP_PORT);
-    add(tcp);
 
     // 
     Modbus::ModbusTcp * modbus_tcp = new Modbus::ModbusTcp(tcp);
@@ -74,50 +63,20 @@ Modbus::ModbusChannel * Modbus::ModbusFactory::tcp(const std::string & host, int
     return modbus_tcp;
 }
 
-Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(const std::string & device, int32_t baudrate, int32_t data, int32_t parity, int32_t stopbits)
+Modbus::ModbusChannel * Modbus::ModbusFactory::rtu(RS232 * serial)
 {
     try
     {
-        Modbus::ModbusChannel * res = get(device);
+        Modbus::ModbusChannel * res = get(serial);
         return res;
     }
     catch(...)
     {}
-    
-    RS232 * serial = new RS232(device);
-    if (!serial)
-    {
-        throw Modbus::ModbusException(__FILE__, __LINE__, "i can't rtu enough");
-    }
-
-    if ((parity != 'N') && (parity == 'E') && (parity == 'O'))
-        throw Modbus::ModbusException(__FILE__, __LINE__, " parity : bad parameters");
-    
-    speed_t cbaudrate;
-    if (baudrate == 1200)
-        cbaudrate = B1200;
-    else if (baudrate == 2400)
-        cbaudrate = B2400;
-    else if (baudrate == 4800)
-        cbaudrate = B4800;
-    else if (baudrate == 9600)
-        cbaudrate = B9600;
-    else if (baudrate == 19200)
-        cbaudrate = B19200;
-    else if (baudrate == 38400)
-        cbaudrate = B38400;
-    else
-        throw Modbus::ModbusException(__FILE__, __LINE__, " baud rate : bad parameters");
-
-    serial->setConfig(cbaudrate, data, parity, stopbits);
-    serial->setInterCharacterTimer(5);
-    serial->setBlockingReadUntilCharacterArrives(5);
-    add(serial);
 
     Modbus::ModbusRtu * modbus_rtu = new Modbus::ModbusRtu(serial);
     if (modbus_rtu)
     {
-		_codec[device] = modbus_rtu;
+	_codec[device] = modbus_rtu;
     }
 
     return modbus_rtu;
