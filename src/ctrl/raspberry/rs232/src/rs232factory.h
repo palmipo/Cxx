@@ -1,11 +1,9 @@
 #ifndef RS232FACTORY_H
 #define RS232FACTORY_H
 
-#include "pollfactory.h"
 #include <string>
 #include <map>
 #include <list>
-#include <poll.h>
 #include <termios.h>
 
 #if defined __MINGW32__ ||  defined __CYGWIN__
@@ -19,7 +17,7 @@
 #endif
 
 class RS232;
-class RS232_DLL RS232Factory : public PollFactory
+class RS232_DLL RS232Factory
 {
 	public:
 		RS232Factory();
