@@ -12,6 +12,7 @@ class Device
 		enum { GPIO, I2C, SPI, UART, JOYSTICK } Type;
 
 		virtual int32_t handler();
+		virtual Type type();
 
 		bool operator==(const Device &) const;
 
