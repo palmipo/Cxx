@@ -5,11 +5,12 @@
 #include <cerrno>
 
 Socket::SocketFactory::SocketFactory()
-: PollFactory()
 {}
 
 Socket::SocketFactory::~SocketFactory()
-{}
+{
+// TODO delete it->second;
+}
 
 Socket::SocketTcp * Socket::SocketFactory::addTcpServer(const std::string & addr, uint16_t port)
 {
@@ -21,8 +22,7 @@ Socket::SocketTcp * Socket::SocketFactory::addTcpServer(const std::string & addr
 	{
 		Socket::SocketTcp * sock = new Socket::SocketTcp(addr, port);
 
-		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock->handler();
-		add(sock);
+		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock;
 
 		return sock;
 	}
@@ -41,8 +41,7 @@ Socket::SocketTcp * Socket::SocketFactory::addTcpConnection(const std::string & 
 		Socket::SocketTcp * sock = new Socket::SocketTcp();
 		sock->connexion(addr, port);
 
-		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock->handler();
-		add(sock);
+		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock;
 
 		return sock;
 	}
@@ -61,8 +60,7 @@ Socket::SocketUdp * Socket::SocketFactory::addUdpConnection(const std::string & 
 		Socket::SocketUdp * sock = new Socket::SocketUdp();
 		sock->connexion(addr, port);
 
-		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock->handler();
-		add(sock);
+		_hosts[std::pair<std::string, uint16_t>(addr, port)] = sock;
 
 		return sock;
 	}
@@ -72,10 +70,10 @@ Socket::SocketUdp * Socket::SocketFactory::addUdpConnection(const std::string & 
 
 Socket::SocketBase * Socket::SocketFactory::get(const std::string & addr, uint16_t port)
 {
-	std::map<std::pair<std::string, uint16_t>, int32_t>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
+	std::map<std::pair<std::string, uint16_t>, SocketBase *>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
 	if (it != _hosts.end())
 	{
-		return (Socket::SocketBase *)PollFactory::get(it->second);
+		return it->second;
 	}
 	
 	throw Socket::SocketException(__FILE__, __LINE__, "not find");
@@ -83,10 +81,10 @@ Socket::SocketBase * Socket::SocketFactory::get(const std::string & addr, uint16
 
 void Socket::SocketFactory::del(const std::string & addr, uint16_t port)
 {
-	std::map<std::pair<std::string, uint16_t>, int32_t>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
+	std::map<std::pair<std::string, uint16_t>, SocketBase *>::iterator it = _hosts.find(std::pair<std::string, uint16_t>(addr, port));
 	if (it != _hosts.end())
 	{
-		PollFactory::del(it->second);
+		delete it->second;
 		_hosts.erase(it);
 	}
 	else
