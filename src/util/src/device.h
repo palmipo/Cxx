@@ -9,7 +9,7 @@ class Device
 		Device(Type);
 		Device(Type, int32_t);
 
-		enum { GPIO, I2C, SPI, UART, JOYSTICK } Type;
+		enum { GPIO = 1, I2C, SPI, UART, SOCKET, JOYSTICK, CAN } Type;
 
 		virtual int32_t handler();
 		virtual Type type();
