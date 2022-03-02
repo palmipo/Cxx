@@ -10,37 +10,37 @@ public:
 	ADA772(MCP23017 * ctrl);
 	virtual ~ADA772();
 
-	virtual void setSelectCallback(void (*callback)(bool));
-	virtual void setUpCallback(void (*callback)(bool));
-	virtual void setRightCallback(void (*callback)(bool));
-	virtual void setDownCallback(void (*callback)(bool));
-	virtual void setLeftCallback(void (*callback)(bool));
-	virtual void setButtonsCallback(void (*callback)(u8, void *), void *user_data);
+	virtual void setSelectCallback(void (*)(bool));
+	virtual void setUpCallback(void (*)(bool));
+	virtual void setRightCallback(void (*)(bool));
+	virtual void setDownCallback(void (*)(bool));
+	virtual void setLeftCallback(void (*)(bool));
+	virtual void setButtonsCallback(void (*)(uint8_t, void *), void *);
 
-	virtual void setBackLight(u8 value);
+	virtual void setBackLight(uint8_t value);
 
-	virtual u8 scrute();
+	virtual uint8_t scrute();
 
 private:
-	virtual void cmd (u8);
-	virtual void data (u8);
-	virtual bool isBusy(u8 * addressCounter = 0);
-	virtual void enableBit(u8);
-	virtual u8 readCmd();
-	virtual u8 readData();
-	virtual void write (u8 value, u8 rs, u8 rw_);
+	virtual void cmd (uint8_t);
+	virtual void data (uint8_t);
+	virtual bool isBusy(uint8_t * addressCounter = 0);
+	virtual void enableBit(uint8_t);
+	virtual uint8_t readCmd();
+	virtual uint8_t readData();
+	virtual void write (uint8_t value, uint8_t rs, uint8_t rw_);
 
 private:
 	MCP23017 *_pia;
 	void *_user_data;
-	u8 _backlight;
+	uint8_t _backlight;
 
 	void (*_selectTriggered)(bool);
 	void (*_upTriggered)(bool);
 	void (*_rightTriggered)(bool);
 	void (*_downTriggered)(bool);
 	void (*_leftTriggered)(bool);
-	void (*_buttonTriggered)(u8, void *);
+	void (*_buttonTriggered)(uint8_t, void *);
 };
 
 #endif

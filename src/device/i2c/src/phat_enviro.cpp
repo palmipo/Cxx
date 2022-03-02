@@ -1,8 +1,8 @@
 #include "phat_enviro.h"
-#include "gpio.h"
+#include "raspigpio.h"
 
 
-PHatEnviro::PHatEnviro(Gpio * gpio_led)
+PHatEnviro::PHatEnviro(RaspiGpio * gpio_led)
 : _gpio_led(gpio_led)
 {
 	setLed(0);

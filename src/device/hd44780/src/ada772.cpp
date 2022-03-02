@@ -7,16 +7,16 @@ union ST_LCD
 {
 	struct ST_LCD_BIT
 	{
-		u8 BACKLIGHT:1;	// bit 0
-		u8 DB7:1;
-		u8 DB6:1;
-		u8 DB5:1;
-		u8 DB4:1;
-		u8 EN:1;
-		u8 RW_:1;
-		u8 RS:1;	//  bit 7
+		uint8_t BACKLIGHT:1;	// bit 0
+		uint8_t DB7:1;
+		uint8_t DB6:1;
+		uint8_t DB5:1;
+		uint8_t DB4:1;
+		uint8_t EN:1;
+		uint8_t RW_:1;
+		uint8_t RS:1;	//  bit 7
 	} bit;
-	u8 octet;
+	uint8_t octet;
 };
 
 ADA772::ADA772(MCP23017 * ctrl)
@@ -60,21 +60,21 @@ void ADA772::setLeftCallback(void (*callback)(bool))
 	_leftTriggered = callback;
 }
 
-void ADA772::setButtonsCallback(void (*callback)(u8, void *), void *user_data)
+void ADA772::setButtonsCallback(void (*callback)(uint8_t, void *), void *user_data)
 {
 	_buttonTriggered = callback;
 	_user_data = user_data;
 }
 
-void ADA772::setBackLight(u8 value)
+void ADA772::setBackLight(uint8_t value)
 {
 	_backlight = value ? 1 : 0;
 	_pia->set(0, value ? 0 : 0xC0);
 }
 
-u8 ADA772::scrute()
+uint8_t ADA772::scrute()
 {
-	u8 value = _pia->getIrq(0);
+	uint8_t value = _pia->getIrq(0);
 
 	if (_buttonTriggered)
 	{
@@ -105,7 +105,7 @@ u8 ADA772::scrute()
 	return value;
 }
 
-void ADA772::cmd(u8 cmd)
+void ADA772::cmd(uint8_t cmd)
 {
 	ST_LCD lcd;
 
@@ -130,7 +130,7 @@ void ADA772::cmd(u8 cmd)
 	while(isBusy());
 }
      
-void ADA772::data(u8 dat)
+void ADA772::data(uint8_t dat)
 {
 	ST_LCD lcd;
 
@@ -157,7 +157,7 @@ void ADA772::data(u8 dat)
 	while(isBusy());
 }
 
-void ADA772::enableBit(u8 octet)
+void ADA772::enableBit(uint8_t octet)
 {
 	ST_LCD lcd;
 	lcd.octet = octet;
@@ -178,14 +178,14 @@ void ADA772::enableBit(u8 octet)
 	Tempo::millisecondes(1);
 }
 
-bool ADA772::isBusy(u8 *addressCounter)
+bool ADA772::isBusy(uint8_t *addressCounter)
 {
-	u8 octet = readCmd();
+	uint8_t octet = readCmd();
 	if (addressCounter) *addressCounter = octet & 0x7F;
 	return ((octet & 0x80) >> 7);
 }
 
-u8 ADA772::readData()
+uint8_t ADA772::readData()
 {
 	ST_LCD lcd;
 	lcd.octet = 0;
@@ -196,12 +196,12 @@ u8 ADA772::readData()
 	lcd.bit.EN  = 0;
 	_pia->set(1, lcd.octet);
 
-	u8 octet = _pia->get(1) & 0xF0;
+	uint8_t octet = _pia->get(1) & 0xF0;
 	octet |= (_pia->get(1) & 0xF0) >> 4;
 	return octet;
 }
 
-u8 ADA772::readCmd()
+uint8_t ADA772::readCmd()
 {
 	ST_LCD lcd;
 	lcd.octet = 0;
@@ -212,12 +212,12 @@ u8 ADA772::readCmd()
 	lcd.bit.EN  = 0;
 	_pia->set(1, lcd.octet);
 
-	u8 octet = _pia->get(1) & 0xF0;
+	uint8_t octet = _pia->get(1) & 0xF0;
 	octet |= (_pia->get(1) & 0xF0) >> 4;
 	return octet;
 }
 
-void ADA772::write (u8 cmd, u8 rs, u8 rw_)
+void ADA772::write (uint8_t cmd, uint8_t rs, uint8_t rw_)
 {
 	ST_LCD lcd;
 	lcd.octet = 0;

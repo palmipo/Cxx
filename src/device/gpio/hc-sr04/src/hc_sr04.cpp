@@ -1,53 +1,28 @@
 #include "hc_sr04.h"
-#include "gpio.h"
-#include "gpiofactory.h"
+#include "raspigpio.h"
+#include "raspigpiofactory.h"
 #include "log.h"
 #include <sstream>
 #include <chrono>
 
-HC_SR04::HC_SR04(int32_t OUT_PIN, int32_t IRQ_PIN)
-: GpioFactory("/dev/gpiochip0")
-, _distance(0.)
-, _thread(0)
-, _fin(1)
-{
-	_out = output(OUT_PIN);
-	_in = event(IRQ_PIN, GPIOEVENT_REQUEST_BOTH_EDGES);
-}
+HC_SR04::HC_SR04(RaspiGpio * OUT_PIN, RaspiGpio * IRQ_PIN)
+: _distance(0.)
+, _out(OUT_PIN)
+, _in(IRQ_PIN)
+{}
 
 HC_SR04::~HC_SR04()
 {
-	_fin = 1;
-	delete _thread;
-}
-
-void HC_SR04::stop()
-{
-	_fin = 1;
 }
 
 void HC_SR04::start(int32_t intervalle_500ms)
 {
-	_fin = 0;
-	_intervalle_500ms = (intervalle_500ms > 0) ? intervalle_500ms : 1;
-	_thread = new std::thread(run, this);
-	_thread->detach();
-
+	_status = 0;
 	_out->write(1);
 
 	std::this_thread::sleep_for(std::chrono::microseconds(10));
 
 	_out->write(0);
-
-	//~ std::this_thread::sleep_for(std::chrono::milliseconds(500 * obj->_intervalle_500ms));
-}
-
-void HC_SR04::run(HC_SR04 * obj)
-{
-	while (!obj->_fin)
-	{
-		obj->scrute(1000);
-	}
 }
 
 int32_t HC_SR04::status()
@@ -57,30 +32,26 @@ int32_t HC_SR04::status()
 
 double HC_SR04::distance()
 {
-	_status = 0;
 	return _distance;
 }
 
-int32_t HC_SR04::actionIn(PollDevice * device)
+int32_t HC_SR04::actionIn(nt32_t evnt, uint64_t time)
 {
-	// Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
-
-	Gpio * io = (Gpio *)device;
-	if (io)
-	{
-		int32_t evnt = io->readEvent();
 		if (evnt == GPIOEVENT_EVENT_RISING_EDGE)
 		{
-			_timestamp_rising = std::chrono::high_resolution_clock::now();
+			_timestamp_rising = time;
 		}
 		else if (evnt == GPIOEVENT_EVENT_FALLING_EDGE)
 		{
-			_timestamp_falling = std::chrono::high_resolution_clock::now();
+			//_timestamp_falling = std::chrono::high_resolution_clock::now();
+			_timestamp_falling = time;
 
-			std::chrono::duration<double> delta_t = _timestamp_falling - _timestamp_rising;
+			//std::chrono::duration<double> delta_t = _timestamp_falling - _timestamp_rising;
+			uint64_t delta_t = _timestamp_falling - _timestamp_rising;
 
 			// vitesse du son : 340m/s
-			_distance = (delta_t.count() * 170000.); //* 340. /2. * 1000.
+			//_distance = (delta_t.count() * 170000.); //* 340. /2. * 1000.
+			_distance = (delta_t * 170000.); //* 340. /2. * 1000.
 			_status = 1;
 		}
 	}

@@ -14,7 +14,9 @@
 #include "ada772.h"
 #include "hd44780.h"
 #include "mcp23017.h"
-#include "gpio_irq_mod.h"
+#include "raspigpiofactory.h"
+#include "raspigpio.h"
+#include "pollfactory.h"
 
 static void bouton(unsigned char value, void *user_data)
 {
@@ -28,16 +30,20 @@ static void bouton(unsigned char value, void *user_data)
 	}
 }
 
-static int32_t irq(PollDevice *)
+static int32_t irq(PollDevice *, void * user_data)
 {
+/*
 	try
 	{
-		lcd_io.scrute();
+		ADA772 * lcd_io = (ADA772 *)user_data;
+		lcd_io->scrute();
 	}
 	catch(...)
 	{
 		std::cout << "erreur ..." << std::endl;
 	}
+*/
+	return 0;
 }
 
 int main(int argc, char **argv)
@@ -63,11 +69,13 @@ int main(int argc, char **argv)
 		lcd_io.setBackLight(1);
 		lcd_io.setButtonsCallback(bouton, 0);
 
-		HD44780 lcd(&lcd_io);
+		HD44780 lcd(&lcd_io, 16, 2);
 
-		GpioFactory fact(argv[2]);
-		fact.setActionInCallback(irq);
-		Gpio * gpio = fact.event(14, GPIOEVENT_REQUEST_FALLING_EDGE);
+		RaspiGpioFactory gpio_fact(argv[2]);
+		RaspiGpio * gpio = gpio_fact.event(14, GPIOEVENT_REQUEST_FALLING_EDGE);
+
+		PollFactory poll_fact;
+		poll_fact.setActionInCallback(irq, &lcd_io);
 
 		std::string str_date;
 		struct tm *la_date;
@@ -82,12 +90,12 @@ int main(int argc, char **argv)
 			str_date = buf_date.str();
 			
 			lcd.setPosition(0, 0);
-			lcd.setText((s8*)str_date.c_str(), str_date.length());
+			lcd.setText((int8_t *)str_date.c_str(), str_date.length());
 
 			lcd.setPosition(1, 0);
-			lcd.setText((s8*)"20 C", 4);
+			lcd.setText((int8_t *)"20 C", 4);
 			
-			fact.scrute(10);
+			poll_fact.scrute(10);
 
 			std::cout << "compteur : " << cpt << std::endl;
 			++cpt;

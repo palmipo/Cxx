@@ -7,17 +7,17 @@
 /* gpio = 4 */
 
 //~ class I2C;
-class Gpio;
+class RaspiGpio;
 class PHatEnviro
 {
 	public:
-		PHatEnviro(Gpio *);
+		PHatEnviro(RaspiGpio *);
 		~PHatEnviro();
 	
 		void setLed(uint8_t);
 	
 	protected:
-		Gpio * _gpio_led;
+		RaspiGpio * _gpio_led;
 };
 
 #endif /* PHAT_ENVIRO_H */
