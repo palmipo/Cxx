@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 		Modbus::ModbusRtu rtu(1, serial);
 		
 		Modbus::R4DCB08 sondes(&rtu);
-		Modbus::R4D3B16 relais&rtu);
+		Modbus::R4D3B16 relais(&rtu);
 
 		sondes.temperature(0);
 		relais.openAll();
