@@ -1,3 +1,6 @@
+#include "joystick.h"
+#include "joystickexception.h"
+
 #include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
@@ -5,14 +8,14 @@
 #include <sys/stat.h>
 #include <cstring>
 #include <iostream>
-#include "joystick.h"
-#include "joystickexception.h"
 #include <sstream>
+#include <linux/joystick.h>
+
 /*
  * https://www.kernel.org/doc/Documentation/input/joystick-api.txt
  */
 Joystick::Joystick(const std::string & jsX)
-: PollDevice()
+: PollDevice(DeviceType::JOYSTICK)
 {
 	_handler = ::open(jsX.c_str(), O_RDONLY);
 	if (_handler < 0)

@@ -1,3 +1,5 @@
+#include "forcefeedback.h"
+
 #include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
@@ -5,14 +7,13 @@
 #include <sys/stat.h>
 #include <cstring>
 #include <iostream>
-#include "forcefeedback.h"
 
 /*
  * force feedback : fftest /dev/input/event15
  * https://www.kernel.org/doc/Documentation/input/ff.txt
  */
 ForceFeedback::ForceFeedback(const std::string & eventXX)
-: PollDevice()
+: PollDevice(DeviceType::JOYSTICK)
 {
     _handler = ::open(eventXX.c_str(), O_RDWR);
     if (_handler < 0)

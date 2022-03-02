@@ -16,7 +16,6 @@
 
 #include "polldevice.h"
 #include <linux/joystick.h>
-#include <poll.h>
 #include <string>
 
 class ForceFeedback : public PollDevice

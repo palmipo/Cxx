@@ -1,7 +1,7 @@
 #include "usb_i2c.h"
 #include "i2cexception.h"
 #include "rs232.h"
-#include <poll.h>
+#include "tempo.h"
 #include <iostream>
 
 /*
@@ -38,7 +38,7 @@ uint8_t UsbI2C::getVersion()
 	uint8_t cmd[4] = { 0x5A, 0x01, 0, 0 };
 	std::cout << (int)_uart->write(cmd, 4) << std::endl;
 	std::cout << (int)_uart->read(&version, 1) << std::endl;
-	poll(0, 0, 500);
+	Tempo::millisecondes(500);
 	
 	return version;
 }
@@ -57,7 +57,7 @@ void UsbI2C::set (uint8_t addr, uint8_t* buf, int32_t len)
 		msg[2] = buf[0];
 
 		std::cout << (int)_uart->write(msg, length) << std::endl;
-		poll(0, 0, 500);
+		Tempo::millisecondes(500);
 	}
 	else
 	{
@@ -73,7 +73,7 @@ void UsbI2C::set (uint8_t addr, uint8_t* buf, int32_t len)
 		}
 
 		std::cout << (int)_uart->write(msg, length) << std::endl;
-		poll(0, 0, 500);
+		Tempo::millisecondes(500);
 	}
 }
 
@@ -88,7 +88,7 @@ void UsbI2C::get (uint8_t addr, uint8_t* buf, int32_t len)
 
 		std::cout << (int)_uart->write(msg, length) << std::endl;
 		std::cout << (int)_uart->read(buf, 1) << std::endl;
-		poll(0, 0, 500);
+		Tempo::millisecondes(500);
 	}
 	else
 	{
@@ -101,7 +101,7 @@ void UsbI2C::get (uint8_t addr, uint8_t* buf, int32_t len)
 
 		std::cout << (int)_uart->write(msg, length) << std::endl;
 		std::cout << (int)_uart->read(buf, len) << std::endl;
-		poll(0, 0, 500);
+		Tempo::millisecondes(500);
 	}
 }
 

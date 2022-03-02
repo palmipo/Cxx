@@ -25,8 +25,6 @@
 #endif
 
 #include "polldevice.h"
-#include <linux/joystick.h>
-#include <poll.h>
 #include <string>
 
 class JOYSTICK_DLL Joystick : public PollDevice

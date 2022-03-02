@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 //			lcd.setPosition(3, 1);
 //			lcd.setText((int8_t*)str_tempe.c_str(), str_tempe.length());
 	
-			Tempo::minutes(1);
+			Tempo::secondes(10);
 		}
 
 		lcd_io.setBackLight(0);
