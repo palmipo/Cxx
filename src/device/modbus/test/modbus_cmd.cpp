@@ -21,7 +21,7 @@ int32_t action(PollDevice * device, void * user_data)
 	Modbus::ModbusRtu * rtu = (Modbus::ModbusRtu *)user_data;
 
 	uint8_t data[1024];
-	int32_t length = device->read(data, 1024);
+	int32_t length = ((RS232 *)device)->recvUntilEnd(data, 1024);
 	rtu->read(data, length);
 
 	std::stringstream ss;
@@ -54,20 +54,20 @@ int main(int argc, char **argv)
 		RS232 * uart = uart_factory.add(argv[1]);
 		uart->setConfig(B9600, 8, 'N', 1);
 
-		Modbus::ModbusRtu rtu(1, uart);
+		Modbus::ModbusRtu rtu(uart);
 
-		PollFactory poll_factory;
-		poll_factory.setActionInCallback(action, &rtu);
-		poll_factory.add(uart);
+		//~ PollFactory poll_factory;
+		//~ poll_factory.setActionInCallback(action, &rtu);
+		//~ poll_factory.add(uart);
 
 		int32_t fin = 0;
 		
-		std::thread t(scrute, &poll_factory, &fin);
+		//~ std::thread t(scrute, &poll_factory, &fin);
 
-		//~ Modbus::R4D3B16 msg_out(4, rtu);
+		Modbus::R4D3B16 msg_out(4, &rtu);
 		//~ msg_out.closeAll();
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		//~ msg_out.openAll();
+		msg_out.openAll();
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		//~ msg_out.toggle(1);
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -80,34 +80,37 @@ int main(int argc, char **argv)
 
 		Modbus::N4DIH32 msg_in(0x08, &rtu);
 		//~ msg_in.resetFactory();
-		msg_in.getAll();
+		//~ msg_in.getAll();
 		//~ msg_in.setTempoAutomaticReporting(1);
 		//~ msg_in.setAllAutomaticReporting(0);
 		//~ std::this_thread::sleep_for(std::chrono::seconds(10));
 		//~ msg_in.setAutomaticReporting(1, 0);
 
 
-		//~ Modbus::R4DCB08 msg_brd(0xff, rtu);
+		//~ Modbus::R4DCB08 msg_brd(0xff, &rtu);
 		//~ msg_brd.moduleAddress();
 		//~ msg_brd.setModuleAddress(1);
 		// std::this_thread::sleep_for(std::chrono::seconds(10));
 
-		//~ Modbus::R4DCB08 msg_temp(1, rtu);
+		Modbus::R4DCB08 msg_temp(1, &rtu);
 		//~ msg_temp.resertFactory();
 		//~ msg_temp.temperature(0);
-		//~ msg_temp.allTemperature();
+		msg_temp.allTemperature();
 		//~ msg_temp.moduleAddress();
 		//~ msg_temp.setAutomaticTemperatureReport(1);
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		//~ std::this_thread::sleep_for(std::chrono::minutes(1));
-		//~ msg_out.closeAll();
+		msg_out.closeAll();
 		msg_in.setTempoAutomaticReporting(0);
 		//~ msg_brd.setAutomaticTemperatureReport(0);
 		//~ msg_temp.setAutomaticTemperatureReport(0);
+
 		Tempo::secondes(10);
+
 		fin = 1;
-		t.join();
+		//~ t.join();
+
 		return 0;
 	}
 	catch(Modbus::ModbusException e)

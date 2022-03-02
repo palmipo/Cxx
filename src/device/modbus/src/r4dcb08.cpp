@@ -3,9 +3,10 @@
 #include "modbusmsgdirect.h"
 #include "modbusmsgfc03.h"
 #include "modbusmsgfc06.h"
+#include "tempo.h"
 #include <thread>
 
-#define TEMPO 500
+#define TEMPO 1
 
 Modbus::R4DCB08::R4DCB08(uint8_t id_slave, ModbusRtu * rtu)
 : _rtu(rtu)
@@ -21,7 +22,7 @@ void Modbus::R4DCB08::temperature(int8_t sonde)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -31,7 +32,7 @@ void Modbus::R4DCB08::allTemperature()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -41,7 +42,7 @@ void Modbus::R4DCB08::temperatureCorrectionValue(int8_t sonde)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -52,7 +53,7 @@ void Modbus::R4DCB08::setTemperatureCorrectionValue(uint16_t sonde, uint16_t val
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -62,7 +63,7 @@ void Modbus::R4DCB08::automaticTemperatureReport()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -73,7 +74,7 @@ void Modbus::R4DCB08::setAutomaticTemperatureReport(int16_t tempo)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -83,7 +84,7 @@ void Modbus::R4DCB08::moduleAddress()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -94,7 +95,7 @@ void Modbus::R4DCB08::setModuleAddress(uint16_t addr)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -104,7 +105,7 @@ void Modbus::R4DCB08::baudRate()
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -115,7 +116,7 @@ void Modbus::R4DCB08::setBaudRate(uint16_t br)
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }
 
@@ -126,6 +127,6 @@ void Modbus::R4DCB08::resertFactory() const
 
 	_rtu->set_id_slave(_module_address);
 	_rtu->write(&msg);
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	Tempo::secondes(TEMPO);
 	_rtu->read(&msg);
 }

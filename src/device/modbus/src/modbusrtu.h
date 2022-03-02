@@ -23,7 +23,7 @@ namespace Modbus
 	class MODBUS_DLL ModbusRtu : public ModbusChannel
 	{
 		public:
-			ModbusRtu(uint8_t, RS232 *);
+			ModbusRtu(RS232 *);
 			virtual ~ModbusRtu();
 
 			virtual int32_t read(uint8_t *, int32_t);
