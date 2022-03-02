@@ -50,13 +50,19 @@ int main(int argc, char **argv)
 
 	try
 	{
+		Rs232Factory uart_factory;
+		RS232 * uart = uart_factory.serial(argv[1]);
+		uart->setConfig(B9600, 8, 'N', 1);
+
+		Modbus::ModbusRtu rtu(uart);
+
+		PollFactory poll_factory;
+		poll_factory.setActionInCallback(action, &rtu);
+		poll_factory.add(uart);
+
 		int32_t fin = 0;
-		uint8_t data[1024];
-		Modbus::ModbusFactory factory;
-		Modbus::ModbusRtu * rtu = (Modbus::ModbusRtu *)factory.rtu(argv[1], 9600, 8, 'N' ,1);
-		factory.setActionInCallback(action, rtu);
 		
-		std::thread t(scrute, &factory, &fin);
+		std::thread t(scrute, &poll_factory, &fin);
 
 		//~ Modbus::R4D3B16 msg_out(4, rtu);
 		//~ msg_out.closeAll();
@@ -72,7 +78,7 @@ int main(int argc, char **argv)
 		//~ std::cout << (int)msg_out.get(4) << std::endl;
 		//~ std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-		Modbus::N4DIH32 msg_in(0x08, rtu);
+		Modbus::N4DIH32 msg_in(0x08, &rtu);
 		//~ msg_in.resetFactory();
 		msg_in.getAll();
 		//~ msg_in.setTempoAutomaticReporting(1);
@@ -99,7 +105,7 @@ int main(int argc, char **argv)
 		msg_in.setTempoAutomaticReporting(0);
 		//~ msg_brd.setAutomaticTemperatureReport(0);
 		//~ msg_temp.setAutomaticTemperatureReport(0);
-		std::this_thread::sleep_for(std::chrono::seconds(10));
+		Tempo::seconds(10);
 		fin = 1;
 		t.join();
 		return 0;
