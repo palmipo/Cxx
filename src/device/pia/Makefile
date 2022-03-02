@@ -48,5 +48,6 @@ libpia.so: $(OBJECTS) libpoll.so libraspigpio.so
 #
 #
 $(BIN_PWD)/%.o: src/%.cpp
+	mkdir -p bin
 	$(CC) $(CFLAGS) -c $^ -o $@ -fPIC -DRASPI
 
