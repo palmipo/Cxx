@@ -16,7 +16,6 @@
 #define TCP_PORT 502
 
 Modbus::ModbusFactory::ModbusFactory()
-: PollFactory()
 {}
 
 Modbus::ModbusFactory::~ModbusFactory()

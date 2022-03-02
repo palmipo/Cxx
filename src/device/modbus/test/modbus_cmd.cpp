@@ -6,7 +6,6 @@
 #include "n4dih32.h"
 #include "r4dcb08.h"
 #include "modbusrtu.h"
-#include "modbusfactory.h"
 #include "modbusexception.h"
 #include "pollfactory.h"
 #include "tempo.h"
