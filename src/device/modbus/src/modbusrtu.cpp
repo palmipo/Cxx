@@ -10,9 +10,9 @@
 #include <sstream>
 #include <thread>
 
-Modbus::ModbusRtu::ModbusRtu(RS232 * serial)
+Modbus::ModbusRtu::ModbusRtu(uint8_t addr, RS232 * serial)
 : ModbusChannel(serial)
-, _module_address(0xF8)
+, _module_address(addr)
 , _fifo(new Fifo(2048))
 {}
 

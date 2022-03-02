@@ -2,7 +2,8 @@
 #include "raspigpio.h"
 
 RaspiPia::RaspiPia(RaspiGpio * gpio)
-_gpio(gpio)
+: PIA()
+, _gpio(gpio)
 {}
 
 RaspiPia::~RaspiPia()

@@ -18,21 +18,10 @@ static void * thread_start(void * data)
 	{
 		factory->scrute(1000);
 	}
-    // Socket::SocketTcp * sock = (Socket::SocketTcp *)data;
-    // u8 rep[100];
-    // s32 len = sock->read(rep, 100);
 }
 
 int main(int argc, char **argv)
 {
- 	log4cxx::BasicConfigurator::configure();
-	log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger( "main"));
-
-    if (argc != 2)
-    {
-        LOG4CXX_ERROR(logger, argv[0] << " <ip>");
-    }
-
     try
     {
         Socket::SocketFactory factory;

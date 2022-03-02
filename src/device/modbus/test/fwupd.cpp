@@ -10,7 +10,7 @@
 #include <sstream>
 #include <thread>
 
-static void scrute(Modbus::ModbusFactory * factory, int32_t * fin)
+static void scrute(PollFactory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
@@ -29,7 +29,7 @@ int main(int argc, char ** argv)
 	}
 
 	int32_t fin = 0;
-	Modbus::ModbusFactory factory;
+	PollFactory factory;
 	std::thread t(scrute, &factory, &fin);
 
 	try

@@ -1,29 +1,29 @@
 #ifndef HC_SR04_H
 #define HC_SR04_H
 
-class RaspiGpio;
-class PollDevice;
+#include <cstdint>
+
+class PIA;
 class HC_SR04
 {
 	public:
-		HC_SR04(RaspiGpio *, RaspiGpio *);
+		HC_SR04(PIA *);
 		virtual ~HC_SR04();
 
-		virtual void start(int32_t);
-		virtual int32_t status();
+		virtual void start();
+		
+		virtual void setTimeRising(uint64_t);
+		virtual void setTimeFalling(uint64_t);
+
+		virtual int32_t isBusy();
 		virtual uint64_t distance();
 
 	protected:
-		int32_t actionIn(uint32_t, uint64_t);
-		
-		// nanosecond
-		//std::chrono::time_point<std::chrono::high_resolution_clock> _timestamp_rising;
-		//std::chrono::time_point<std::chrono::high_resolution_clock> _timestamp_falling;
-
-		RaspiGpio * _out;
-		RaspiGpio * _in;
+		PIA * _out;
 		int32_t _status;
 		uint64_t _distance;
+		uint64_t _timestamp_rising;
+		uint64_t _timestamp_falling;
 };
 
 #endif /* HC_SR04_H */

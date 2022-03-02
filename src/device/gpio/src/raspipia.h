@@ -1,17 +1,20 @@
 #ifndef RASPIPIA_H
 #define RASPIPIA_H
 
-#include "PIA.h"
+#include "pia.h"
 
 class RaspiGpio;
 class RaspiPia : public PIA
 {
-public:
-	RaspiPia(RaspiGpio *);
-	virtual ~RaspiPia();
+	public:
+		RaspiPia(RaspiGpio *);
+		virtual ~RaspiPia();
 
-	virtual void write(uint8_t);
-	virtual int8_t read();
+		virtual void write(uint8_t);
+		virtual uint8_t read();
+	
+	protected:
+		RaspiGpio * _gpio;
 };
 
 #endif /* RASPIPIA_H */

@@ -8,6 +8,8 @@
 #include "modbusrtu.h"
 #include "modbusfactory.h"
 #include "modbusexception.h"
+#include "pollfactory.h"
+#include "tempo.h"
 #include "log.h"
 #include "polldevice.h"
 #include <cstdint>
@@ -15,11 +17,10 @@
 #include <iostream>
 #include <thread>
 
-static int action(PollDevice * device, void * user_data)
+int32_t action(PollDevice * device, void * user_data)
 {
 	Modbus::ModbusRtu * rtu = (Modbus::ModbusRtu *)user_data;
 
-	//~ std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	uint8_t data[1024];
 	int32_t length = device->read(data, 1024);
 	rtu->read(data, length);
@@ -31,7 +32,7 @@ static int action(PollDevice * device, void * user_data)
 	return length;
 }
 
-static void scrute(Modbus::ModbusFactory * factory, int32_t * fin)
+void scrute(PollFactory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
@@ -50,11 +51,11 @@ int main(int argc, char **argv)
 
 	try
 	{
-		Rs232Factory uart_factory;
-		RS232 * uart = uart_factory.serial(argv[1]);
+		RS232Factory uart_factory;
+		RS232 * uart = uart_factory.add(argv[1]);
 		uart->setConfig(B9600, 8, 'N', 1);
 
-		Modbus::ModbusRtu rtu(uart);
+		Modbus::ModbusRtu rtu(1, uart);
 
 		PollFactory poll_factory;
 		poll_factory.setActionInCallback(action, &rtu);
@@ -105,7 +106,7 @@ int main(int argc, char **argv)
 		msg_in.setTempoAutomaticReporting(0);
 		//~ msg_brd.setAutomaticTemperatureReport(0);
 		//~ msg_temp.setAutomaticTemperatureReport(0);
-		Tempo::seconds(10);
+		Tempo::secondes(10);
 		fin = 1;
 		t.join();
 		return 0;

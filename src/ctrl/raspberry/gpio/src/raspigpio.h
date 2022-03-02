@@ -2,6 +2,7 @@
 #define RASPIGPIO_H
 
 #include "polldevice.h"
+#include <linux/gpio.h>
 
 class RaspiGpio : public PollDevice
 {
