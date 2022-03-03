@@ -1,26 +1,25 @@
 #ifndef APC220_H
 #define APC220_H
 
-#include "batratypes.h"
+#include <cstdint>
 
-class GPIO_MOD;
+class PIA;
 class RS232;
 class APC220
 {
 	public:
-		APC220(u8, u8, RS232 *, GPIO_MOD *);
+		APC220(PIA *, PIA *, RS232 *);
 		virtual ~APC220();
 	
-		void setConfig(s32, s32, s32, s32, s32);
+		void setConfig(int32_t, int32_t, int32_t, int32_t, int32_t);
 		void getConfig();
-		s32 get(u8*, s32);
-		s32 set(u8*, s32);
+		int32_t get(uint8_t*, int32_t);
+		int32_t set(uint8_t*, int32_t);
 
 	protected:
-		u8 _pin_set;
-		u8 _pin_enable;
+		PIA * _pin_set;
+		PIA * _pin_enable;
 		RS232 * _uart;
-		GPIO_MOD * _gpio;
 };
 
 #endif

@@ -1,4 +1,5 @@
 BIN_PWD = bin/$(HOSTNAME)
+ELECTECHSUP_PWD = bin/electechsup/$(HOSTNAME)
 
 OBJECTS = \
 	$(BIN_PWD)/modbuschannel.o \
@@ -15,10 +16,12 @@ OBJECTS = \
 	$(BIN_PWD)/modbusmsgheader.o \
 	$(BIN_PWD)/modbusfifo.o \
 	$(BIN_PWD)/modbusrtu.o \
-	$(BIN_PWD)/modbustcp.o \
-	$(BIN_PWD)/r4d3b16.o \
-	$(BIN_PWD)/n4dih32.o \
-	$(BIN_PWD)/r4dcb08.o
+	$(BIN_PWD)/modbustcp.o
+
+ELECTECHSUP = \
+	$(ELECTECHSUP_PWD)/r4d3b16.o \
+	$(ELECTECHSUP_PWD)/n4dih32.o \
+	$(ELECTECHSUP_PWD)/r4dcb08.o
 
 MAKE = make
 MKDIR = mkdir -p
@@ -29,7 +32,7 @@ LOG_PWD = $(RASPI_CTRL)/log
 POLL_PWD = $(RASPI_CTRL)/poll
 SOCKET_PWD = $(RASPI_CTRL)/socket
 RS232_PWD = $(RASPI_CTRL)/rs232
-INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
+INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -Ielectechsup/src -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
 LIBS = -L. -lutil -llog -lrs232 -lpoll -lsocket
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASPI
@@ -52,41 +55,22 @@ cabane: $(BIN_PWD)/cabane.o
 	$(MAKE) librs232.so
 	$(MAKE) libsocket.so
 	$(MAKE) libmodbus.so
-	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+	$(MAKE) libelectechsup.so
+	$(CC) $^ -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lpthread
 
 $(BIN_PWD)/cabane.o: domotic/cabane.cpp
 	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-fwupd: $(BIN_PWD)/fwupd.o
+modbus_cmd: $(BIN_PWD)/modbus_cmd.o
 	$(MAKE) liblog.so
 	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(MAKE) libsocket.so
 	$(MAKE) libmodbus.so
-	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
-
-fwupd.exe: $(BIN_PWD)/fwupd.o
-	$(MAKE) libmodbus.dll
-	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
-
-$(BIN_PWD)/fwupd.o: test/fwupd.cpp
-	$(MKDIR) $(BIN_PWD)
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-modbus_cmd: $(BIN_PWD)/modbus_cmd.o libutil.so liblog.so librs232.so libsocket.so libmodbus.so
-	$(MAKE) -C $(LOG_PWD) liblog.so
-	$(MAKE) -C $(UTIL_PWD) libutil.so
-	$(MAKE) -C $(POLL_PWD) libpoll.so
-	$(MAKE) -C $(RS232_PWD) librs232.so
-	$(MAKE) -C $(SOCKET_PWD) libsocket.so
-	$(MAKE) libmodbus.so
-	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
-
-modbus_cmd.exe: $(BIN_PWD)/modbus_cmd.o
-	$(MAKE) libmodbus.dll
-	$(CC) $^ -o $@ $(LDFLAGS) -lmodbus -lpthread
+	$(MAKE) libelectechsup.so
+	$(CC) $^ -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lpthread
 
 $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 	$(MKDIR) $(BIN_PWD)
@@ -116,42 +100,18 @@ libsocket.so:
 	ln -s $(SOCKET_PWD)/$@
 
 libmodbus.so: $(OBJECTS)
-	$(CC) -shared $^ -o $@ $(LDFLAGS)
+	$(CC) -shared $^ -o $@
 
-#
-# MINGW
-#
-libutil.dll:
-	$(MAKE) -C $(UTIL_PWD) $@
-	cp $(UTIL_PWD)/$@ .
-
-liblog.dll:
-	$(MAKE) -C $(LOG_PWD) $@
-	cp $(LOG_PWD)/$@ .
-
-libpoll.dll:
-	$(MAKE) -C $(POLL_PWD) $@
-	cp $(POLL_PWD)/$@ .
-
-librs232.dll:
-	$(MAKE) -C $(RS232_PWD) $@
-	cp $(RS232_PWD)/$@ .
-
-libsocket.dll:
-	$(MAKE) -C $(SOCKET_PWD) $@
-	cp $(SOCKET_PWD)/$@ .
-
-libmodbus.dll: $(OBJECTS)
-	$(MAKE) libutil.dll
-	$(MAKE) liblog.dll
-	$(MAKE) libpoll.dll
-	$(MAKE) librs232.dll
-	$(MAKE) libsocket.dll
-	$(CC) -shared $^ -o $@ $(LDFLAGS)
+libelectechsup.so: $(ELECTECHSUP)
+	$(CC) -shared $^ -o $@
 
 #
 # GLOBAL
 #
 $(BIN_PWD)/%.o: src/%.cpp
 	$(MKDIR) $(BIN_PWD)
+	$(CC) $(CFLAGS) -DMAKE_MODBUS_DLL -c $^ -o $@
+
+$(ELECTECHSUP_PWD)/%.o: electechsup/src/%.cpp
+	$(MKDIR) $(ELECTECHSUP_PWD)
 	$(CC) $(CFLAGS) -DMAKE_MODBUS_DLL -c $^ -o $@
