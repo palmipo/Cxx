@@ -12,12 +12,12 @@ SPI::RC522::~RC522()
 
 u8 SPI::RC522::readAddress(u8 adr)
 {
-	return (1<<7) | ((addr & 0x3F) << 1);
+	return (1<<7) | (addr & 0x7F);
 }
 
 u8 SPI::RC522::writeAddress(u8 adr)
 {
-	return ((addr & 0x3F) << 1);
+	return (addr & 0x7F);
 }
 
 u8 SPI::RC522::writeRegister(u8 addr, u8* data, u8* rcv, s32 len)
@@ -38,10 +38,7 @@ u8 SPI::RC522::readRegister(u8 addr, u8* rcv, s32 len)
 {
 	s32 nb = len;
 	u8 snd[nb];
-	for s32 i=0; i<nb; ++i)
-	{
-		snd[i] = readAddress(addr+i);
-	}
+	snd[0] = readAddress(addr);
 	_spi->transfer(snd, rcv, len);
 	
 	return 0;
