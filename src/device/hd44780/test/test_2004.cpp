@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 		LCD2004 lcd_io(&pia);
 		lcd_io.setBackLight(1);
 		
-		HD44780 lcd(&lcd_io, 20, 4);
+		HD44780 lcd(&lcd_io, 4, 20);
 
 		std::string str_date, str_heure, str_tempe;
 		struct tm *la_date;
@@ -49,18 +49,22 @@ int main(int argc, char **argv)
 			time(&t);
 			la_date = localtime(&t);
 			std::stringstream buf1;
-			buf1 << std::setw(2) << std::setfill('0') << la_date->tm_mday << "-" << std::setw(2) << std::setfill('0') << 1 + la_date->tm_mon << "-" << std::setw(4) << std::setfill('0') << 1900 + la_date->tm_year;
+			buf1 << std::setw(2) << std::setfill('0') << la_date->tm_mday << "/" << std::setw(2) << std::setfill('0') << 1 + la_date->tm_mon << "/" << std::setw(4) << std::setfill('0') << 1900 + la_date->tm_year;
 			str_date = buf1.str();
 
 			std::stringstream buf2;
 			buf2 << std::setw(2) << std::setfill('0') << la_date->tm_hour << ":" << std::setw(2) << std::setfill('0') << la_date->tm_min << ":" << std::setw(2) << std::setfill('0') << la_date->tm_sec;
 			str_heure = buf2.str();
+
+			std::stringstream buf3;
+			buf3 << str_heure.length();
+			str_tempe = buf3.str();
 			
 			//afficheur.returnHome();
-			lcd.setPosition(1, 1);
+			lcd.setPosition(0, 0);
 			lcd.setText((int8_t*)str_date.c_str(), str_date.length());
 
-			lcd.setPosition(2, 1);
+			lcd.setPosition(0, 12);
 			lcd.setText((int8_t*)str_heure.c_str(), str_heure.length());
 
 //			std::stringstream buf3;
@@ -70,7 +74,7 @@ int main(int argc, char **argv)
 //			lcd.setPosition(3, 1);
 //			lcd.setText((int8_t*)str_tempe.c_str(), str_tempe.length());
 	
-			Tempo::secondes(10);
+			Tempo::millisecondes(500);
 		}
 
 		lcd_io.setBackLight(0);

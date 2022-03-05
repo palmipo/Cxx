@@ -91,14 +91,14 @@ void HD44780::setPosition(uint8_t line, uint8_t column)
 		case 0: // 0x00
 			byte = column;
 			break;
-		case 1: // 0x40
-			byte = 0X40 | column;
+		case 1:
+			byte = (2 * _nb_colonne) + column;
 			break;
-		case 2: // 0x14
-			byte = _nb_colonne | column;
+		case 2:
+			byte = _nb_colonne + column;
 			break;
-		case 3: // 0x54
-			byte = 0X40 | _nb_colonne | column;
+		case 3:
+			byte = (4 * _nb_colonne) + column;
 			break;
 	}
 	setDDRAMAdrress(byte);

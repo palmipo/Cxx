@@ -9,8 +9,8 @@ class AT24C32 : public DeviceI2C
 public:
 	AT24C32(I2C *);
 
-	virtual void write(uint16_t addr, uint8_t value);
-	virtual uint8_t read(uint16_t addr);
+	virtual void write(uint16_t, uint8_t *, int32_t);
+	virtual void read(uint16_t, uint8_t *, int32_t);
 };
 
 #endif
