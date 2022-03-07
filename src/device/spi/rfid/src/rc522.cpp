@@ -64,26 +64,22 @@
 3Ch to 3Fh Reserved reserved for production tests
 */
 
-uint8_t MFRC522::readRegister (uint8_t addr, uint8_t val)
+uint8_t MFRC522::readRegister (uint8_t addr)
 {
 int32_t lenght = 1;
 uint8_t cmd[] = { ((addr <<1) & 0x7e) | 0x80 };
-uint8_t data[1];
+uint8_t data[ length ];
 _spi.transfer(cmd, data, lenght);
 return data[0];
 }
 
-void MFRC522::writeRegister (uint8_t addr, uint8_t data, int32_t lenght)
+uint8_t MFRC522::writeRegister (uint8_t addr, uint8_t val)
 {
-int32_t len = length + 1;
-uint8_t cmd[len], val[len];
-cmd[0] = ((addr <<1) & 0x7e);
-for (int32_t i=0; i<length; i++)
-{
-cmd[i + 1] = data[i];
-}
-_spi.transfer(cmd, val, len);
-return data[0];
+int32_t lenght = 2;
+uint8_t cmd[] = { ((addr <<1) & 0x7e), val };
+uint8_t data[ length ];
+_spi.transfer(cmd, data, lenght);
+return data[1];
 }
 
 uint8_t MFRC522::CommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
@@ -93,17 +89,18 @@ uint8_t MFRC522::CommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
 	uint8_t res = 0;
 	//~ 5 RcvOff 1 analog part of the receiver is switched off
 	res |= (RcvOff & 1) << 5;
-	//~ 4 PowerDown 1 Soft power-down mode entered
+	//~ 4 PowerDown
+	//~ 1 Soft power-down mode entered
 	//~ 0 MFRC522 starts the wake up procedure during which this bit is 
 	//~ read as a logic 1; it is read as a logic 0 when the MFRC522 is 
 	//~ ready; see Section 8.6.2 on page 33
 	//~ Remark: The PowerDown bit cannot be set when the SoftReset 
 	//~ command is activated
-	res |= (RcvOff & 1) << 4;
+	res |= (PowerDown & 1) << 4;
 	//~ 3 to 0 Command[3:0] - activates a command based on the Command value; reading this register show
-	res |= (RcvOff & 0xF);
+	res |= (Command & 0xF);
 
-	return res;
+	return writeRegister (0x01, res);
 }
 
 uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t IdleIEn, uint8_t HiAlertIEn, uint8_t LoAlertIEn, uint8_t ErrIEn, uint8_t TimerIEn)
@@ -131,7 +128,7 @@ uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t
 	//~ 0 TimerIEn - allows the timer interrupt request (TimerIRq bit) to be propagated to pin  IRQ
 	res |= (TimerIEn & 1);
 
-	return res;
+	return writeRegister (0x01, res);
 }
 
 uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCIEn)
@@ -148,7 +145,7 @@ uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCI
 	//~ 2 CRCIEn - allows the CRC interrupt request, indicated by the DivIrqReg register’s CRCIRq bit, to be propagated to pin IRQ
 	res |= (CRCIEn & 1) << 2;
 
-	return res;
+	return writeRegister (0x01, res);
 }
 
 uint8_t MFRC522::ComIrqReg(uint8_t ComIrqReg, uint8_t TxIRq, uint8_t RxIRq, uint8_t IdleIRq, uint8_t HiAlertIRq, uint8_t LoAlertIRq, uint8_t ErrIRq, uint8_t TimerIRq)
@@ -853,15 +850,18 @@ uint8_t MFRC522::AutoTestReg()
 	return res;
 }
 
-uint8_t MFRC522::VersionReg()
+uint8_t MFRC522::VersionReg(uint8_t * chiptype, uint8_t * version)
 {
 	//  shows the software version Table 131 on page 66
 
-	uint8_t res = 0;
+	uint8_t res = readRegister (0x37);
 	//~ 7 to 4 Chiptype ‘9’ stands for MFRC522
-	//~ 3 to 0 Version ‘1’ stands for MFRC522 version 1.0 and ‘2’ stands for MFRC522 version 2.0.
+	*chiptype = ( res & 0xf0 ) >> 4;
 
-	return res;
+	//~ 3 to 0 Version ‘1’ stands for MFRC522 version 1.0 and ‘2’ stands for MFRC522 version 2.0.
+	*version = ( res & 0x0f );
+
+	return 0;
 }
 
 uint8_t MFRC522::AnalogTestReg()
