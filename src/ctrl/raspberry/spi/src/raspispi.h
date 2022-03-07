@@ -1,14 +1,14 @@
-#ifndef SPI_H
-#define SPI_H
+#ifndef RASPISPI_H
+#define RASPISPI_H
 
-#include <cstdint>
+#include "spi.h"
 #include <string>
 
-class SPI
+class RaspiSPI: public SPI
 {
 public:
-	SPI(const std::string &);
-	~SPI();
+	RaspiSPI(const std::string &);
+	~RaspiSPI();
 
 	//~ SPI_CPOL    - Clock polarity
 	//~ SPI_CPHA    - Clock phase
@@ -49,4 +49,4 @@ protected:
 	uint32_t _bit_per_word;
 };
 
-#endif /* SPI_H */
+#endif /* RASPISPI_H */

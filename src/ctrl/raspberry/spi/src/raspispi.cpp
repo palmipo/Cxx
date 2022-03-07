@@ -1,4 +1,4 @@
-#include "spi.h"
+#include "raspispi.h"
 #include "spiexception.h"
 #include <linux/spi/spidev.h>
 #include <sys/ioctl.h>
@@ -10,14 +10,14 @@
 #include <iostream>
 #include <iomanip>
 
-SPI::SPI(const std::string & device)
+RaspiSPI::RaspiSPI(const std::string & device)
 {
 	_fd = open(device.c_str(), O_RDWR);
 	if (_fd < 0)
 		throw SPIException("SPI::SPI()");
 }
 
-SPI::~SPI()
+RaspiSPI::~RaspiSPI()
 {
 	close(_fd);
 }
@@ -38,36 +38,36 @@ SPI::~SPI()
 #define SPI_NO_CS		0x40
 #define SPI_READY		0x80
 */
-void SPI::setMode(uint32_t mode)
+void RaspiSPI::setMode(uint32_t mode)
 {
 	if (ioctl(_fd, SPI_IOC_WR_MODE, (uint32_t*)&mode) < 0)
-		throw SPIException("SPI::setMode()");
+		throw SPIException("RaspiSPI::setMode()");
 	if (ioctl(_fd, SPI_IOC_RD_MODE, (uint32_t*)&mode) < 0)
-		throw SPIException("SPI::setMode()");
+		throw SPIException("RaspiSPI::setMode()");
 }
 
 
-void SPI::setClockRate(uint32_t speed)
+void RaspiSPI::setClockRate(uint32_t speed)
 {
 	_speed = speed;
 	if (ioctl (_fd, SPI_IOC_WR_MAX_SPEED_HZ, (uint32_t*)&_speed) < 0)
-		throw SPIException("SPI::setClockRate()");
+		throw SPIException("RaspiSPI::setClockRate()");
 	if (ioctl (_fd, SPI_IOC_RD_MAX_SPEED_HZ, (uint32_t*)&_speed) < 0)
-		throw SPIException("SPI::setClockRate()");
+		throw SPIException("RaspiSPI::setClockRate()");
 }
 
 
-void SPI::setBitPerWord(uint32_t order)
+void RaspiSPI::setBitPerWord(uint32_t order)
 {
 	_bit_per_word = order;
 	if (ioctl (_fd, SPI_IOC_WR_BITS_PER_WORD, (uint32_t*)&_bit_per_word) < 0)
-		throw SPIException("SPI::setBitPerWord()");
+		throw SPIException("RaspiSPI::setBitPerWord()");
 	if (ioctl (_fd, SPI_IOC_RD_BITS_PER_WORD, (uint32_t*)&_bit_per_word) < 0)
-		throw SPIException("SPI::setBitPerWord()");
+		throw SPIException("RaspiSPI::setBitPerWord()");
 }
 
 
-void SPI::set(uint8_t * cmd, uint32_t length)
+void RaspiSPI::set(uint8_t * cmd, uint32_t length)
 {
 	std::cout << "spi out (" << length << ") : " << std::hex;
 	for (uint32_t i=0; i<length; i+=1)
@@ -80,13 +80,13 @@ void SPI::set(uint8_t * cmd, uint32_t length)
 }
 
 
-void SPI::get(uint8_t * rcv, uint32_t length)
+void RaspiSPI::get(uint8_t * rcv, uint32_t length)
 {
 	transfer(0, rcv, length);
 }
 
 
-void SPI::transfer(uint8_t * cmd, uint8_t * rcv, uint32_t length)
+void RaspiSPI::transfer(uint8_t * cmd, uint8_t * rcv, uint32_t length)
 {
 	struct spi_ioc_transfer io;
 	memset(&io, 0, sizeof(struct spi_ioc_transfer));
@@ -102,5 +102,5 @@ void SPI::transfer(uint8_t * cmd, uint8_t * rcv, uint32_t length)
 	// io.pad = 0;
 
 	if (ioctl (_fd, SPI_IOC_MESSAGE(1), &io) < 0)
-		throw SPIException("SPI::transfer()");
+		throw SPIException("RaspiSPI::transfer()");
 }

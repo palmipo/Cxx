@@ -13,7 +13,7 @@ public:
 
 	virtual void set (uint8_t addr, uint8_t* buf, int32_t len);
 	virtual void get (uint8_t addr, uint8_t* buf, int32_t len);
-	virtual void transfert (uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len);
+	virtual void transfer (uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len);
 
 private:
 	int _fd;

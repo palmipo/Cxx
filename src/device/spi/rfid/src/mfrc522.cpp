@@ -1,4 +1,5 @@
 #include "mfrc522.h"
+#include "spi.h"
 
 /*
 00h Reserved reserved for future use Table 21 on page 38
@@ -67,7 +68,7 @@
 uint8_t MFRC522::readRegister (uint8_t addr)
 {
 int32_t lenght = 1;
-uint8_t cmd[] = { ((addr <<1) & 0x7e) | 0x80 };
+uint8_t cmd[] = { (((addr << 1) & 0x7e) | 0x80) };
 uint8_t data[ length ];
 _spi.transfer(cmd, data, lenght);
 return data[0];

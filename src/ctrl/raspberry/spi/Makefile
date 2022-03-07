@@ -1,14 +1,14 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
-	$(BIN_PWD)/spi.o \
-	$(BIN_PWD)/spiexception.o
+	$(BIN_PWD)/raspispi.o
 
 MAKE = make
 MKDIR = mkdir -p
 CC = g++
 UTIL_PWD = ../../../util
-INCLUDE = -Isrc -I$(UTIL_PWD)/src
+INTERFACE_PWD = ../../interface
+INCLUDE = -Isrc -I$(INTERFACE_PWD)/src -I$(UTIL_PWD)/src
 LIBS =
 
 CFLAGS = -g $(INCLUDE) -fPIC
@@ -23,7 +23,7 @@ libutil.so:
 	$(MAKE) -C $(UTIL_PWD) $@
 	ln -s $(UTIL_PWD)/$@
 
-libspi.so: $(OBJECTS)
+libraspispi.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp

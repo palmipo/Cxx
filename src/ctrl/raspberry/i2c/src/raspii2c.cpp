@@ -157,7 +157,7 @@ void RaspiI2C::get(uint8_t addr, uint8_t* buf, int32_t len)
 	delete[] msg.msgs;
 }
 
-void RaspiI2C::transfert(uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len)
+void RaspiI2C::transfer(uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len)
 {
 
 	struct i2c_rdwr_ioctl_data msg;
