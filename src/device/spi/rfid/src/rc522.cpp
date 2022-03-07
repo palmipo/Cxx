@@ -64,6 +64,28 @@
 3Ch to 3Fh Reserved reserved for production tests
 */
 
+uint8_t MFRC522::readRegister (uint8_t addr, uint8_t val)
+{
+int32_t lenght = 1;
+uint8_t cmd[] = { ((addr <<1) & 0x7e) | 0x80 };
+uint8_t data[1];
+_spi.transfer(cmd, data, lenght);
+return data[0];
+}
+
+void MFRC522::writeRegister (uint8_t addr, uint8_t data, int32_t lenght)
+{
+int32_t len = length + 1;
+uint8_t cmd[len], val[len];
+cmd[0] = ((addr <<1) & 0x7e);
+for (int32_t i=0; i<length; i++)
+{
+cmd[i + 1] = data[i];
+}
+_spi.transfer(cmd, val, len);
+return data[0];
+}
+
 uint8_t MFRC522::CommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
 {
 	// starts and stops command execution
@@ -89,9 +111,9 @@ uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t
 	//  enable and disable interrupt request control bits
 
 	uint8_t res = 0;
-	//~ 7 IRqInv 1 signal on pin IRQ is inverted with respect to the Status1Reg register’s IRq bit
+	//~ 7 IRqInv 1 signal on pin IRQ is inverted with respect to the Status1Reg registerâ€™s IRq bit
 	//~ 0 signal on pin IRQ is equal to the IRq bit; in combination with the 
-	//~ DivIEnReg register’s IRqPushPull bit, the default value of logic 1 ensures 
+	//~ DivIEnReg registerâ€™s IRqPushPull bit, the default value of logic 1 ensures 
 	//~ that the output level on pin IRQ is 3-state
 	res |= (IRqInv & 1) << 7;
 	//~ 6 TxIEn - allows the transmitter interrupt request (TxIRq bit) to be propagated to pin IRQ
@@ -123,7 +145,7 @@ uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCI
 	res |= (IRQPushPull & 1) << 7;
 	//~ 4 MfinActIEn - allows the MFIN active interrupt request to be propagated to pin IRQ
 	res |= (MfinActIEn & 1) << 4;
-	//~ 2 CRCIEn - allows the CRC interrupt request, indicated by the DivIrqReg register’s CRCIRq bit, to be propagated to pin IRQ
+	//~ 2 CRCIEn - allows the CRC interrupt request, indicated by the DivIrqReg registerâ€™s CRCIRq bit, to be propagated to pin IRQ
 	res |= (CRCIEn & 1) << 2;
 
 	return res;
@@ -141,7 +163,7 @@ uint8_t MFRC522::ComIrqReg(uint8_t ComIrqReg, uint8_t TxIRq, uint8_t RxIRq, uint
 	//~ 6 TxIRq 1 set immediately after the last bit of the transmitted data was sent out
 	res |= (TxIRq & 1) << 6;
 	//~ 5 RxIRq 1 receiver has detected the end of a valid data stream
-	//~ if the RxModeReg register’s RxNoErr bit is set to logic 1, the RxIRq bit is 
+	//~ if the RxModeReg registerâ€™s RxNoErr bit is set to logic 1, the RxIRq bit is 
 	//~ only set to logic 1 when data bytes are available in the FIFO
 	res |= (RxIRq & 1) << 5;
 	//~ 4 IdleIRq 1 If a command terminates, for example, when the CommandReg changes 
@@ -152,11 +174,11 @@ uint8_t MFRC522::ComIrqReg(uint8_t ComIrqReg, uint8_t TxIRq, uint8_t RxIRq, uint
 	//~ The microcontroller starting the Idle command does not set the IdleIRq 
 	//~ bit
 	res |= (IdleIRq & 1) << 4;
-	//~ 3 HiAlertIRq 1 the Status1Reg register’s HiAlert bit is set
+	//~ 3 HiAlertIRq 1 the Status1Reg registerâ€™s HiAlert bit is set
 	//~ in opposition to the HiAlert bit, the HiAlertIRq bit stores this event and 
 	//~ can only be reset as indicated by the Set1 bit in this register
 	res |= (HiAlertIRq & 1) << 3;
-	//~ 2 LoAlertIRq 1 Status1Reg register’s LoAlert bit is set
+	//~ 2 LoAlertIRq 1 Status1Reg registerâ€™s LoAlert bit is set
 	//~ in opposition to the LoAlert bit, the LoAlertIRq bit stores this event and 
 	//~ can only be reset as indicated by the Set1 bit in this register
 	res |= (LoAlertIRq & 1) << 2;
@@ -201,7 +223,7 @@ uint8_t MFRC522::ErrorReg(uint8_t WrErr, uint8_t TempErr, uint8_t BufferOvfl, ui
 	//~ 6 TempErr[1] 1 internal temperature sensor detects overheating, in which case the 
 	//~ antenna drivers are automatically switched off
 	res |= (TempErr & 1) << 6;
-	//~ 4 BufferOvfl 1 the host or a MFRC522’s internal state machine (e.g. receiver) tries to 
+	//~ 4 BufferOvfl 1 the host or a MFRC522â€™s internal state machine (e.g. receiver) tries to 
 	//~ write data to the FIFO buffer even though it is already full
 	res |= (BufferOvfl & 1) << 4;
 	//~ 3 CollErr 1 a bit-collision is detected
@@ -210,7 +232,7 @@ uint8_t MFRC522::ErrorReg(uint8_t WrErr, uint8_t TempErr, uint8_t BufferOvfl, ui
 	//~ always set to logic 0 during communication protocols at 212 kBd, 
 	//~ 424 kBd and 848 kBd
 	res |= (CollErr & 1) << 3;
-	//~ 2 CRCErr 1 the RxModeReg register’s RxCRCEn bit is set and the CRC calculation 
+	//~ 2 CRCErr 1 the RxModeReg registerâ€™s RxCRCEn bit is set and the CRC calculation 
 	//~ fails
 	//~ automatically cleared to logic 0 during receiver start-up phase
 	res |= (CRCErr & 1) << 2;
@@ -235,7 +257,7 @@ uint8_t MFRC522::Status1Reg(uint8_t CRCOk, uint8_t CRCReady, uint8_t IRq, uint8_
 	uint8_t res = 0;
 	//~ 6 CRCOk 1 the CRC result is zero
 	//~ for data transmission and reception, the CRCOk bit is undefined: use the 
-	//~ ErrorReg register’s CRCErr bit
+	//~ ErrorReg registerâ€™s CRCErr bit
 	//~ indicates the status of the CRC coprocessor, during calculation the value 
 	//~ changes to logic 0, when the calculation is done correctly the value 
 	//~ changes to logic 1
@@ -248,10 +270,10 @@ uint8_t MFRC522::Status1Reg(uint8_t CRCOk, uint8_t CRCReady, uint8_t IRq, uint8_
 	//~ setting of the interrupt enable bits: see the ComIEnReg and DivIEnReg 
 	//~ registers
 	res |= (IRq & 1) << 4;
-	//~ 3 TRunning 1 MFRC522’s timer unit is running, i.e. the timer will decrement the 
+	//~ 3 TRunning 1 MFRC522â€™s timer unit is running, i.e. the timer will decrement the 
 	//~ TCounterValReg register with the next timer clock
 	//~ Remark: in gated mode, the TRunning bit is set to logic 1 when the 
-	//~ timer is enabled by TModeReg register’s TGated[1:0] bits; this bit is not 
+	//~ timer is enabled by TModeReg registerâ€™s TGated[1:0] bits; this bit is not 
 	//~ influenced by the gated signal
 	res |= (TRunning & 1) << 3;
 	//~ 1 HiAlert 1 the number of bytes stored in the FIFO buffer corresponds to equation: 
@@ -286,13 +308,13 @@ uint8_t MFRC522::Status2Reg(uint8_t TempSensClear, uint8_t I2CForceHS, uint8_t M
 	res |= (MFCrypto1On & 1) << 1;
 	//~ 2 to 0 ModemState[2:0] - shows the state of the transmitter and receiver state machines:
 		//~ 000 idle
-		//~ 001 wait for the BitFramingReg register’s StartSend bit
+		//~ 001 wait for the BitFramingReg registerâ€™s StartSend bit
 		//~ 010 TxWait: wait until RF field is present if the TModeReg 
-		//~ register’s TxWaitRF bit is set to logic 1
+		//~ registerâ€™s TxWaitRF bit is set to logic 1
 		//~ the minimum time for TxWait is defined by the TxWaitReg register
 		//~ 011 transmitting
 		//~ 100 RxWait: wait until RF field is present if the TModeReg 
-		//~ register’s TxWaitRF bit is set to logic 1
+		//~ registerâ€™s TxWaitRF bit is set to logic 1
 		//~ the minimum time for RxWait is defined by the RxWaitReg register
 		//~ 101 wait for data
 		//~ 110 receiving
@@ -317,8 +339,8 @@ uint8_t MFRC522::FIFOLevelReg ()
 	// number of bytes stored in the FIFO buffer Table 41 on page 44
 
 	uint8_t res = 0;
-	//~ 7 FlushBuffer 1 immediately clears the internal FIFO buffer’s read and write pointer 
-	//~ and ErrorReg register’s BufferOvfl bit reading this bit always returns 0
+	//~ 7 FlushBuffer 1 immediately clears the internal FIFO bufferâ€™s read and write pointer 
+	//~ and ErrorReg registerâ€™s BufferOvfl bit reading this bit always returns 0
 	//~ 6 to 0 FIFOLevel[6:0]
 	//~ - indicates the number of bytes stored in the FIFO buffer
 	//~ writing to the FIFODataReg registe
@@ -333,10 +355,10 @@ uint8_t MFRC522::WaterLevelReg ()
 	//~ 7 to 6 reserved reserved for future use
 	//~ 5 to 0 WaterLevel[5:0]
 	//~ defines a warning level to indicate a FIFO buffer overflow or underflow:
-	//~ Status1Reg register’s HiAlert bit is set to logic 1 if the remaining 
+	//~ Status1Reg registerâ€™s HiAlert bit is set to logic 1 if the remaining 
 	//~ number of bytes in the FIFO buffer space is equal to, or less than the 
 	//~ defined number of WaterLevel bytes
-	//~ Status1Reg register’s LoAlert bit is set to logic 1 if equal to, or less 
+	//~ Status1Reg registerâ€™s LoAlert bit is set to logic 1 if equal to, or less 
 	//~ than the WaterLevel bytes in the FIFO buffer
 	//~ Remark: to calculate values for HiAlert and LoAlert see 
 	//~ Section 9.3.1.8 on page 42
@@ -380,7 +402,7 @@ uint8_t MFRC522::CollReg ()
 	uint8_t res = 0;
 	//~ 7 ValuesAfterColl 0 all received bits will be cleared after a collision only used during bitwise anticollision at 106 kBd, otherwise it is set to logic 1
 	//~ 5 CollPosNotValid 1 no collision detected or the position of the collision is out of the range of CollPos[4:0]
-	//~ MFRC522 All information provided in this document is subject to legal disclaimers. © NXP Semiconductors N.V. 2016. All rights reserved.
+	//~ MFRC522 All information provided in this document is subject to legal disclaimers. Â© NXP Semiconductors N.V. 2016. All rights reserved.
 	//~ 4 to 0 CollPos[4:0] - shows the bit position of the first detected collision in a received frame only data bits are interpreted example:
 	//~ 00h indicates a bit-collision in the 32nd bit
 	//~ 01h indicates a bit-collision in the 1st bit
@@ -514,7 +536,7 @@ uint8_t MFRC522::TxSelReg ()
 	//~ 0000 3-state
 	//~ 0001 LOW
 	//~ 0010 HIGH
-	//~ 0011 test bus signal as defined by the TestSel1Reg register’s TstBusBitSel[2:0] value
+	//~ 0011 test bus signal as defined by the TestSel1Reg registerâ€™s TstBusBitSel[2:0] value
 	//~ 0100 modulation signal (envelope) from the internal encoder, Miller pulse encoded
 	//~ 0101 serial data stream to be transmitted, data stream before Miller encoder
 	//~ 0110 reserved
@@ -534,7 +556,7 @@ uint8_t MFRC522::RxSelReg ()
 	//~ 10 modulated signal from the internal analog module, default
 	//~ 11 NRZ coding without subcarrier from pin MFIN which is only valid 
 	//~ for transfer speeds above 106 kBd
-	//~ 5 to 0 RxWait[5:0]- after data transmission the activation of the receiver is delayed for RxWait bit-clocks, during this ‘frame guard time’ any signal on pin RX is ignored
+	//~ 5 to 0 RxWait[5:0]- after data transmission the activation of the receiver is delayed for RxWait bit-clocks, during this â€˜frame guard timeâ€™ any signal on pin RX is ignored
 	//~ this parameter is ignored by the Receive command
 	//~ all other commands, such as Transceive, MFAuthent use this parameter
 	//~ the counter starts immediately after the external RF field is switched on
@@ -614,8 +636,8 @@ uint8_t MFRC522::CRCResultReg ()
 	// shows the MSB and LSB values of the CRC calculation Table 87 on page 57
 
 	uint8_t res = 0;
-	//~ 7 to 0 CRCResultMSB[7:0]shows the value of the CRCResultReg register’s most significant byte
-	//~ only valid if Status1Reg register’s CRCReady bit is set to logic 1
+	//~ 7 to 0 CRCResultMSB[7:0]shows the value of the CRCResultReg registerâ€™s most significant byte
+	//~ only valid if Status1Reg registerâ€™s CRCReady bit is set to logic 1
 	return res;
 }
 
@@ -625,7 +647,7 @@ uint8_t MFRC522::ModWidthReg ()
 
 	uint8_t res = 0;
 	//~ 7 to 0 CRCResultLSB[7:0]shows the value of the least significant byte of the CRCResultReg register
-	//~ only valid if Status1Reg register’s CRCReady bit is set to logic 1
+	//~ only valid if Status1Reg registerâ€™s CRCReady bit is set to logic 1
 
 	return res;
 }
@@ -645,7 +667,7 @@ uint8_t MFRC522::GsNReg ()
 	// selects the conductance of the antenna driver pins TX1 and TX2 for modulation Table 99 on page 59
 
 	uint8_t res = 0;
-	//~ 6 to 4 RxGain[2:0]defines the receiver’s signal voltage gain factor:
+	//~ 6 to 4 RxGain[2:0]defines the receiverâ€™s signal voltage gain factor:
 	//~ 000 18 dB
 	//~ 001 23 dB
 	//~ 010 18 dB
@@ -682,7 +704,7 @@ uint8_t MFRC522::ModGsPReg ()
 	//~ 5 to 0 ModGsP[5:0] defines the conductance of the p-driver output during modulation which can be used to regulate the modulation index
 	//~ Remark: the conductance value is binary weighted
 	//~ during soft Power-down mode the highest bit is forced to logic 1
-	//~ if the TxASKReg register’s Force100ASK bit is set to logic 1 the value of ModGsP has no effect
+	//~ if the TxASKReg registerâ€™s Force100ASK bit is set to logic 1 the value of ModGsP has no effect
 	return res;
 }
 
@@ -692,25 +714,25 @@ uint8_t MFRC522::TModeReg ()
 
 	uint8_t res = 0;
 	//~ 7 TAuto 1 timer starts automatically at the end of the transmission in all communication modes at all speeds
-	//~ if the RxModeReg register’s RxMultiple bit is not set, the timer stops immediately after receiving the 5th bit (1 start bit, 4 data bits)
-	//~ if the RxMultiple bit is set to logic 1 the timer never stops, in which case the timer can be stopped by setting the ControlReg register’s TStopNow bit to logic 1
+	//~ if the RxModeReg registerâ€™s RxMultiple bit is not set, the timer stops immediately after receiving the 5th bit (1 start bit, 4 data bits)
+	//~ if the RxMultiple bit is set to logic 1 the timer never stops, in which case the timer can be stopped by setting the ControlReg registerâ€™s TStopNow bit to logic 1
 	//~ 0 indicates that the timer is not influenced by the protocol
 	//~ 6 to 5 TGated[1:0] internal timer is running in gated mode
-	//~ Remark: in gated mode, the Status1Reg register’s TRunning bit is logic 1 when the timer is enabled by the TModeReg register’s TGated[1:0] bits
+	//~ Remark: in gated mode, the Status1Reg registerâ€™s TRunning bit is logic 1 when the timer is enabled by the TModeReg registerâ€™s TGated[1:0] bits
 	//~ this bit does not influence the gating signal
 	//~ 00 non-gated mode
 	//~ 01 gated by pin MFIN
 	//~ 10 gated by pin AUX1
 	//~ 11 -
 	//~ 4 TAutoRestart 1 timer automatically restarts its count-down from the 16-bit timer reload value instead of counting down to zero
-	//~ 0 timer decrements to 0 and the ComIrqReg register’s TimerIRq bit is set to logic 1
+	//~ 0 timer decrements to 0 and the ComIrqReg registerâ€™s TimerIRq bit is set to logic 1
 	//~ 3 to 0 TPrescaler_Hi[3:0] - defines the higher 4 bits of the TPrescaler value
-	//~ The following formula is used to calculate the timer frequency if the DemodReg register’s TPrescalEven bit in Demot Regis set to logic 0:
+	//~ The following formula is used to calculate the timer frequency if the DemodReg registerâ€™s TPrescalEven bit in Demot Regis set to logic 0:
 	//~ ftimer = 13.56 MHz / (2*TPreScaler+1).
 	//~ Where TPreScaler = [TPrescaler_Hi:TPrescaler_Lo] (TPrescaler value on 12 bits) (Default TPrescalEven bit is logic 0)
-	//~ The following formula is used to calculate the timer frequency if the DemodReg register’s TPrescalEven bit is set to logic 1:
+	//~ The following formula is used to calculate the timer frequency if the DemodReg registerâ€™s TPrescalEven bit is set to logic 1:
 	//~ ftimer = 13.56 MHz / (2*TPreScaler+2).
-	//~ See Section 8.5 “Timer unit”
+	//~ See Section 8.5 â€œTimer unitâ€
 	return res;
 }
 
@@ -720,12 +742,12 @@ uint8_t MFRC522::TPrescalerReg ()
 
 	uint8_t res = 0;
 	//~ 7 to 0 TPrescaler_Lo[7:0] defines the lower 8 bits of the TPrescaler value
-	//~ The following formula is used to calculate the timer frequency if the DemodReg register’s TPrescalEven bit is set to logic 0:
+	//~ The following formula is used to calculate the timer frequency if the DemodReg registerâ€™s TPrescalEven bit is set to logic 0:
 	//~ ftimer = 13.56 MHz / (2*TPreScaler+1).
 	//~ Where TPreScaler = [TPrescaler_Hi:TPrescaler_Lo] (TPrescaler value on 12 bits) (Default TPrescalEven bit is logic 0)
-	//~ The following formula is used to calculate the timer frequency if the DemodReg register’s TPrescalEven bit inDemoReg is set to logic 1:
+	//~ The following formula is used to calculate the timer frequency if the DemodReg registerâ€™s TPrescalEven bit inDemoReg is set to logic 1:
 	//~ ftimer = 13.56 MHz / (2*TPreScaler+2).
-	//~ See Section 8.5 “Timer unit”
+	//~ See Section 8.5 â€œTimer unitâ€
 	return res;
 }
 
@@ -777,7 +799,7 @@ uint8_t MFRC522::TestSel2Reg ()
 	//~ 5 PRBS15 - starts and enables the PRBS15 sequence according to ITU-TO150
 	//~ Remark: all relevant registers to transmit data must be configured before entering PRBS15 mode
 	//~ the data transmission of the defined sequence is started by the Transmit command
-	//~ 4 to 0 TestBusSel[4:0] - selects the test bus; see Section 16.1 “Test signals
+	//~ 4 to 0 TestBusSel[4:0] - selects the test bus; see Section 16.1 â€œTest signals
 	return res;
 }
 
@@ -823,7 +845,7 @@ uint8_t MFRC522::AutoTestReg()
 
 	uint8_t res = 0;
 	//~ 6 AmpRcv 1 internal signal processing in the receiver chain is performed non-linearly which increases the operating distance in communication modes at 106 kBd
-	//~ Remark: due to non-linearity, the effect of the RxThresholdReg register’s MinLevel[3:0] and the CollLevel[2:0] values is also non-linear
+	//~ Remark: due to non-linearity, the effect of the RxThresholdReg registerâ€™s MinLevel[3:0] and the CollLevel[2:0] values is also non-linear
 	//~ 3 to 0 SelfTest[3:0] - enables the digital self test
 	//~ the self test can also be started by the CalcCRC command; see Section 10.3.1.4 on page 71
 	//~ the self test is enabled by value 1001b
@@ -836,8 +858,8 @@ uint8_t MFRC522::VersionReg()
 	//  shows the software version Table 131 on page 66
 
 	uint8_t res = 0;
-	//~ 7 to 4 Chiptype ‘9’ stands for MFRC522
-	//~ 3 to 0 Version ‘1’ stands for MFRC522 version 1.0 and ‘2’ stands for MFRC522 version 2.0.
+	//~ 7 to 4 Chiptype â€˜9â€™ stands for MFRC522
+	//~ 3 to 0 Version â€˜1â€™ stands for MFRC522 version 1.0 and â€˜2â€™ stands for MFRC522 version 2.0.
 
 	return res;
 }
@@ -869,7 +891,7 @@ uint8_t MFRC522::AnalogTestReg()
 		//~ 1110 subcarrier detected:
 			//~ 106 kBd: not applicable
 			//~ 212 kBd: 424 kBd and 848 kBd: HIGH during last part of data and CRC
-		//~ 1111 test bus bit as defined by the TestSel1Reg register’s 
+		//~ 1111 test bus bit as defined by the TestSel1Reg registerâ€™s 
 	//~ TstBusBitSel[2:0] bits Remark: all test signals are described in Section 16.1 on page 82
 	//~ 3 to 0 AnalogSelAux2[3:0]- controls pin AUX2 (see bit descriptions for AUX1)
 	return res;
