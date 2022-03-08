@@ -1,14 +1,16 @@
 #ifndef __I2C_DEVICE_H__
 #define __I2C_DEVICE_H__
 
+#include "device.h"
 #include <cstdint>
 
 class I2C;
-class DeviceI2C
+class DeviceI2C : public Device
 {
 	public:
 		DeviceI2C(uint8_t addr, I2C * bus)
-		: _address(addr)
+		: Device(DeviceType::I2C)
+, _address(addr)
 		, _twi(bus)
 		{}
 
