@@ -2,9 +2,10 @@
 #define RASPISPI_H
 
 #include "spi.h"
+#include "polldevice.h"
 #include <string>
 
-class RaspiSPI: public SPI
+class RaspiSPI: public SPI public PollDevice
 {
 public:
 	RaspiSPI(const std::string &);
@@ -44,7 +45,6 @@ public:
 	virtual void transfer(uint8_t *, uint8_t *, uint32_t);
 
 protected:
-	int32_t _fd;
 	uint32_t _speed;
 	uint32_t _bit_per_word;
 };
