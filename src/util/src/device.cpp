@@ -1,27 +1,12 @@
 #include "device.h"
 
 Device::Device(enum Device::DeviceType type)
-: _handler(-1)
-, _max_retry(10)
-, _timeout(1000)
-, _type(type)
+: _type(type)
 {}
-
-Device::Device(enum Device::DeviceType type, int32_t handler)
-: _handler(handler)
-, _max_retry(10)
-, _timeout(1000)
-, _type(type)
-{}
-
-int32_t Device::handler()
-{
-    return _handler;
-}
 
 bool Device::operator==(const Device & device) const
 {
-	return (device._handler == _handler);
+	return (device._type == _type);
 }
 
 enum Device::DeviceType Device::type()
