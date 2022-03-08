@@ -1,13 +1,18 @@
 #ifndef I2C_H
 #define I2C_H
 
+#include "device.h"
 #include <cstdint>
 
-class I2C
+class I2C : public Device
 {
 public:
 	I2C()
+: Device(DeviceType::I2C)
 	{}
+
+virtual ~I2C()
+{}
 
 	virtual void set (uint8_t addr, uint8_t* buf, int32_t len) = 0;
 	virtual void get (uint8_t addr, uint8_t* buf, int32_t len) = 0;
