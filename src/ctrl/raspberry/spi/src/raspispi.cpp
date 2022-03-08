@@ -12,7 +12,6 @@
 
 RaspiSPI::RaspiSPI(const std::string & device)
 : SPI()
-, PollDevice(device)
 {
 	_handler = open(device.c_str(), O_RDWR);
 	if (_handler < 0)
