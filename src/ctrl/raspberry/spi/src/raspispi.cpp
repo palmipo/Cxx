@@ -11,15 +11,17 @@
 #include <iomanip>
 
 RaspiSPI::RaspiSPI(const std::string & device)
+: SPI()
+, PollDevice(device)
 {
-	_fd = open(device.c_str(), O_RDWR);
-	if (_fd < 0)
+	_handler = open(device.c_str(), O_RDWR);
+	if (_handler < 0)
 		throw SPIException("SPI::SPI()");
 }
 
 RaspiSPI::~RaspiSPI()
 {
-	close(_fd);
+	close(_handler);
 }
 
 /*
@@ -40,9 +42,9 @@ RaspiSPI::~RaspiSPI()
 */
 void RaspiSPI::setMode(uint32_t mode)
 {
-	if (ioctl(_fd, SPI_IOC_WR_MODE, (uint32_t*)&mode) < 0)
+	if (ioctl(_handler, SPI_IOC_WR_MODE, (uint32_t*)&mode) < 0)
 		throw SPIException("RaspiSPI::setMode()");
-	if (ioctl(_fd, SPI_IOC_RD_MODE, (uint32_t*)&mode) < 0)
+	if (ioctl(_handler, SPI_IOC_RD_MODE, (uint32_t*)&mode) < 0)
 		throw SPIException("RaspiSPI::setMode()");
 }
 
@@ -50,9 +52,9 @@ void RaspiSPI::setMode(uint32_t mode)
 void RaspiSPI::setClockRate(uint32_t speed)
 {
 	_speed = speed;
-	if (ioctl (_fd, SPI_IOC_WR_MAX_SPEED_HZ, (uint32_t*)&_speed) < 0)
+	if (ioctl (_handler, SPI_IOC_WR_MAX_SPEED_HZ, (uint32_t*)&_speed) < 0)
 		throw SPIException("RaspiSPI::setClockRate()");
-	if (ioctl (_fd, SPI_IOC_RD_MAX_SPEED_HZ, (uint32_t*)&_speed) < 0)
+	if (ioctl (_handler, SPI_IOC_RD_MAX_SPEED_HZ, (uint32_t*)&_speed) < 0)
 		throw SPIException("RaspiSPI::setClockRate()");
 }
 
@@ -60,9 +62,9 @@ void RaspiSPI::setClockRate(uint32_t speed)
 void RaspiSPI::setBitPerWord(uint32_t order)
 {
 	_bit_per_word = order;
-	if (ioctl (_fd, SPI_IOC_WR_BITS_PER_WORD, (uint32_t*)&_bit_per_word) < 0)
+	if (ioctl (_handler, SPI_IOC_WR_BITS_PER_WORD, (uint32_t*)&_bit_per_word) < 0)
 		throw SPIException("RaspiSPI::setBitPerWord()");
-	if (ioctl (_fd, SPI_IOC_RD_BITS_PER_WORD, (uint32_t*)&_bit_per_word) < 0)
+	if (ioctl (_handler, SPI_IOC_RD_BITS_PER_WORD, (uint32_t*)&_bit_per_word) < 0)
 		throw SPIException("RaspiSPI::setBitPerWord()");
 }
 
@@ -101,6 +103,6 @@ void RaspiSPI::transfer(uint8_t * cmd, uint8_t * rcv, uint32_t length)
 	// io.rx_nbits = 0;
 	// io.pad = 0;
 
-	if (ioctl (_fd, SPI_IOC_MESSAGE(1), &io) < 0)
+	if (ioctl (_handler, SPI_IOC_MESSAGE(1), &io) < 0)
 		throw SPIException("RaspiSPI::transfer()");
 }
