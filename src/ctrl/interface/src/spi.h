@@ -3,11 +3,15 @@
 
 #include <cstdint>
 
-class SPI
+class SPI : public Device
 {
 public:
 	SPI()
+:Device(DeviceType::SPI)
 	{}
+
+virtual ~SPI()
+{}
 
 	virtual void set (uint8_t addr, uint8_t* buf, int32_t len) = 0;
 	virtual void get (uint8_t addr, uint8_t* buf, int32_t len) = 0;
