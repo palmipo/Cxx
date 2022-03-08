@@ -3,12 +3,12 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class MPU9255Magneto;
 class MPU9255 : public DeviceI2C
 {
 public:
-	MPU9255(I2C * bus);
+	MPU9255(CtrlI2C * bus);
 	virtual ~MPU9255();
 
 	MPU9255Magneto *magnetometre();

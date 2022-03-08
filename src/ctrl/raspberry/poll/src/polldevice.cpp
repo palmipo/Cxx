@@ -15,7 +15,7 @@ int32_t PollDevice::handler()
     return _handler;
 }
 
-bool PollDevice::operator==(const Device & device) const
+bool PollDevice::operator==(const PollDevice & device) const
 {
 	return (device._handler == _handler);
 }

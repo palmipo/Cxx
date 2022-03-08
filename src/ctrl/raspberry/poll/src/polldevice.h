@@ -14,12 +14,12 @@ class PollDevice : public Device
 		virtual int32_t write(uint8_t *, int32_t) = 0;
 		virtual int32_t read(uint8_t *, int32_t) = 0;
 
-virtual int32_t handler();
+		virtual int32_t handler();
 
-		bool operator==(const Device &) const;
+		bool operator==(const PollDevice &) const;
 
 	protected:
-int32_t _handler;
+		int32_t _handler;
 		int32_t _max_retry;
 		int32_t _timeout;
 };

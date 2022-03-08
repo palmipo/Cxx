@@ -1,5 +1,5 @@
 #include "nunchuk.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include <poll.h>
 #include <iostream>
 #include <iomanip>
@@ -13,7 +13,7 @@
  * SCK   -- yellow -- A5
  */
 
-Nunchuk::Nunchuk(I2C *i2c)
+Nunchuk::Nunchuk(CtrlI2C *i2c)
 :DeviceI2C(0x52, i2c)
 {}
 

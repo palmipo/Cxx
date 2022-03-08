@@ -1,15 +1,13 @@
 #ifndef RASPI_I2C_H
 #define RASPI_I2C_H
 
-#include "i2c.h"
+#include "ctrli2c.h"
 
-class RaspiI2C : public I2C
+class RaspiI2C : public CtrlI2C
 {
 public:
 	RaspiI2C(const char *);
 	virtual ~RaspiI2C();
-
-	// virtual void setOwnAddress (uint8_t own_address);
 
 	virtual void set (uint8_t addr, uint8_t* buf, int32_t len);
 	virtual void get (uint8_t addr, uint8_t* buf, int32_t len);

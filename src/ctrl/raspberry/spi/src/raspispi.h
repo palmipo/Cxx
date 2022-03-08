@@ -1,10 +1,10 @@
 #ifndef RASPISPI_H
 #define RASPISPI_H
 
-#include "spi.h"
+#include "ctrlspi.h"
 #include <string>
 
-class RaspiSPI: public SPI
+class RaspiSPI: public CtrlSPI
 {
 public:
 	RaspiSPI(const std::string &);
@@ -44,7 +44,7 @@ public:
 	virtual void transfer(uint8_t *, uint8_t *, uint32_t);
 
 protected:
-int32_t _handler;
+	int32_t _handler;
 	uint32_t _speed;
 	uint32_t _bit_per_word;
 };

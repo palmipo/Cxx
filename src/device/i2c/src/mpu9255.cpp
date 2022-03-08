@@ -1,8 +1,8 @@
 #include "mpu9255.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "mpu9255magneto.h"
 
-MPU9255::MPU9255(I2C * bus)
+MPU9255::MPU9255(CtrlI2C * bus)
 : DeviceI2C(0x68, bus)
 , _magneto(0)
 {
@@ -62,7 +62,7 @@ int16_t MPU9255::temperature()
 	uint8_t snd = 0x41;
 	uint8_t rcv[2];
 	
-	_twi->transfert(_address, &snd, 1, rcv, 2);
+	_twi->transfer(_address, &snd, 1, rcv, 2);
 	
 	int16_t temperature = (rcv[0] << 8) | rcv[1];
 	return temperature / 340 + 36.53;
@@ -78,7 +78,7 @@ uint8_t MPU9255::whoami()
 	uint8_t snd = 0x75;
 	uint8_t rcv;
 	
-	_twi->transfert(_address, &snd, 1, &rcv, 1);
+	_twi->transfer(_address, &snd, 1, &rcv, 1);
 	
 	return rcv;
 }

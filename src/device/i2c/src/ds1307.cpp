@@ -1,8 +1,8 @@
 #include "ds1307.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include <cstring>
 
-DS1307::DS1307(I2C *i2c)
+DS1307::DS1307(CtrlI2C *i2c)
 : DeviceI2C(0x68, i2c)
 {}
 
@@ -41,7 +41,7 @@ uint8_t DS1307::haltClock(uint8_t halt)
 uint8_t DS1307::clockHalted()
 {
 	uint8_t cmd = 0, buffer = 0;
-	_twi->transfert(_address, &cmd, 1, &buffer, 1);
+	_twi->transfer(_address, &cmd, 1, &buffer, 1);
 	
 	return (buffer & 0x80) ? 1 : 0;
 }
@@ -49,7 +49,7 @@ uint8_t DS1307::clockHalted()
 void DS1307::date(char * date)
 {
 	uint8_t buffer[3], adresse = 0x04;
-	_twi->transfert(_address, &adresse, 1, buffer, 3);
+	_twi->transfer(_address, &adresse, 1, buffer, 3);
 
 	date[0] = ((buffer[0] & 0x30) >> 4) + '0';
 	date[1] = (buffer[0] & 0x0F) + '0';
@@ -65,7 +65,7 @@ void DS1307::date(char * date)
 void DS1307::time(char * time)
 {
 	uint8_t buffer[3], adresse = 0x00;
-	_twi->transfert(_address, &adresse, 1, buffer, 3);
+	_twi->transfer(_address, &adresse, 1, buffer, 3);
 
 	time[0] = ((buffer[2] & 0x30) >> 4) + '0';
 	time[1] = (buffer[2] & 0x0F) + '0';
@@ -126,6 +126,6 @@ void DS1307::memory(uint8_t addr, uint8_t * buffer, uint32_t length)
 	if (taille < 0x3F)
 	{
 		uint8_t adresse = addr + 0x08;
-		_twi->transfert(_address, &adresse, 1, buffer, length);
+		_twi->transfer(_address, &adresse, 1, buffer, length);
 	}
 }

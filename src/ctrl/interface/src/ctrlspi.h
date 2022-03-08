@@ -1,22 +1,22 @@
-#ifndef I2C_H
-#define I2C_H
+#ifndef CTRLSPI_H
+#define CTRLSPI_H
 
 #include "device.h"
 #include <cstdint>
 
-class I2C : public Device
+class CtrlSPI : public Device
 {
 public:
-	I2C()
-: Device(DeviceType::I2C)
+	CtrlSPI()
+	:Device(DeviceType::SPI)
 	{}
 
-virtual ~I2C()
-{}
+	virtual ~CtrlSPI()
+	{}
 
 	virtual void set (uint8_t addr, uint8_t* buf, int32_t len) = 0;
 	virtual void get (uint8_t addr, uint8_t* buf, int32_t len) = 0;
 	virtual void transfer (uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len) = 0;
 };
 
-#endif /* I2C_H */
+#endif /* CTRLSPI_H */

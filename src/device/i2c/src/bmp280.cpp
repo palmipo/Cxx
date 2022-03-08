@@ -1,10 +1,10 @@
 #include "bmp280.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "log.h"
 #include <thread>
 #include <sstream>
 
-BMP280::BMP280(uint8_t addr, I2C * i2c_ctrl)
+BMP280::BMP280(uint8_t addr, CtrlI2C * i2c_ctrl)
 : DeviceI2C(0x77 | (addr & 0x1), i2c_ctrl)
 {}
 
@@ -26,7 +26,7 @@ void BMP280::read_coefficients()
 	/* register dig */
 	uint8_t cmd = 0x88;
 	uint8_t buffer[24];
-	_twi->transfert (_address, &cmd, 1, buffer, 24);
+	_twi->transfer (_address, &cmd, 1, buffer, 24);
 	dig_T1 = buffer[0] | (buffer[1] << 8);
 	dig_T2 = buffer[2] | (buffer[3] << 8);
 	dig_T3 = buffer[4] | (buffer[5] << 8);
@@ -45,7 +45,7 @@ uint8_t BMP280::id()
 {
 	uint8_t cmd = 0xD0;
 	uint8_t buffer;
-	_twi->transfert (_address, &cmd, 1, &buffer, 1);
+	_twi->transfer (_address, &cmd, 1, &buffer, 1);
 
 	return buffer;
 }
@@ -63,7 +63,7 @@ uint8_t BMP280::status(uint8_t * measuring, uint8_t * m_update)
 {
 	uint8_t cmd = 0xF3;
 	uint8_t buffer;
-	_twi->transfert (_address, &cmd, 1, &buffer, 1);
+	_twi->transfer (_address, &cmd, 1, &buffer, 1);
 
 	if (measuring)
 	{
@@ -82,7 +82,7 @@ void BMP280::set_mode(uint8_t mode)
 {
 	uint8_t registre = 0xF4;
 	uint8_t valeur;
-	_twi->transfert (_address, &registre, 1, &valeur, 1);
+	_twi->transfer (_address, &registre, 1, &valeur, 1);
 
 	/* register control => MODE_SLEEP */
 	uint8_t buffer[2];
@@ -110,7 +110,7 @@ void BMP280::raw_measure(uint32_t * temp, uint32_t * pressure)
 {
 	uint8_t cmd1 = 0xF7;
 	uint8_t mesure[6];
-	_twi->transfert (_address, &cmd1, 1, mesure, 6);
+	_twi->transfer (_address, &cmd1, 1, mesure, 6);
 	
 	*pressure = ((mesure[0] << 12) | (mesure[1] << 4) | (mesure[2] >> 4));
 	*temp = ((mesure[3] << 12) | (mesure[4] << 4) | (mesure[5] >> 4));

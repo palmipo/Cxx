@@ -1,4 +1,3 @@
-#include "i2c.h"
 #include "i2cexception.h"
 #include "bme280.h"
 #include "raspii2c.h"

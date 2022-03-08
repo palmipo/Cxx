@@ -3,11 +3,11 @@
 
 #include "bmp280.h"
 
-class I2C;
+class CtrlI2C;
 class BME280 : public BMP280
 {
 	public:
-		BME280(uint8_t, I2C *);
+		BME280(uint8_t, CtrlI2C *);
 
 		void read_coefficients();
 		void set_sampling(uint8_t osrs_t, uint8_t osrs_p, uint8_t t_sb, uint8_t filter, uint8_t osrs_h);

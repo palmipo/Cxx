@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class DS1621 : public DeviceI2C
 {
 	public:
-		DS1621(uint8_t, I2C *);
+		DS1621(uint8_t, CtrlI2C *);
 		virtual ~DS1621();
 
 		void conversion_unique (uint8_t);

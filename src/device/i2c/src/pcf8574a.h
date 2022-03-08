@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class PCF8574A : public DeviceI2C
 {
 public:
-	PCF8574A(uint8_t, I2C *);
+	PCF8574A(uint8_t, CtrlI2C *);
 	
 	virtual void setDirection(uint8_t port, uint8_t direction);
 	virtual uint8_t getDirection(uint8_t port);

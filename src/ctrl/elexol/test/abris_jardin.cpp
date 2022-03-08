@@ -6,7 +6,7 @@
 #include <iomanip>
 
 
-static int32_t action(PollDevice * s)
+static int32_t action(PollDevice * s, void *)
 {
 	std::cout << "action !!!" << std::endl;
 	Socket::SocketUdp * socket = (Socket::SocketUdp*) s;
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 
 		PollFactory factory;
 		factory.add(&socket);
-		factory.setActionInCallback(action);
+		factory.setActionInCallback(action, 0);
 		while (1)
 		{
 		std::cout << "lecture de portA : 0x" << std::hex << (int)pia.get(0) << std::dec << std::endl;

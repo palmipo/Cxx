@@ -26,7 +26,8 @@ A range of commands to the USB-I2C module, generally to improve selected communi
 All
 */
 UsbI2C::UsbI2C(RS232 * serial)
-: _uart(serial)
+: CtrlI2C()
+, _uart(serial)
 {
 	_uart->setConfig(B19200, 8, 'N', 2, 0);
 	_uart->setInterCharacterTimer(50);
@@ -105,7 +106,7 @@ void UsbI2C::get (uint8_t addr, uint8_t* buf, int32_t len)
 	}
 }
 
-void UsbI2C::transfert (uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len)
+void UsbI2C::transfer (uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len)
 {
 	set(addr, cmd, cmd_len);
 	get(addr, buf, buf_len);

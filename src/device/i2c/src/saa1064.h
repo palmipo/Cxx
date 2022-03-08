@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class SAA1064 : public DeviceI2C
 {
 public:
-	SAA1064(uint8_t adresse, I2C * i2c);
+	SAA1064(uint8_t adresse, CtrlI2C * i2c);
 
 	void test_afficheurs (uint8_t valeur);
 	void set_luminosity (uint8_t valeur);

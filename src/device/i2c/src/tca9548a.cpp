@@ -1,7 +1,7 @@
 #include "tca9548a.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 
-TCA9548A::TCA9548A(uint8_t addr, I2C * i2c_ctrl)
+TCA9548A::TCA9548A(uint8_t addr, CtrlI2C * i2c_ctrl)
 : DeviceI2C(0xE0 | (addr & 0x7), i2c_ctrl)
 {}
 

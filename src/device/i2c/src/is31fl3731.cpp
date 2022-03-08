@@ -1,5 +1,5 @@
 #include "is31fl3731.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "log.h"
 #include <sstream>
 #include <iomanip>
@@ -29,7 +29,7 @@
 /*
  *
  */
-IS31FL3731::IS31FL3731(uint8_t addr, I2C * i2c_ctrl)
+IS31FL3731::IS31FL3731(uint8_t addr, CtrlI2C * i2c_ctrl)
 : DeviceI2C(0x74 | (addr & 0x7), i2c_ctrl)
 {
 	_on.resize(0x12);

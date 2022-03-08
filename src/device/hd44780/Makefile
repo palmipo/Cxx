@@ -37,8 +37,8 @@ test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libhd44780.so libraspigpio.
 $(BIN_PWD)/test_hd44780.o: test/test_hd44780.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-test_2004: $(BIN_PWD)/test_2004.o liblcd2004.so libhd44780.so libi2cdevice.so libraspii2c.so liblog.so
-	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lhd44780 -llcd2004 -llog
+test_2004: $(BIN_PWD)/test_2004.o liblcd2004.so libhd44780.so libi2cdevice.so libraspii2c.so liblog.so libutil.so
+	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lhd44780 -llcd2004 -llog -lutil
 
 $(BIN_PWD)/test_2004.o: test/test_2004.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

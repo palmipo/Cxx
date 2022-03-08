@@ -10,14 +10,11 @@ class Device
 
 		Device(enum DeviceType);
 
-		virtual int32_t handler();
-		virtual enum DeviceType type();
+		enum DeviceType type();
 
 		bool operator==(const Device &) const;
 
 	protected:
-		int32_t _max_retry;
-		int32_t _timeout;
 		enum DeviceType _type;
 };
 

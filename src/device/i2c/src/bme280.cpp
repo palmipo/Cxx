@@ -1,10 +1,10 @@
 #include "bme280.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "log.h"
 #include <thread>
 #include <sstream>
 
-BME280::BME280(uint8_t addr, I2C * i2c_ctrl)
+BME280::BME280(uint8_t addr, CtrlI2C * i2c_ctrl)
 : BMP280(addr, i2c_ctrl)
 {}
 
@@ -26,11 +26,11 @@ void BME280::read_coefficients()
 	uint8_t cmd = 0xA1;
 	uint8_t buffer[8];
 
-	_twi->transfert (_address, &cmd, 1, buffer, 1);
+	_twi->transfer (_address, &cmd, 1, buffer, 1);
 	dig_H1 = buffer[0];
 	
 	cmd = 0xE1;
-	_twi->transfert (_address, &cmd, 1, buffer, 7);
+	_twi->transfer (_address, &cmd, 1, buffer, 7);
 	dig_H2 = buffer[0] | (buffer[1] << 8);
 	dig_H3 = buffer[2];
 	dig_H4 = (buffer[3] << 4) | (buffer[4] & 0x0F);
@@ -42,7 +42,7 @@ void BME280::raw_measure(uint32_t * temperature, uint32_t * pressure, uint32_t *
 {
 	uint8_t cmd = 0xF7;
 	uint8_t mesure[8];
-	_twi->transfert (_address, &cmd, 1, mesure, 8);
+	_twi->transfer (_address, &cmd, 1, mesure, 8);
 
 	*temperature = (mesure[0] << 12) | (mesure[1] << 4) | (mesure[2] >> 4);
 	*pressure = (mesure[3] << 12) | (mesure[4] << 4) | (mesure[5] >> 4);

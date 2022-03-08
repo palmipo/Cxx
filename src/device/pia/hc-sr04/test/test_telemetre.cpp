@@ -60,8 +60,6 @@ int main(int argc,char **argv)
 
 	telemetre.start();
 
-	Tempo::minutes(1);
-
 	while (telemetre.isBusy());
 	fin = 1;
 

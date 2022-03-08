@@ -11,7 +11,7 @@
 #include <iomanip>
 
 RaspiSPI::RaspiSPI(const std::string & device)
-: SPI()
+: CtrlSPI()
 {
 	_handler = open(device.c_str(), O_RDWR);
 	if (_handler < 0)

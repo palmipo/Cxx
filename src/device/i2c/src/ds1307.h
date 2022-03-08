@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class DS1307 : public DeviceI2C
 {
 public:
-	DS1307(I2C *);
+	DS1307(CtrlI2C *);
 
 	void setDate(const char * date);
 	void setTime(const char * time);

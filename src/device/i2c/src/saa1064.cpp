@@ -1,5 +1,5 @@
 #include "saa1064.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 
 #define SAA1064_ADDRESS				0x38
 #define SAA1064_CONTROL_REGISTER_CONFIG		0
@@ -12,7 +12,7 @@
 #define SAA1064_COMMAND_TEST_SEGMENT		3
 #define SAA1064_COMMAND_INTENSITE_LUMINEUSE	4
 
-SAA1064::SAA1064(uint8_t adresse, I2C * i2c)
+SAA1064::SAA1064(uint8_t adresse, CtrlI2C * i2c)
 : DeviceI2C(SAA1064_ADDRESS | (adresse & 0x3), i2c)
 , _lumunosite(7)
 {}

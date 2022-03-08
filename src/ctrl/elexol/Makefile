@@ -40,4 +40,4 @@ liblog.so:
 	ln -s ../raspberry/log/$@
 
 $(BIN_PWD)/%.o: src/%.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@ -fPIC -DRASPI

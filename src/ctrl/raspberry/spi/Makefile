@@ -14,7 +14,7 @@ LIBS =
 CFLAGS = -g $(INCLUDE) -fPIC
 LDFLAGS = $(LIBS)
 
-all: libspi.so
+all: libraspispi.so
 
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll

@@ -8,7 +8,8 @@ MKDIR = mkdir -p
 CC = g++
 LOG_PWD = ../log
 IFACE_PWD = ../../interface
-INCLUDE = -I$(IFACE_PWD)/src -Isrc -I$(LOG_PWD)/src
+UTIL_PWD = ../../../util
+INCLUDE = -I$(UTIL_PWD)/src -I$(IFACE_PWD)/src -Isrc -I$(LOG_PWD)/src
 LIBS = -L. -llog
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC

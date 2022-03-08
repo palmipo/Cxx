@@ -6,7 +6,7 @@
 class PCF8574AT : public PCF8574A
 {
 public:
-	PCF8574AT(uint8_t, I2C *);
+	PCF8574AT(uint8_t, CtrlI2C *);
 };
 
 #endif

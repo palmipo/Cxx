@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class PCF8593 : public DeviceI2C
 {
 public:
-	PCF8593(uint8_t, I2C *);
+	PCF8593(uint8_t, CtrlI2C *);
 
 	void getClock(char *hh_mm_ss);
 	void setClock(const char *hh_mm_ss);

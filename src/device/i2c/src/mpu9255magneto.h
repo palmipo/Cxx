@@ -13,11 +13,11 @@
 #define MPU9255_MAGNETO_14_BIT_OUTPUT 0x00
 #define MPU9255_MAGNETO_16_BIT_OUTPUT 0x01
 
-class I2C;
+class CtrlI2C;
 class MPU9255Magneto : public DeviceI2C
 {
 public:
-	MPU9255Magneto(I2C * bus);
+	MPU9255Magneto(CtrlI2C * bus);
 	virtual ~MPU9255Magneto();
 
 	uint8_t wia();

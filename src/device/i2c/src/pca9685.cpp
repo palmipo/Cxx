@@ -1,6 +1,6 @@
 #include "pca9685.h"
 #include "pca9685led.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 
 const uint8_t REG_MODE1 = 0x00;
 const uint8_t REG_MODE2 = 0x01;
@@ -26,7 +26,7 @@ const uint8_t MODE2_OUTDRV = 2;
 const uint8_t MODE2_OUTNE1 = 1;
 const uint8_t MODE2_OUTNE0 = 0;
 
-PCA9685::PCA9685(uint8_t addr, I2C * ctrl)
+PCA9685::PCA9685(uint8_t addr, CtrlI2C * ctrl)
 : DeviceI2C(0x40 | addr, ctrl)
 , _mode1(0)
 , _mode2(0)
@@ -63,7 +63,7 @@ void PCA9685::read(uint8_t port)
 	uint8_t p = port & 0x0F;
 	uint8_t cmd = 0x06 + 4 * p;
 	uint8_t *rcv = new uint8_t[4];
-	_twi->transfert(_address, &cmd, 1, rcv, 4);
+	_twi->transfer(_address, &cmd, 1, rcv, 4);
 	
 	uint16_t v1 = rcv[1]<<8 | rcv[0];
 	_leds[p].setOffsetON(v1);
@@ -238,7 +238,7 @@ uint8_t PCA9685::getPrescaler()
 {
 	uint8_t cmd = REG_PRESCALE;
 	uint8_t rcv = 0;
-	_twi->transfert(_address, &cmd, 1, &rcv, 1);
+	_twi->transfer(_address, &cmd, 1, &rcv, 1);
 	
 	return rcv;
 }
@@ -350,7 +350,7 @@ void PCA9685::getModes()
 {
 	uint8_t cmd = REG_MODE1;
 	uint8_t *rcv = new uint8_t[2];
-	_twi->transfert(_address, &cmd, 1, rcv, 2);
+	_twi->transfer(_address, &cmd, 1, rcv, 2);
 	_mode1 = rcv[0];
 	_mode2 = rcv[1];
 	delete[] rcv;

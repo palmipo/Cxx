@@ -5,11 +5,11 @@
 
 /* i2c_addr = 0x77 */
 
-class I2C;
+class CtrlI2C;
 class BMP280 : public DeviceI2C
 {
 	public:
-		BMP280(uint8_t, I2C *);
+		BMP280(uint8_t, CtrlI2C *);
 
 		uint8_t id();
 

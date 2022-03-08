@@ -1,6 +1,6 @@
 #include "phat_enviro.h"
-#include "gpiofactory.h"
-#include "gpio.h"
+#include "raspigpiofactory.h"
+#include "raspigpio.h"
 #include "tcs34725.h"
 #include "raspii2c.h"
 #include "log.h"
@@ -9,8 +9,8 @@
 
 int main(int argc, char **argv)
 {
-	GpioFactory factory("/dev/gpiochip0");
-	Gpio *io = factory.output(4);
+	RaspiGpioFactory factory("/dev/gpiochip0");
+	RaspiGpio *io = factory.output(4);
 
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 

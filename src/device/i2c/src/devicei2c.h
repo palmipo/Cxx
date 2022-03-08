@@ -4,18 +4,18 @@
 #include "device.h"
 #include <cstdint>
 
-class I2C;
+class CtrlI2C;
 class DeviceI2C : public Device
 {
 	public:
-		DeviceI2C(uint8_t addr, I2C * bus)
+		DeviceI2C(uint8_t addr, CtrlI2C * bus)
 		: Device(DeviceType::I2C)
-, _address(addr)
+		, _address(addr)
 		, _twi(bus)
 		{}
 
 	protected:
-		I2C * _twi;
+		CtrlI2C * _twi;
 		uint8_t _address;
 };
 

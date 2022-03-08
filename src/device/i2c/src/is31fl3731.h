@@ -4,11 +4,11 @@
 #include "devicei2c.h"
 #include <vector>
 
-class I2C;
+class CtrlI2C;
 class IS31FL3731 : public DeviceI2C
 {
 	public:
-		IS31FL3731(uint8_t, I2C *);
+		IS31FL3731(uint8_t, CtrlI2C *);
 		virtual ~IS31FL3731();
 		
 		virtual void shutdown(uint8_t on);

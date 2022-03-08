@@ -3,12 +3,12 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class PCA9685Led;
 class PCA9685 : public DeviceI2C
 {
 public:
-	PCA9685(uint8_t addr, I2C * ctrl);
+	PCA9685(uint8_t addr, CtrlI2C * ctrl);
 	virtual ~PCA9685();
 
 	virtual void restart();

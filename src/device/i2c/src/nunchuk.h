@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class Nunchuk : public DeviceI2C
 {
 public:
-	Nunchuk(I2C *);
+	Nunchuk(CtrlI2C *);
 
 	void init();
 

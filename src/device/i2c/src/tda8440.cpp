@@ -1,5 +1,5 @@
 #include "tda8440.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include <cstring>
 
 const uint8_t BIT_AUDIO_1A = 7;
@@ -11,7 +11,7 @@ const uint8_t BIT_VIDEO_2 = 2;
 const uint8_t BIT_VIDEO_GAIN = 1;
 const uint8_t BIT_ON_OFF = 0;
 
-TDA8440::TDA8440(uint8_t addr, I2C *i2c)
+TDA8440::TDA8440(uint8_t addr, CtrlI2C *i2c)
 : DeviceI2C(0x48 | (addr & 0x07), i2c)
 {}
 

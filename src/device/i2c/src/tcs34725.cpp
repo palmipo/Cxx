@@ -1,5 +1,5 @@
 #include "tcs34725.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "log.h"
 
 #define TCS34725_ENABLE (0x00)      /**< Interrupt Enable register */
@@ -25,7 +25,7 @@
 #define TCS34725_BDATAL (0x1A) /**< Blue channel data low byte */
 #define TCS34725_BDATAH (0x1B) /**< Blue channel data high byte */
 
-TCS34725::TCS34725(I2C * i2c_ctrl)
+TCS34725::TCS34725(CtrlI2C * i2c_ctrl)
 : DeviceI2C(0x29, i2c_ctrl)
 {}
 
@@ -140,7 +140,7 @@ uint8_t TCS34725::id()
 
 	uint8_t cmd = cmd_register(1, 0, TCS34725_ID);
 	uint8_t buffer;
-	_twi->transfert (_address, &cmd, 1, &buffer, 1);
+	_twi->transfer (_address, &cmd, 1, &buffer, 1);
 	
 	return buffer;
 }
@@ -155,7 +155,7 @@ uint8_t TCS34725::status(uint8_t * AINT)
 
 	uint8_t cmd = cmd_register(1, 0, TCS34725_STATUS);
 	uint8_t buffer;
-	_twi->transfert (_address, &cmd, 1, &buffer, 1);
+	_twi->transfer (_address, &cmd, 1, &buffer, 1);
 	
 	if (AINT) *AINT = (buffer & 0x10) ? 0x01 : 0x00;
 	return (buffer & 0x01) ? 0x01 : 0x00;
@@ -181,7 +181,7 @@ void TCS34725::readChannels(uint16_t * c, uint16_t * r, uint16_t * g, uint16_t *
 	uint32_t buffer_len = 8;
 	uint8_t buffer[buffer_len];
 
-	_twi->transfert (_address, &cmd, 1, buffer, buffer_len);
+	_twi->transfer (_address, &cmd, 1, buffer, buffer_len);
 	
 	*c = buffer[0] | (buffer[1] << 8);
 	*r = buffer[2] | (buffer[3] << 8);
@@ -198,7 +198,7 @@ uint16_t TCS34725::clearChannel()
 	uint32_t buffer_len = 2;
 	uint8_t buffer[buffer_len];
 
-	_twi->transfert (_address, cmd, cmd_len, buffer, buffer_len);
+	_twi->transfer (_address, cmd, cmd_len, buffer, buffer_len);
 	
 	return buffer[0] | (buffer[1] << 8);
 }
@@ -212,7 +212,7 @@ uint16_t TCS34725::redChannel()
 	uint32_t buffer_len = 2;
 	uint8_t buffer[buffer_len];
 
-	_twi->transfert (_address, cmd, cmd_len, buffer, buffer_len);
+	_twi->transfer (_address, cmd, cmd_len, buffer, buffer_len);
 	
 	return buffer[0] | (buffer[1] << 8);
 }
@@ -226,7 +226,7 @@ uint16_t TCS34725::greenChannel()
 	uint32_t buffer_len = 2;
 	uint8_t buffer[buffer_len];
 
-	_twi->transfert (_address, cmd, cmd_len, buffer, buffer_len);
+	_twi->transfer (_address, cmd, cmd_len, buffer, buffer_len);
 	
 	return buffer[0] | (buffer[1] << 8);
 }
@@ -240,7 +240,7 @@ uint16_t TCS34725::blueChannel()
 	uint32_t buffer_len = 2;
 	uint8_t buffer[buffer_len];
 
-	_twi->transfert (_address, cmd, cmd_len, buffer, buffer_len);
+	_twi->transfer (_address, cmd, cmd_len, buffer, buffer_len);
 	
 	return buffer[0] | (buffer[1] << 8);
 }

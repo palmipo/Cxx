@@ -1,7 +1,7 @@
 #include "at24c32.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 
-AT24C32::AT24C32(I2C *i2c)
+AT24C32::AT24C32(CtrlI2C *i2c)
 : DeviceI2C(0x50, i2c)
 {}
 
@@ -22,5 +22,5 @@ void AT24C32::read(uint16_t addr, uint8_t * data, int32_t length)
 	uint8_t cmd [ 2 ];
 	cmd[ 0 ] = addr >> 8;
 	cmd[ 1 ] = addr & 0xFF;
-	_twi->transfert(_address, cmd, 2, data, length);
+	_twi->transfer(_address, cmd, 2, data, length);
 }

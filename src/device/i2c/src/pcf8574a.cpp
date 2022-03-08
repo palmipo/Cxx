@@ -1,7 +1,7 @@
 ﻿#include "pcf8574a.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 
-PCF8574A::PCF8574A(uint8_t address, I2C * i2c)
+PCF8574A::PCF8574A(uint8_t address, CtrlI2C * i2c)
 : DeviceI2C(0x38 | (address & 0x7), i2c)
 , _direction(0)
 {}

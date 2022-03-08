@@ -1,5 +1,5 @@
 #include "pcf8593.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 
 #define PCF8593_CONTROL_REGISTER		0x00
 #define PCF8593_ALARM_CONTROL_REGISTER	0x08
@@ -7,7 +7,7 @@
 #define PCF8593_ALARM_ENABLE			2
 #define PCF8593_FONCTION_MODE			4
 
-PCF8593::PCF8593(uint8_t addr, I2C * i2c)
+PCF8593::PCF8593(uint8_t addr, CtrlI2C * i2c)
 : DeviceI2C(0x51, i2c)
 {
 	uint8_t buffer[2];
@@ -31,7 +31,7 @@ void PCF8593::setAlarm()
 void PCF8593::getClock(char *hh_mm_ss)
 {
 	uint8_t buffer[4], reg = 0x01;
-	_twi->transfert(_address, &reg, 1, buffer, 4);
+	_twi->transfer(_address, &reg, 1, buffer, 4);
 	hh_mm_ss[0] = ((buffer[3] & 0x30) >> 4) + '0';
 	hh_mm_ss[1] = (buffer[3] & 0x0F) + '0';
 	hh_mm_ss[2] = ':';

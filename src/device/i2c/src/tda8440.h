@@ -3,11 +3,11 @@
 
 #include "devicei2c.h"
 
-class I2C;
+class CtrlI2C;
 class TDA8440 : public DeviceI2C
 {
 public:
-	TDA8440(uint8_t, I2C *);
+	TDA8440(uint8_t, CtrlI2C *);
 
 	//~ valeurs possible pour on_off
 	//~ 0 : input active
