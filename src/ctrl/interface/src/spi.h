@@ -1,6 +1,7 @@
 #ifndef SPI_H
 #define SPI_H
 
+#include "device.h"
 #include <cstdint>
 
 class SPI : public Device
