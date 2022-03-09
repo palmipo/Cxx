@@ -3,13 +3,15 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/mfrc522.o
 
-SPI_REP = ../../ctrl/raspberry/spi
 CC = g++
 MAKE = make
 INTERFACE_PWD = ../../../ctrl/interface
+UTIL_PWD = ../../../util
 SPI_PWD = ../../../ctrl/raspberry/spi
-INCLUDE = -I$(INTERFACE_PWD)/src -Isrc -I$(SPI_REP)/src
-LIBS = -L. -lspidevice -lspi
+GPIO_PWD = ../../../ctrl/raspberry/gpio
+PIA_PWD = ../../pia
+INCLUDE = -Isrc -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -I$(SPI_PWD)/src -I$(PIA_PWD)/src -I$(GPIO_PWD)/src
+LIBS = -L. -lspidevice -lraspispi -lpia -lraspigpio
 
 CFLAGS = -g $(INCLUDE) -fPIC -DRASPI
 LDFLAGS = $(LIBS)
@@ -17,17 +19,25 @@ LDFLAGS = $(LIBS)
 all: test_rfid
 
 clean:
-	rm $(BIN_PWD)/*.o libspi.so libspidevice.so test_rfid
+	rm $(BIN_PWD)/*.o libspidevice.so libraspispi.so test_rfid
 
-test_rfid: $(BIN_PWD)/test_rfid.o libspidevice.so libraspispi.so
+test_rfid: $(BIN_PWD)/test_rfid.o libspidevice.so libraspispi.so libraspigpio.so libpia.so
 	$(CC) -o $@ $< $(LDFLAGS)
 
 $(BIN_PWD)/test_rfid.o: test/test_rfid.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 libraspispi.so:
-	$(MAKE) -C $(SPI_REP) $@
-	ln -s $(SPI_REP)/$@
+	$(MAKE) -C $(SPI_PWD) $@
+	ln -s $(SPI_PWD)/$@
+
+libraspigpio.so:
+	$(MAKE) -C $(GPIO_PWD) $@
+	ln -s $(GPIO_PWD)/$@
+
+libpia.so:
+	$(MAKE) -C $(PIA_PWD) $@
+	ln -s $(PIA_PWD)/$@
 
 libspidevice.so: $(OBJECTS)
 	$(CC) $(CFLAGS) -shared $^ -o $@

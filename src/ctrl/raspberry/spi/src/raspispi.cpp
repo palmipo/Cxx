@@ -68,7 +68,7 @@ void RaspiSPI::setBitPerWord(uint32_t order)
 }
 
 
-void RaspiSPI::set(uint8_t * cmd, uint32_t length)
+void RaspiSPI::set(uint8_t * cmd, int32_t length)
 {
 	std::cout << "spi out (" << length << ") : " << std::hex;
 	for (uint32_t i=0; i<length; i+=1)
@@ -81,13 +81,13 @@ void RaspiSPI::set(uint8_t * cmd, uint32_t length)
 }
 
 
-void RaspiSPI::get(uint8_t * rcv, uint32_t length)
+void RaspiSPI::get(uint8_t * rcv, int32_t length)
 {
 	transfer(0, rcv, length);
 }
 
 
-void RaspiSPI::transfer(uint8_t * cmd, uint8_t * rcv, uint32_t length)
+void RaspiSPI::transfer(uint8_t * cmd, uint8_t * rcv, int32_t length)
 {
 	struct spi_ioc_transfer io;
 	memset(&io, 0, sizeof(struct spi_ioc_transfer));

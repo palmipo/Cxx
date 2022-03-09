@@ -38,7 +38,7 @@ PIA_PWD = ../pia
 CC = g++
 MAKE = make
 INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -Isrc -I$(PIA_PWD)/src -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -lutil -llog -li2cdevice -lpoll
+LIBS = -L. -llog -li2cdevice -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -59,13 +59,13 @@ clean:
 
 #
 #
-bmp280: $(BIN_PWD)/test_bmp280.o liblog.so libutil.so libpoll.so libi2cdevice.so libraspii2c.so
-	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -llog -lutil
+bmp280: $(BIN_PWD)/test_bmp280.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -llog
 
 $(BIN_PWD)/test_bmp280.o: test/test_bmp280.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-ph_hd: $(BIN_PWD)/ph_hd.o liblog.so libutil.so libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
+ph_hd: $(BIN_PWD)/ph_hd.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -lraspigpio
 
 $(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
@@ -73,7 +73,7 @@ $(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
 
 #
 #
-ph_enviro: $(BIN_PWD)/test_phat_enviro.o liblog.so libutil.so libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
+ph_enviro: $(BIN_PWD)/test_phat_enviro.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_phat_enviro.o: test/test_phat_enviro.cpp
@@ -113,7 +113,7 @@ $(BIN_PWD)/test_pca9685.o: test/test_pca9685.cpp
 
 #
 #
-test_ds1307: $(BIN_PWD)/test_ds1307.o liblog.so libpoll.so libutil.so libi2cdevice.so libusbi2c.so librs232.so
+test_ds1307: $(BIN_PWD)/test_ds1307.o liblog.so libpoll.so libi2cdevice.so libusbi2c.so librs232.so
 	$(CC) -o $@ $< $(LDFLAGS) -lrs232 -lusbi2c
 
 $(BIN_PWD)/test_ds1307.o: test/test_ds1307.cpp

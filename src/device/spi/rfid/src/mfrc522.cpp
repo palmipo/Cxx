@@ -1,5 +1,7 @@
 #include "mfrc522.h"
-#include "spi.h"
+#include "ctrlspi.h"
+#include "pia.h"
+#include "tempo.h"
 
 /*
 00h Reserved reserved for future use Table 21 on page 38
@@ -65,25 +67,70 @@
 3Ch to 3Fh Reserved reserved for production tests
 */
 
+MFRC522::MFRC522(CtrlSPI * ctrl, PIA * irq, PIA * rst)
+: _spi(ctrl)
+, _irq_gpio(irq)
+, _rst_gpio(rst)
+{}
+
+MFRC522::~MFRC522()
+{}
+
+void MFRC522::init()
+{
+	if (_rst_gpio)
+	{
+		_rst_gpio->write(0);
+		Tempo::millisecondes(2);
+		_rst_gpio->write(1);
+	}
+	else
+	{
+		softReset();
+	}
+
+	writeRegister(TxModeReg, 0x00);
+	writeRegister(RxModeReg, 0x00);
+
+	writeRegister(ModWidthReg, 0x26);
+
+	writeRegister(TModeReg, 0x80);
+	writeRegister(TPrescalerReg, 0xA9);
+	writeRegister(TReloadRegH, 0x03);
+	writeRegister(TReloadRegL, 0xE8);
+
+	writeRegister(TxASKReg, 0x40);
+	writeRegister(ModeReg, 0x3D);
+}
+
+void MFRC522::softReset()
+{
+	setCommandReg(0, 1, 0);
+	uint8_t RcvOff, PowerDown=1, Command;
+	while (PowerDown)
+	{
+		commandReg(&RcvOff, &PowerDown, &Command);
+	}
+}
+
 uint8_t MFRC522::readRegister (uint8_t addr)
 {
-int32_t lenght = 1;
-uint8_t cmd[] = { (((addr << 1) & 0x7e) | 0x80) };
-uint8_t data[ length ];
-_spi.transfer(cmd, data, lenght);
-return data[0];
+	int32_t length = 1;
+	uint8_t cmd[] = { (((addr << 1) & 0x7e) | 0x80) };
+	uint8_t data[ length ];
+	_spi->transfer(cmd, data, length);
+	return data[0];
 }
 
-uint8_t MFRC522::writeRegister (uint8_t addr, uint8_t val)
+void MFRC522::writeRegister (uint8_t addr, uint8_t val)
 {
-int32_t lenght = 2;
-uint8_t cmd[] = { ((addr <<1) & 0x7e), val };
-uint8_t data[ length ];
-_spi.transfer(cmd, data, lenght);
-return data[1];
+	int32_t length = 2;
+	uint8_t cmd[] = { ((addr <<1) & 0x7e), val };
+	uint8_t data[ length ];
+	_spi->transfer(cmd, data, length);
 }
 
-uint8_t MFRC522::CommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
+void MFRC522::setCommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
 {
 	// starts and stops command execution
 
@@ -101,7 +148,26 @@ uint8_t MFRC522::CommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
 	//~ 3 to 0 Command[3:0] - activates a command based on the Command value; reading this register show
 	res |= (Command & 0xF);
 
-	return writeRegister (0x01, res);
+	writeRegister (0x01, res);
+}
+
+void MFRC522::commandReg(uint8_t * RcvOff, uint8_t * PowerDown, uint8_t * Command)
+{
+	// starts and stops command execution
+
+	uint8_t res = readRegister (0x01);
+	//~ 5 RcvOff 1 analog part of the receiver is switched off
+	*RcvOff = (res & (1 << 5)) ? 1 : 0;
+	//~ 4 PowerDown
+	//~ 1 Soft power-down mode entered
+	//~ 0 MFRC522 starts the wake up procedure during which this bit is 
+	//~ read as a logic 1; it is read as a logic 0 when the MFRC522 is 
+	//~ ready; see Section 8.6.2 on page 33
+	//~ Remark: The PowerDown bit cannot be set when the SoftReset 
+	//~ command is activated
+	*PowerDown = (res & (1 << 4)) ? 1 : 0;
+	//~ 3 to 0 Command[3:0] - activates a command based on the Command value; reading this register show
+	*Command = res & 0xF;
 }
 
 uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t IdleIEn, uint8_t HiAlertIEn, uint8_t LoAlertIEn, uint8_t ErrIEn, uint8_t TimerIEn)
@@ -129,7 +195,8 @@ uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t
 	//~ 0 TimerIEn - allows the timer interrupt request (TimerIRq bit) to be propagated to pin  IRQ
 	res |= (TimerIEn & 1);
 
-	return writeRegister (0x01, res);
+	writeRegister (0x01, res);
+	return res;
 }
 
 uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCIEn)
@@ -146,10 +213,11 @@ uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCI
 	//~ 2 CRCIEn - allows the CRC interrupt request, indicated by the DivIrqReg register’s CRCIRq bit, to be propagated to pin IRQ
 	res |= (CRCIEn & 1) << 2;
 
-	return writeRegister (0x01, res);
+	writeRegister (0x01, res);
+	return res;
 }
 
-uint8_t MFRC522::ComIrqReg(uint8_t ComIrqReg, uint8_t TxIRq, uint8_t RxIRq, uint8_t IdleIRq, uint8_t HiAlertIRq, uint8_t LoAlertIRq, uint8_t ErrIRq, uint8_t TimerIRq)
+uint8_t MFRC522::ComIrqReg(uint8_t Set1, uint8_t TxIRq, uint8_t RxIRq, uint8_t IdleIRq, uint8_t HiAlertIRq, uint8_t LoAlertIRq, uint8_t ErrIRq, uint8_t TimerIRq)
 {
 	//  interrupt request bits Table 29 on page 39
 

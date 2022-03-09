@@ -5,7 +5,7 @@
 #include <map>
 #include <list>
 #include <poll.h>
-#include <mutex>
+#include "mutex.h"
 
 class PollDevice;
 class PollFactory

@@ -8,7 +8,7 @@ class RaspiSPI: public CtrlSPI
 {
 public:
 	RaspiSPI(const std::string &);
-	~RaspiSPI();
+	virtual ~RaspiSPI();
 
 	//~ SPI_CPOL    - Clock polarity
 	//~ SPI_CPHA    - Clock phase
@@ -39,9 +39,9 @@ public:
 	//~ 9 - This is supported using LoSSI mode.
 	virtual void setBitPerWord(uint32_t);
 
-	virtual void set(uint8_t *, uint32_t);
-	virtual void get(uint8_t *, uint32_t);
-	virtual void transfer(uint8_t *, uint8_t *, uint32_t);
+	virtual void set(uint8_t *, int32_t);
+	virtual void get(uint8_t *, int32_t);
+	virtual void transfer(uint8_t *, uint8_t *, int32_t);
 
 protected:
 	int32_t _handler;

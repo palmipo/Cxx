@@ -1,6 +1,6 @@
 #include "pollfactory.h"
 #include "polldevice.h"
-#include "pollmutex.h"
+#include "mutex.h"
 #include "pollexception.h"
 #include "log.h"
 #include <sstream>
@@ -35,7 +35,7 @@ void PollFactory::add(PollDevice * t)
 
 void PollFactory::del(int32_t id)
 {
-	PollMutex mutex(_mutex);
+	Mutex mutex(_mutex);
 
 	std::map < int32_t, PollDevice * >::iterator it = _liste.find(id);
 	if (it != _liste.end())
@@ -76,7 +76,7 @@ int32_t PollFactory::scrute(int32_t timeout, int32_t scruteIn, int32_t scruteOut
 	int32_t nb = _liste.size();
 	struct pollfd * lst_fd = new struct pollfd[nb];
 	{
-		PollMutex mutex(_mutex);
+		Mutex mutex(_mutex);
 		std::map<int32_t, PollDevice*>::iterator it = _liste.begin();
 		while(it != _liste.end())
 		{

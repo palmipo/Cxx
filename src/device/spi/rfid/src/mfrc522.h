@@ -3,16 +3,23 @@
 
 #include <cstdint>
 
-class SPI;
+class PIA;
+class CtrlSPI;
 class MFRC522
 {
 public:
-	MFRC522(SPI *);
+	MFRC522(CtrlSPI * ctrl, PIA * irq = 0, PIA * rst = 0);
 	virtual ~MFRC522();
 
+void init();
+void softReset();
+
 uint8_t readRegister (uint8_t addr);
-uint8_t writeRegister (uint8_t addr, uint8_t val);
-uint8_t CommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command);
+void writeRegister (uint8_t addr, uint8_t val);
+
+void setCommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command);
+uint8_t commandReg(uint8_t * RcvOff, uint8_t * PowerDown, uint8_t * Command);
+
 uint8_t ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t IdleIEn, uint8_t HiAlertIEn, uint8_t LoAlertIEn, uint8_t ErrIEn, uint8_t TimerIEn);
 uint8_t DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCIEn);
 uint8_t ComIrqReg(uint8_t ComIrqReg, uint8_t TxIRq, uint8_t RxIRq, uint8_t IdleIRq, uint8_t HiAlertIRq, uint8_t LoAlertIRq, uint8_t ErrIRq, uint8_t TimerIRq);
@@ -59,6 +66,11 @@ uint8_t AnalogTestReg();
 uint8_t TestDAC1Reg();
 uint8_t TestDAC2Reg();
 uint8_t TestADCReg();
+
+private:
+	CtrlSPI * _spi;
+	PIA * _irq_gpio;
+	PIA * _rst_gpio;
 };
 
 #endif /* NFRC522_H */
