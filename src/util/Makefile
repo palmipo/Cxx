@@ -1,7 +1,6 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
-	$(BIN_PWD)/device.o \
 	$(BIN_PWD)/fifo.o
 
 LOG_PWD = ../../src/ctrl/raspberry/log
