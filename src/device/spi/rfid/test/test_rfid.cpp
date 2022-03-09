@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 		RaspiGpioFactory gpio_factory("/dev/gpiochip1");
 		
-		int32_t irq_pin = 1, rst_pin = 2;
+		int32_t irq_pin = 24, rst_pin = 25;
 		RaspiGpio * rst = gpio_factory.outputs(&rst_pin, 1);
 		RaspiGpio * irq = gpio_factory.event(irq_pin, GPIOEVENT_REQUEST_FALLING_EDGE);
 
