@@ -3,70 +3,6 @@
 #include "pia.h"
 #include "tempo.h"
 
-/*
-00h Reserved reserved for future use Table 21 on page 38
-01h CommandReg starts and stops command execution Table 23 on page 38
-02h ComlEnReg enable and disable interrupt request control bits Table 25 on page 38
-03h DivlEnReg enable and disable interrupt request control bits Table 27 on page 39
-04h ComIrqReg interrupt request bits Table 29 on page 39
-05h DivIrqReg interrupt request bits Table 31 on page 40
-06h ErrorReg error bits showing the error status of the last command executed Table 33 on page 41
-07h Status1Reg communication status bits Table 35 on page 42
-08h Status2Reg receiver and transmitter status bits Table 37 on page 43
-09h FIFODataReg input and output of 64 byte FIFO buffer Table 39 on page 44
-0Ah FIFOLevelReg number of bytes stored in the FIFO buffer Table 41 on page 44
-0Bh WaterLevelReg level for FIFO underflow and overflow warning Table 43 on page 44
-0Ch ControlReg miscellaneous control registers Table 45 on page 45
-0Dh BitFramingReg adjustments for bit-oriented frames Table 47 on page 46
-0Eh CollReg bit position of the first bit-collision detected on the RF interface Table 49 on page 46
-0Fh Reserved reserved for future use Table 51 on page 47 
-10h Reserved reserved for future use Table 53 on page 47
-11h ModeReg defines general modes for transmitting and receiving Table 55 on page 48
-12h TxModeReg defines transmission data rate and framing Table 57 on page 48
-13h RxModeReg defines reception data rate and framing Table 59 on page 49
-14h TxControlReg controls the logical behavior of the antenna driver pins TX1 and TX2 Table 61 on page 50
-15h TxASKReg controls the setting of the transmission modulation Table 63 on page 51
-16h TxSelReg selects the internal sources for the antenna driver Table 65 on page 51
-17h RxSelReg selects internal receiver settings Table 67 on page 52
-18h RxThresholdReg selects thresholds for the bit decoder Table 69 on page 53
-19h DemodReg defines demodulator settings Table 71 on page 53
-1Ah Reserved reserved for future use Table 73 on page 54
-1Bh Reserved reserved for future use Table 75 on page 54
-1Ch MfTxReg controls some MIFARE communication transmit parameters Table 77 on page 55
-1Dh MfRxReg controls some MIFARE communication receive parameters Table 79 on page 55
-1Eh Reserved reserved for future use Table 81 on page 55
-1Fh SerialSpeedReg selects the speed of the serial UART interface Table 83 on page 55
-20h Reserved reserved for future use Table 85 on page 57
-21h CRCResultReg shows the MSB and LSB values of the CRC calculation Table 87 on page 57
-22h Table 89 on page 57
-23h Reserved reserved for future use Table 91 on page 58
-24h ModWidthReg controls the ModWidth setting Table 93 on page 58
-25h Reserved reserved for future use Table 95 on page 58
-26h RFCfgReg configures the receiver gain Table 97 on page 59
-27h GsNReg selects the conductance of the antenna driver pins TX1 and TX2 for modulation Table 99 on page 59
-28h CWGsPReg defines the conductance of the p-driver output during periods of no modulation Table 101 on page 60
-29h ModGsPReg defines the conductance of the p-driver output during periods of modulation Table 103 on page 60
-2Ah TModeReg defines settings for the internal timer Table 105 on page 60
-2Bh TPrescalerReg Table 107 on page 61
-2Ch TReloadReg defines the 16-bit timer reload value Table 109 on page 62
-2Dh Table 111 on page 62
-2Eh TCounterValReg shows the 16-bit timer value Table 113 on page 63
-2Fh Table 115 on page 63
-30h Reserved reserved for future use Table 117 on page 63
-31h TestSel1Reg general test signal configuration Table 119 on page 63
-32h TestSel2Reg general test signal configuration and PRBS control Table 121 on page 64
-33h TestPinEnReg enables pin output driver on pins D1 to D7 Table 123 on page 64
-34h TestPinValueReg defines the values for D1 to D7 when it is used as an I/O bus Table 125 on page 65
-35h TestBusReg shows the status of the internal test bus Table 127 on page 65
-36h AutoTestReg controls the digital self test Table 129 on page 66
-37h VersionReg shows the software version Table 131 on page 66
-38h AnalogTestReg controls the pins AUX1 and AUX2 Table 133 on page 67
-39h TestDAC1Reg defines the test value for TestDAC1 Table 135 on page 68
-3Ah TestDAC2Reg defines the test value for TestDAC2 Table 137 on page 68
-3Bh TestADCReg shows the value of ADC I and Q channels Table 139 on page 68
-3Ch to 3Fh Reserved reserved for production tests
-*/
-
 MFRC522::MFRC522(CtrlSPI * ctrl, PIA * irq, PIA * rst)
 : _spi(ctrl)
 , _irq_gpio(irq)
@@ -89,18 +25,17 @@ void MFRC522::init()
 		softReset();
 	}
 
-	writeRegister(TxModeReg, 0x00);
-	writeRegister(RxModeReg, 0x00);
+	setTxModeReg(0x00);
+	setRxModeReg(0x00);
 
-	writeRegister(ModWidthReg, 0x26);
+	setModWidthReg(0x26);
 
-	writeRegister(TModeReg, 0x80);
-	writeRegister(TPrescalerReg, 0xA9);
-	writeRegister(TReloadRegH, 0x03);
-	writeRegister(TReloadRegL, 0xE8);
+	setTModeReg(0x80);
+	setTPrescalerReg(0xA9);
+	setTReloadReg(0x03E8);
 
-	writeRegister(TxASKReg, 0x40);
-	writeRegister(ModeReg, 0x3D);
+	setTxASKReg(0x40);
+	setModeReg(0x3D);
 }
 
 void MFRC522::softReset()
@@ -130,6 +65,7 @@ void MFRC522::writeRegister (uint8_t addr, uint8_t val)
 	_spi->transfer(cmd, data, length);
 }
 
+//01h CommandReg starts and stops command execution Table 23 on page 38
 void MFRC522::setCommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command)
 {
 	// starts and stops command execution
@@ -170,7 +106,8 @@ void MFRC522::commandReg(uint8_t * RcvOff, uint8_t * PowerDown, uint8_t * Comman
 	*Command = res & 0xF;
 }
 
-uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t IdleIEn, uint8_t HiAlertIEn, uint8_t LoAlertIEn, uint8_t ErrIEn, uint8_t TimerIEn)
+//02h ComlEnReg enable and disable interrupt request control bits Table 25 on page 38
+uint8_t MFRC522::setComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t IdleIEn, uint8_t HiAlertIEn, uint8_t LoAlertIEn, uint8_t ErrIEn, uint8_t TimerIEn)
 {
 	//  enable and disable interrupt request control bits
 
@@ -195,11 +132,12 @@ uint8_t MFRC522::ComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t
 	//~ 0 TimerIEn - allows the timer interrupt request (TimerIRq bit) to be propagated to pin  IRQ
 	res |= (TimerIEn & 1);
 
-	writeRegister (0x01, res);
+	writeRegister (0x02, res);
 	return res;
 }
 
-uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCIEn)
+//03h DivlEnReg enable and disable interrupt request control bits Table 27 on page 39
+uint8_t MFRC522::setDivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCIEn)
 {
 	//  enable and disable interrupt request control bits
 
@@ -213,11 +151,12 @@ uint8_t MFRC522::DivlEnReg(uint8_t IRQPushPull, uint8_t MfinActIEn, uint8_t CRCI
 	//~ 2 CRCIEn - allows the CRC interrupt request, indicated by the DivIrqReg register’s CRCIRq bit, to be propagated to pin IRQ
 	res |= (CRCIEn & 1) << 2;
 
-	writeRegister (0x01, res);
+	writeRegister (0x03, res);
 	return res;
 }
 
-uint8_t MFRC522::ComIrqReg(uint8_t Set1, uint8_t TxIRq, uint8_t RxIRq, uint8_t IdleIRq, uint8_t HiAlertIRq, uint8_t LoAlertIRq, uint8_t ErrIRq, uint8_t TimerIRq)
+//04h ComIrqReg interrupt request bits Table 29 on page 39
+uint8_t MFRC522::setComIrqReg(uint8_t Set1, uint8_t TxIRq, uint8_t RxIRq, uint8_t IdleIRq, uint8_t HiAlertIRq, uint8_t LoAlertIRq, uint8_t ErrIRq, uint8_t TimerIRq)
 {
 	//  interrupt request bits Table 29 on page 39
 
@@ -256,7 +195,8 @@ uint8_t MFRC522::ComIrqReg(uint8_t Set1, uint8_t TxIRq, uint8_t RxIRq, uint8_t I
 	return res;
 }
 
-uint8_t MFRC522::DivIrqReg(uint8_t Set2, uint8_t MfinActIRq, uint8_t CRCIRq)
+//05h DivIrqReg interrupt request bits Table 31 on page 40
+uint8_t MFRC522::setDivIrqReg(uint8_t Set2, uint8_t MfinActIRq, uint8_t CRCIRq)
 {
 	//  interrupt request bits Table 31 on page 40
 
@@ -275,6 +215,7 @@ uint8_t MFRC522::DivIrqReg(uint8_t Set2, uint8_t MfinActIRq, uint8_t CRCIRq)
 	return res;
 }
 
+//06h ErrorReg error bits showing the error status of the last command executed Table 33 on page 41
 uint8_t MFRC522::ErrorReg(uint8_t WrErr, uint8_t TempErr, uint8_t BufferOvfl, uint8_t CollErr, uint8_t CRCErr, uint8_t ParityErr, uint8_t ProtocolErr)
 {
 	//  error bits showing the error status of the last command executed Table 33 on page 41
@@ -316,6 +257,7 @@ uint8_t MFRC522::ErrorReg(uint8_t WrErr, uint8_t TempErr, uint8_t BufferOvfl, ui
 	return res;
 }
 
+//07h Status1Reg communication status bits Table 35 on page 42
 uint8_t MFRC522::Status1Reg(uint8_t CRCOk, uint8_t CRCReady, uint8_t IRq, uint8_t TRunning, uint8_t HiAlert, uint8_t LoAlert)
 {
 	//  communication status bits Table 35 on page 42
@@ -356,6 +298,7 @@ uint8_t MFRC522::Status1Reg(uint8_t CRCOk, uint8_t CRCReady, uint8_t IRq, uint8_
 	return res;
 }
 
+//08h Status2Reg receiver and transmitter status bits Table 37 on page 43
 uint8_t MFRC522::Status2Reg(uint8_t TempSensClear, uint8_t I2CForceHS, uint8_t MFCrypto1On, uint8_t ModemState)
 {
 	//  receiver and transmitter status bits Table 37 on page 43
@@ -389,6 +332,7 @@ uint8_t MFRC522::Status2Reg(uint8_t TempSensClear, uint8_t I2CForceHS, uint8_t M
 	return res;
 }
 
+//09h FIFODataReg input and output of 64 byte FIFO buffer Table 39 on page 44
 uint8_t MFRC522::FIFODataReg ()
 {
 	// input and output of 64 byte FIFO buffer Table 39 on page 44
@@ -400,6 +344,7 @@ uint8_t MFRC522::FIFODataReg ()
 	return res;
 }
 
+//0Ah FIFOLevelReg number of bytes stored in the FIFO buffer Table 41 on page 44
 uint8_t MFRC522::FIFOLevelReg ()
 {
 	// number of bytes stored in the FIFO buffer Table 41 on page 44
@@ -413,6 +358,7 @@ uint8_t MFRC522::FIFOLevelReg ()
 	return res;
 }
 
+//0Bh WaterLevelReg level for FIFO underflow and overflow warning Table 43 on page 44
 uint8_t MFRC522::WaterLevelReg ()
 {
 	// level for FIFO underflow and overflow warning Table 43 on page 44
@@ -431,6 +377,7 @@ uint8_t MFRC522::WaterLevelReg ()
 	return res;
 }
 
+//0Ch ControlReg miscellaneous control registers Table 45 on page 45
 uint8_t MFRC522::ControlReg ()
 {
 	// miscellaneous control registers Table 45 on page 45
@@ -444,6 +391,7 @@ uint8_t MFRC522::ControlReg ()
 	return res;
 }
 
+//0Dh BitFramingReg adjustments for bit-oriented frames Table 47 on page 46
 uint8_t MFRC522::BitFramingReg ()
 {
 	// adjustments for bit-oriented frames Table 47 on page 46
@@ -461,6 +409,7 @@ uint8_t MFRC522::BitFramingReg ()
 	return res;
 }
 
+//0Eh CollReg bit position of the first bit-collision detected on the RF interface Table 49 on page 46
 uint8_t MFRC522::CollReg ()
 {
 	// bit position of the first bit-collision detected on the RF interface Table 49 on page 46
@@ -476,6 +425,12 @@ uint8_t MFRC522::CollReg ()
 	//~ These bits will only be interpreted if the 
 	//~ CollPosNotValid bit is set to logic 0
 	return res;
+}
+
+//11h ModeReg defines general modes for transmitting and receiving Table 55 on page 48
+void MFRC522::setModeReg (uint8_t val)
+{
+	writeRegister(0x11, val);
 }
 
 uint8_t MFRC522::ModeReg ()
@@ -500,6 +455,12 @@ uint8_t MFRC522::ModeReg ()
 	return res;
 }
 
+//12h TxModeReg defines transmission data rate and framing Table 57 on page 48
+void MFRC522::setTxModeReg (uint8_t val)
+{
+	writeRegister(0x12, val);
+}
+
 uint8_t MFRC522::TxModeReg ()
 {
 	// defines transmission data rate and framing Table 57 on page 48
@@ -519,6 +480,12 @@ uint8_t MFRC522::TxModeReg ()
 	//~ 111 reserved
 	//~ 3 InvMod 1 modulation of transmitted data is inverted
 	return res;
+}
+
+//13h RxModeReg defines reception data rate and framing Table 59 on page 49
+void MFRC522::setRxModeReg (uint8_t val)
+{
+	writeRegister(0x13, val);
 }
 
 uint8_t MFRC522::RxModeReg ()
@@ -559,6 +526,7 @@ uint8_t MFRC522::RxModeReg ()
 	return res;
 }
 
+//14h TxControlReg controls the logical behavior of the antenna driver pins TX1 and TX2 Table 61 on page 50
 uint8_t MFRC522::TxControlReg ()
 {
 	// controls the logical behavior of the antenna driver pins TX1 and TX2 Table 61 on page 50
@@ -576,6 +544,12 @@ uint8_t MFRC522::TxControlReg ()
 	return res;
 }
 
+//15h TxASKReg controls the setting of the transmission modulation Table 63 on page 51
+void MFRC522::setTxASKReg (uint8_t val)
+{
+	writeRegister(0x15, val);
+}
+
 uint8_t MFRC522::TxASKReg ()
 {
 	// controls the setting of the transmission modulation Table 63 on page 51
@@ -587,6 +561,7 @@ uint8_t MFRC522::TxASKReg ()
 	return res;
 }
 
+//16h TxSelReg selects the internal sources for the antenna driver Table 65 on page 51
 uint8_t MFRC522::TxSelReg ()
 {
 	// selects the internal sources for the antenna driver Table 65 on page 51
@@ -611,6 +586,7 @@ uint8_t MFRC522::TxSelReg ()
 	return res;
 }
 
+//17h RxSelReg selects internal receiver settings Table 67 on page 52
 uint8_t MFRC522::RxSelReg ()
 {
 	// selects internal receiver settings Table 67 on page 52
@@ -630,6 +606,7 @@ uint8_t MFRC522::RxSelReg ()
 	return res;
 }
 
+//18h RxThresholdReg selects thresholds for the bit decoder Table 69 on page 53
 uint8_t MFRC522::RxThresholdReg ()
 {
 	// selects thresholds for the bit decoder Table 69 on page 53
@@ -640,6 +617,7 @@ uint8_t MFRC522::RxThresholdReg ()
 	return res;
 }
 
+//19h DemodReg defines demodulator settings Table 71 on page 53
 uint8_t MFRC522::DemodReg ()
 {
 	// defines demodulator settings Table 71 on page 53
@@ -666,6 +644,7 @@ uint8_t MFRC522::DemodReg ()
 	return res;
 }
 
+//1Ch MfTxReg controls some MIFARE communication transmit parameters Table 77 on page 55
 uint8_t MFRC522::MfTxReg ()
 {
 	// controls some MIFARE communication transmit parameters Table 77 on page 55
@@ -676,6 +655,7 @@ uint8_t MFRC522::MfTxReg ()
 	return res;
 }
 
+//1Dh MfRxReg controls some MIFARE communication receive parameters Table 79 on page 55
 uint8_t MFRC522::MfRxReg ()
 {
 	// controls some MIFARE communication receive parameters Table 79 on page 55
@@ -686,6 +666,7 @@ uint8_t MFRC522::MfRxReg ()
 	return res;
 }
 
+//1Fh SerialSpeedReg selects the speed of the serial UART interface Table 83 on page 55
 uint8_t MFRC522::SerialSpeedReg ()
 {
 	// selects the speed of the serial UART interface Table 83 on page 55
@@ -697,6 +678,7 @@ uint8_t MFRC522::SerialSpeedReg ()
 	return res;
 }
 
+//21h CRCResultReg shows the MSB and LSB values of the CRC calculation Table 87 on page 57
 uint8_t MFRC522::CRCResultReg ()
 {
 	// shows the MSB and LSB values of the CRC calculation Table 87 on page 57
@@ -705,6 +687,12 @@ uint8_t MFRC522::CRCResultReg ()
 	//~ 7 to 0 CRCResultMSB[7:0]shows the value of the CRCResultReg register’s most significant byte
 	//~ only valid if Status1Reg register’s CRCReady bit is set to logic 1
 	return res;
+}
+
+//24h ModWidthReg controls the ModWidth setting Table 93 on page 58
+void MFRC522::setModWidthReg (uint8_t val)
+{
+	writeRegister(0x24, val);
 }
 
 uint8_t MFRC522::ModWidthReg ()
@@ -718,6 +706,7 @@ uint8_t MFRC522::ModWidthReg ()
 	return res;
 }
 
+//26h RFCfgReg configures the receiver gain Table 97 on page 59
 uint8_t MFRC522::RFCfgReg ()
 {
 	// configures the receiver gain Table 97 on page 59
@@ -728,6 +717,7 @@ uint8_t MFRC522::RFCfgReg ()
 	return res;
 }
 
+//27h GsNReg selects the conductance of the antenna driver pins TX1 and TX2 for modulation Table 99 on page 59
 uint8_t MFRC522::GsNReg ()
 {
 	// selects the conductance of the antenna driver pins TX1 and TX2 for modulation Table 99 on page 59
@@ -745,6 +735,7 @@ uint8_t MFRC522::GsNReg ()
 	return res;
 }
 
+//28h CWGsPReg defines the conductance of the p-driver output during periods of no modulation Table 101 on page 60
 uint8_t MFRC522::CWGsPReg ()
 {
 	// defines the conductance of the p-driver output during periods of no modulation Table 101 on page 60
@@ -762,6 +753,7 @@ uint8_t MFRC522::CWGsPReg ()
 	return res;
 }
 
+//29h ModGsPReg defines the conductance of the p-driver output during periods of modulation Table 103 on page 60
 uint8_t MFRC522::ModGsPReg ()
 {
 	// defines the conductance of the p-driver output during periods of modulation Table 103 on page 60
@@ -772,6 +764,12 @@ uint8_t MFRC522::ModGsPReg ()
 	//~ during soft Power-down mode the highest bit is forced to logic 1
 	//~ if the TxASKReg register’s Force100ASK bit is set to logic 1 the value of ModGsP has no effect
 	return res;
+}
+
+//2Ah TModeReg defines settings for the internal timer Table 105 on page 60
+void MFRC522::setTModeReg(uint8_t val)
+{
+	writeRegister(0x2A, val);
 }
 
 uint8_t MFRC522::TModeReg ()
@@ -802,6 +800,12 @@ uint8_t MFRC522::TModeReg ()
 	return res;
 }
 
+//2Bh TPrescalerReg Table 107 on page 61
+void MFRC522::setTPrescalerReg(uint8_t val)
+{
+	writeRegister(0x28, val);
+}
+
 uint8_t MFRC522::TPrescalerReg ()
 {
 	// Table 107 on page 61
@@ -815,6 +819,14 @@ uint8_t MFRC522::TPrescalerReg ()
 	//~ ftimer = 13.56 MHz / (2*TPreScaler+2).
 	//~ See Section 8.5 “Timer unit”
 	return res;
+}
+
+//2Ch TReloadReg defines the 16-bit timer reload value Table 109 on page 62
+void MFRC522::setTReloadReg(uint16_t val)
+{
+	uint8_t v[] = { ((val & 0xFF00) >> 8), (val & 0X00FF) };
+	writeRegister(0x2C, v[0]);
+	writeRegister(0x2D, v[1]);
 }
 
 uint16_t MFRC522::TReloadReg ()
@@ -832,6 +844,7 @@ uint16_t MFRC522::TReloadReg ()
 	return res;
 }
 
+//2Eh TCounterValReg shows the 16-bit timer value Table 113 on page 63
 uint16_t MFRC522::TCounterValReg ()
 {
 	// shows the 16-bit timer value Table 113 on page 63
@@ -842,6 +855,7 @@ uint16_t MFRC522::TCounterValReg ()
 	return res;
 }
 
+//31h TestSel1Reg general test signal configuration Table 119 on page 63
 uint8_t MFRC522::TestSel1Reg ()
 {
 	// general test signal configuration Table 119 on page 63
@@ -852,6 +866,7 @@ uint8_t MFRC522::TestSel1Reg ()
 	return res;
 }
 
+//32h TestSel2Reg general test signal configuration and PRBS control Table 121 on page 64
 uint8_t MFRC522::TestSel2Reg ()
 {
 	// general test signal configuration and PRBS control Table 121 on page 64
@@ -869,6 +884,7 @@ uint8_t MFRC522::TestSel2Reg ()
 	return res;
 }
 
+//33h TestPinEnReg enables pin output driver on pins D1 to D7 Table 123 on page 64
 uint8_t MFRC522::TestPinEnReg ()
 {
 	// enables pin output driver on pins D1 to D7 Table 123 on page 64
@@ -883,6 +899,7 @@ uint8_t MFRC522::TestPinEnReg ()
 	return res;
 }
 
+//34h TestPinValueReg defines the values for D1 to D7 when it is used as an I/O bus Table 125 on page 65
 uint8_t MFRC522::TestPinValueReg()
 {
 	//  defines the values for D1 to D7 when it is used as an I/O bus Table 125 on page 65
@@ -896,6 +913,7 @@ uint8_t MFRC522::TestPinValueReg()
 	return res;
 }
 
+//35h TestBusReg shows the status of the internal test bus Table 127 on page 65
 uint8_t MFRC522::TestBusReg()
 {
 	//  shows the status of the internal test bus Table 127 on page 65
@@ -905,6 +923,7 @@ uint8_t MFRC522::TestBusReg()
 	return res;
 }
 
+//36h AutoTestReg controls the digital self test Table 129 on page 66
 uint8_t MFRC522::AutoTestReg()
 {
 	//  controls the digital self test Table 129 on page 66
@@ -919,7 +938,8 @@ uint8_t MFRC522::AutoTestReg()
 	return res;
 }
 
-uint8_t MFRC522::VersionReg(uint8_t * chiptype, uint8_t * version)
+//37h VersionReg shows the software version Table 131 on page 66
+uint8_t MFRC522::versionReg(uint8_t * chiptype, uint8_t * version)
 {
 	//  shows the software version Table 131 on page 66
 
@@ -933,6 +953,7 @@ uint8_t MFRC522::VersionReg(uint8_t * chiptype, uint8_t * version)
 	return 0;
 }
 
+//38h AnalogTestReg controls the pins AUX1 and AUX2 Table 133 on page 67
 uint8_t MFRC522::AnalogTestReg()
 {
 	//  controls the pins AUX1 and AUX2 Table 133 on page 67
@@ -966,6 +987,7 @@ uint8_t MFRC522::AnalogTestReg()
 	return res;
 }
 
+//39h TestDAC1Reg defines the test value for TestDAC1 Table 135 on page 68
 uint8_t MFRC522::TestDAC1Reg()
 {
 	//  defines the test value for TestDAC1 Table 135 on page 68
@@ -976,6 +998,7 @@ uint8_t MFRC522::TestDAC1Reg()
 	return res;
 }
 
+//3Ah TestDAC2Reg defines the test value for TestDAC2 Table 137 on page 68
 uint8_t MFRC522::TestDAC2Reg()
 {
 	//  defines the test value for TestDAC2 Table 137 on page 68
@@ -986,6 +1009,7 @@ uint8_t MFRC522::TestDAC2Reg()
 	return res;
 }
 
+//3Bh TestADCReg shows the value of ADC I and Q channels Table 139 on page 68
 uint8_t MFRC522::TestADCReg()
 {
 	//  shows the value of ADC I and Q channels Table 139 on page 68

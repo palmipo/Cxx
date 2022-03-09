@@ -1,4 +1,10 @@
 #include "raspispi.h"
+#include "raspigpiofactory.h"
+#include "raspigpioexception.h"
+#include "raspigpio.h"
+#include "raspipia.h"
+#include "polldevice.h"
+#include "pollexception.h"
 #include "spiexception.h"
 #include "mfrc522.h"
 #include <cstdint>
@@ -7,25 +13,51 @@
 
 int main(int argc, char **argv)
 {
-try
-{
-RaspiSPI spi(argv[1]);
-spi.setMode(0);
-spi.setClockRate(1000000);
-spi.setBitPerWord(8);
+	try
+	{
+		RaspiSPI spi(argv[1]);
+		spi.setMode(0);
+		spi.setClockRate(1000000);
+		spi.setBitPerWord(8);
+/*
+		RaspiGpioFactory gpio_factory("/dev/gpiochip1");
+		
+		int32_t irq_pin = 1, rst_pin = 2;
+		RaspiGpio * rst = gpio_factory.outputs(&rst_pin, 1);
+		RaspiGpio * irq = gpio_factory.event(irq_pin, GPIOEVENT_REQUEST_FALLING_EDGE);
 
-MFRC522 rfid(&spi);
-uint8_t a, b;
-rfid.VersionReg(&a, &b);
+		RaspiPia rst_pia(rst);
+		RaspiPia irq_pia(irq);
 
-std::stringstream ss;
-ss << "version : " << (int)a << ", " << (int)b;
-std::cout << ss.str() << std::endl;
-}
-catch (SPIException e)
-{
-	std::cerr << e.what() << std::endl;
-}
+		MFRC522 rfid(&spi, &irq_pia, &rst_pia);
+*/
+		MFRC522 rfid(&spi, 0, 0);
 
-return 0;
+		rfid.init();
+
+		uint8_t a, b;
+		rfid.versionReg(&a, &b);
+
+		std::stringstream ss;
+		ss << "version : " << (int)a << ", " << (int)b;
+		std::cout << ss.str() << std::endl;
+	}
+	catch (RaspiGpioException e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	catch (SPIException e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	catch (PollException e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	catch (...)
+	{
+		std::cerr << "erreur" << std::endl;
+	}
+
+	return 0;
 }
