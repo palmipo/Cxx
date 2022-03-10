@@ -49,7 +49,6 @@ all: libi2cdevice.so
 #
 clean:
 	$(MAKE) -C $(LOG_PWD) $@
-	$(MAKE) -C $(UTIL_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(USBI2C_PWD) $@
@@ -144,12 +143,6 @@ libraspigpio.so:
 liblog.so:
 	$(MAKE) -C $(LOG_PWD) $@
 	ln -s $(LOG_PWD)/$@
-
-#
-#
-libutil.so:
-	$(MAKE) -C $(UTIL_PWD) $@
-	ln -s $(UTIL_PWD)/$@
 
 #
 #

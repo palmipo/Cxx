@@ -1,4 +1,10 @@
-#include "log.h"
+#ifndef LOG_H
+#define LOG_H
+
+#include <string>
+#include <cstdint>
+#include <mutex>
+#include "mutex.h"
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -11,36 +17,39 @@
 #include <unistd.h>
 #endif
 
-Log * Log::_instance = 0;
+#if defined __MINGW32__ ||  defined __CYGWIN__
+#ifdef MAKE_LOG_DLL
+#define LOG_DLL __declspec(dllexport)
+#else
+#define LOG_DLL __declspec(dllimport)
+#endif
+#else
+#define LOG_DLL
+#endif
 
 
-LogMutex::LogMutex(std::mutex & m)
-: m_(m)
+class LOG_DLL Log
 {
-	m_.lock();
-}
-
-LogMutex::~LogMutex()
-{
-	m_.unlock();
-}
-
-Log::Log()
+	private:
+		std::mutex m_;
+		std::string filename, filename_result;
+		std::chrono::time_point<std::chrono::high_resolution_clock> t0;
+Log()
 {
 	t0 = std::chrono::high_resolution_clock::now();
 }
 
-Log * Log::getLogger()
-{
-	if (!_instance)
-	{
-		_instance = new Log();
-	}
 
+
+public:
+
+static Log * getLogger()
+{
+	static Log * _instance = new Log();
 	return _instance;
 }
 
-void Log::setFileName(const std::string & fic1, const std::string & fic2)
+void setFileName(const std::string & fic1, const std::string & fic2)
 {
 	/*
 	char nom_machine[256];
@@ -62,32 +71,32 @@ void Log::setFileName(const std::string & fic1, const std::string & fic2)
 	filename_result = fic2;
 }
 
-void Log::debug(const std::string & fichier, int32_t ligne, const std::string & txt)
+void debug(const std::string & fichier, int32_t ligne, const std::string & txt)
 {
 	libre("DEBUG", fichier, std::to_string(ligne), txt);
 }
 
-void Log::info(const std::string & fichier, int32_t ligne, const std::string & txt)
+void info(const std::string & fichier, int32_t ligne, const std::string & txt)
 {
 	libre("INFO", fichier, std::to_string(ligne), txt);
 }
 
-void Log::warn(const std::string & fichier, int32_t ligne, const std::string & txt)
+void warn(const std::string & fichier, int32_t ligne, const std::string & txt)
 {
 	libre("WARNING", fichier, std::to_string(ligne), txt);
 }
 
-void Log::error(const std::string & fichier, int32_t ligne, const std::string & txt)
+void error(const std::string & fichier, int32_t ligne, const std::string & txt)
 {
 	libre("ERROR", fichier, std::to_string(ligne), txt);
 }
 
-void Log::fatal(const std::string & fichier, int32_t ligne, const std::string & txt)
+void fatal(const std::string & fichier, int32_t ligne, const std::string & txt)
 {
 	libre("FATAL", fichier, std::to_string(ligne), txt);
 }
 
-void Log::result(const std::string & fichier, const std::string & ligne, const std::string & OK_KO, const std::string & txt)
+void result(const std::string & fichier, const std::string & ligne, const std::string & OK_KO, const std::string & txt)
 {
 	std::stringstream ss;
 	ss << OK_KO;
@@ -103,9 +112,9 @@ void Log::result(const std::string & fichier, const std::string & ligne, const s
 	}
 }
 
-void Log::libre(const std::string & type, const std::string & fichier, const std::string & ligne, const std::string & txt)
+void libre(const std::string & type, const std::string & fichier, const std::string & ligne, const std::string & txt)
 {
-	LogMutex mutex(m_);
+	Mutex mutex(m_);
 
 	std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - t0;
 
@@ -128,3 +137,6 @@ void Log::libre(const std::string & type, const std::string & fichier, const std
 		os << ss.str() << std::endl;
 	}
 }
+};
+
+#endif /* LOG_H */

@@ -19,10 +19,6 @@ all: libraspispi.so
 clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll
 
-libutil.so:
-	$(MAKE) -C $(UTIL_PWD) $@
-	ln -s $(UTIL_PWD)/$@
-
 libraspispi.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 

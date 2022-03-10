@@ -10,9 +10,8 @@ CC = g++
 
 UTIL_PWD = ../../../util
 POLL_PWD = ../poll
-LOG_PWD = ../log
-INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc
-LIBS = -L. -lutil -lpoll -llog
+INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -Isrc
+LIBS = -L. -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -DRASPI
 LDFLAGS = $(LIBS)
@@ -23,8 +22,6 @@ clean:
 	rm -f $(BIN_PWD)/*.o *.so *.dll fwup* dump*
 
 rsclb : $(BIN_PWD)/rsclb.o
-	$(MAKE) liblog.so
-	$(MAKE) libutil.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
@@ -33,13 +30,11 @@ $(BIN_PWD)/rsclb.o: test/main.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 fwup : $(BIN_PWD)/fwup.o
-	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
 
 fwup.exe : $(BIN_PWD)/fwup.o
-	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) librs232.dll
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
@@ -48,15 +43,11 @@ $(BIN_PWD)/fwup.o: test/fwup.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 dump : $(BIN_PWD)/dump.o
-	$(MAKE) libutil.so
-	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
 
 dump.exe : $(BIN_PWD)/dump.o
-	$(MAKE) libutil.dll
-	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) librs232.dll
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
@@ -65,15 +56,11 @@ $(BIN_PWD)/dump.o: test/dump.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 echo : $(BIN_PWD)/echo.o
-	$(MAKE) libutil.so
-	$(MAKE) liblog.so
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
 
 echo.exe : $(BIN_PWD)/echo.o
-	$(MAKE) libutil.dll
-	$(MAKE) liblog.dll
 	$(MAKE) libpoll.dll
 	$(MAKE) librs232.dll
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
@@ -82,14 +69,6 @@ $(BIN_PWD)/echo.o: test/echo.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 # LINUX
-libutil.so:
-	$(MAKE) -C $(UTIL_PWD) $@
-	ln -s $(UTIL_PWD)/$@
-
-liblog.so:
-	$(MAKE) -C $(LOG_PWD) $@
-	ln -s $(LOG_PWD)/$@
-
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
 	ln -s $(POLL_PWD)/$@
@@ -98,14 +77,6 @@ librs232.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
 # WINDOWS
-libutil.dll:
-	$(MAKE) -C $(UTIL_PWD) $@
-	cp $(UTIL_PWD)/$@ .
-
-liblog.dll:
-	$(MAKE) -C $(LOG_PWD) $@
-	cp $(LOG_PWD)/$@ .
-
 libpoll.dll:
 	$(MAKE) libutil.dll
 	$(MAKE) liblog.dll
