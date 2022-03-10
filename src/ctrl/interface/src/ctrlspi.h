@@ -8,7 +8,7 @@ class CtrlSPI : public Device
 {
 public:
 	CtrlSPI()
-	:Device(DeviceType::SPI)
+	:Device(Device::DeviceType_SPI)
 	{}
 
 	virtual ~CtrlSPI()
