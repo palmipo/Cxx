@@ -6,13 +6,22 @@
 class Device
 {
 	public:
-		enum DeviceType { GPIO = 1, I2C, SPI, UART, SOCKET, JOYSTICK, CAN } DeviceType;
+		const uint8_t DeviceType_GPIO = 1;
+		const uint8_t DeviceType_I2C = 2;
+		const uint8_t DeviceType_SPI = 3;
+		const uint8_t DeviceType_UART = 4;
+		const uint8_t DeviceType_SOCKET = 5;
+		const uint8_t DeviceType_JOYSTICK = 6;
+		const uint8_t DeviceType_CAN = 7;
+		const uint8_t DeviceType_I2C_DEVICE = 8;
+		const uint8_t DeviceType_SPI_DEVICE = 9;
+		const uint8_t DeviceType_UART_DEVICE = 10;
 
-		Device(enum DeviceType type)
+		Device(uint8_t type)
 		: _type(type)
 		{}
 
-		enum DeviceType type()
+		uint8_t type()
 		{
 		    return _type;
 		}
@@ -23,7 +32,7 @@ class Device
 		}
 
 	protected:
-		enum DeviceType _type;
+		uint8_t _type;
 };
 
 #endif
