@@ -17,7 +17,17 @@ public:
 	uint8_t readRegister (uint8_t addr);
 	void writeRegister (uint8_t addr, uint8_t val);
 
-	void setCommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command);
+	const uint8_t CommandReg_idle = 0x01;
+	const uint8_t CommandReg_mem = 0x02;
+	const uint8_t CommandReg_generarteRandomID = 0x03;
+	const uint8_t CommandReg_calCrc = 0x04;
+	const uint8_t CommandReg_transmit = 0x05;
+	const uint8_t CommandReg_noCmdCharge = 0x06;
+	const uint8_t CommandReg_receive = 0x07;
+	const uint8_t CommandReg_transceive = 0x08;
+	const uint8_t CommandReg_mfAuthent = 0x09;
+	const uint8_t CommandReg_softReset = 0xffff;
+ 	void setCommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command);
 	void commandReg(uint8_t * RcvOff, uint8_t * PowerDown, uint8_t * Command);
 
 	uint8_t setComlEnReg(uint8_t IRqInv, uint8_t TxIEn, uint8_t RxIEn, uint8_t IdleIEn, uint8_t HiAlertIEn, uint8_t LoAlertIEn, uint8_t ErrIEn, uint8_t TimerIEn);
