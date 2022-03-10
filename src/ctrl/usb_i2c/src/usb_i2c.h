@@ -15,8 +15,6 @@ class UsbI2C : public CtrlI2C
 
 		virtual uint8_t getVersion();
 
-		virtual void setOwnAddress (uint8_t own_address);
-
 		virtual void set (uint8_t addr, uint8_t* buf, int32_t len);
 		virtual void get (uint8_t addr, uint8_t* buf, int32_t len);
 		virtual void transfer (uint8_t addr, uint8_t* cmd, int32_t cmd_len, uint8_t* buf, int32_t buf_len);
