@@ -76,6 +76,7 @@
 
 
 RaspiI2C::RaspiI2C(const char * device)
+: CtrlI2C()
 {
 	if ((_fd = open(device, O_RDWR)) < 0)
 	{
