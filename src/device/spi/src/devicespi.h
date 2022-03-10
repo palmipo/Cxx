@@ -5,8 +5,9 @@
 
 class DeviceSPI : public Device
 {
+public:
 DeviceSPI()
-: Device(DeviceType_SPI_DEVICE)
+: Device(Device::DeviceType_SPI_DEVICE)
 {}
 
 virtual ~DeviceSPI()

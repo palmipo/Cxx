@@ -6,7 +6,7 @@
 
 class PIA;
 class CtrlSPI;
-class MFRC522 : public DeviveSPI
+class MFRC522 : public DeviceSPI
 {
 public:
 	MFRC522(CtrlSPI * ctrl, PIA * irq = 0, PIA * rst = 0);
@@ -27,7 +27,7 @@ public:
 	const uint8_t CommandReg_receive = 0x07;
 	const uint8_t CommandReg_transceive = 0x08;
 	const uint8_t CommandReg_mfAuthent = 0x09;
-	const uint8_t CommandReg_softReset = 0xffff;
+	const uint8_t CommandReg_softReset = 0x0f;
  	void setCommandReg(uint8_t RcvOff, uint8_t PowerDown, uint8_t Command);
 	void commandReg(uint8_t * RcvOff, uint8_t * PowerDown, uint8_t * Command);
 

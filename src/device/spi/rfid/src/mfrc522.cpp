@@ -8,7 +8,12 @@ MFRC522::MFRC522(CtrlSPI * ctrl, PIA * irq, PIA * rst)
 , _spi(ctrl)
 , _irq_gpio(irq)
 , _rst_gpio(rst)
-{}
+{
+	if (_rst_gpio)
+	{
+		_rst_gpio->write(1);
+	}
+}
 
 MFRC522::~MFRC522()
 {}
@@ -96,6 +101,7 @@ void MFRC522::commandReg(uint8_t * RcvOff, uint8_t * PowerDown, uint8_t * Comman
 	// starts and stops command execution
 
 	uint8_t res = readRegister (0x01);
+
 	//~ 5 RcvOff 1 analog part of the receiver is switched off
 	*RcvOff = (res & (1 << 5)) ? 1 : 0;
 	//~ 4 PowerDown

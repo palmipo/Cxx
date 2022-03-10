@@ -32,13 +32,12 @@ POLL_PWD = $(RASPI_PWD)/poll
 INTERFACE_PWD = $(CTRL_PWD)/interface
 I2C_PWD = $(RASPI_PWD)/i2c
 RS232_PWD = $(RASPI_PWD)/rs232
-LOG_PWD = $(RASPI_PWD)/log
 GPIO_PWD = $(RASPI_PWD)/gpio
 PIA_PWD = ../pia
 CC = g++
 MAKE = make
-INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -Isrc -I$(PIA_PWD)/src -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(LOG_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -llog -li2cdevice -lpoll
+INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -Isrc -I$(PIA_PWD)/src -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(GPIO_PWD)/src
+LIBS = -L. -li2cdevice -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -48,7 +47,6 @@ all: libi2cdevice.so
 #
 #
 clean:
-	$(MAKE) -C $(LOG_PWD) $@
 	$(MAKE) -C $(POLL_PWD) $@
 	$(MAKE) -C $(RS232_PWD) $@
 	$(MAKE) -C $(USBI2C_PWD) $@
@@ -58,13 +56,13 @@ clean:
 
 #
 #
-bmp280: $(BIN_PWD)/test_bmp280.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so
-	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -llog
+bmp280: $(BIN_PWD)/test_bmp280.o libpoll.so libi2cdevice.so libraspii2c.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_bmp280.o: test/test_bmp280.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-ph_hd: $(BIN_PWD)/ph_hd.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
+ph_hd: $(BIN_PWD)/ph_hd.o libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -lraspigpio
 
 $(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
@@ -72,7 +70,7 @@ $(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
 
 #
 #
-ph_enviro: $(BIN_PWD)/test_phat_enviro.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
+ph_enviro: $(BIN_PWD)/test_phat_enviro.o libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_phat_enviro.o: test/test_phat_enviro.cpp
@@ -80,7 +78,7 @@ $(BIN_PWD)/test_phat_enviro.o: test/test_phat_enviro.cpp
 
 #
 #
-test_saa1064: $(BIN_PWD)/test_saa1064.o liblog.so libpoll.so libi2cdevice.so libusbi2c.so librs232.so
+test_saa1064: $(BIN_PWD)/test_saa1064.o libpoll.so libi2cdevice.so libusbi2c.so librs232.so
 	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS) -lusbi2c -lrs232
 
 $(BIN_PWD)/test_saa1064.o: test/test_saa1064.cpp
@@ -88,7 +86,7 @@ $(BIN_PWD)/test_saa1064.o: test/test_saa1064.cpp
 
 #
 #
-test_nunchuk: $(BIN_PWD)/test_nunchuk.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so
+test_nunchuk: $(BIN_PWD)/test_nunchuk.o libpoll.so libi2cdevice.so libraspii2c.so
 	$(CC) -DUSB_I2C -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_nunchuk.o: test/test_nunchuk.cpp
@@ -96,7 +94,7 @@ $(BIN_PWD)/test_nunchuk.o: test/test_nunchuk.cpp
 
 #
 #
-test_mcp23017: $(BIN_PWD)/test_mcp23017.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so
+test_mcp23017: $(BIN_PWD)/test_mcp23017.o libpoll.so libi2cdevice.so libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_mcp23017.o: test/test_mcp23017.cpp
@@ -104,7 +102,7 @@ $(BIN_PWD)/test_mcp23017.o: test/test_mcp23017.cpp
 
 #
 #
-test_pca9685: $(BIN_PWD)/test_pca9685.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so
+test_pca9685: $(BIN_PWD)/test_pca9685.o libpoll.so libi2cdevice.so libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_pca9685.o: test/test_pca9685.cpp
@@ -112,7 +110,7 @@ $(BIN_PWD)/test_pca9685.o: test/test_pca9685.cpp
 
 #
 #
-test_ds1307: $(BIN_PWD)/test_ds1307.o liblog.so libpoll.so libi2cdevice.so libusbi2c.so librs232.so
+test_ds1307: $(BIN_PWD)/test_ds1307.o libpoll.so libi2cdevice.so libusbi2c.so librs232.so
 	$(CC) -o $@ $< $(LDFLAGS) -lrs232 -lusbi2c
 
 $(BIN_PWD)/test_ds1307.o: test/test_ds1307.cpp
@@ -120,7 +118,7 @@ $(BIN_PWD)/test_ds1307.o: test/test_ds1307.cpp
 
 #
 #
-test_ds1621: $(BIN_PWD)/test_ds1621.o liblog.so libpoll.so libi2cdevice.so libraspii2c.so
+test_ds1621: $(BIN_PWD)/test_ds1621.o libpoll.so libi2cdevice.so libraspii2c.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
 
 $(BIN_PWD)/test_ds1621.o: test/test_ds1621.cpp
@@ -137,12 +135,6 @@ libraspii2c.so:
 libraspigpio.so:
 	$(MAKE) -C $(GPIO_PWD) $@
 	ln -s $(GPIO_PWD)/$@
-
-#
-#
-liblog.so:
-	$(MAKE) -C $(LOG_PWD) $@
-	ln -s $(LOG_PWD)/$@
 
 #
 #
