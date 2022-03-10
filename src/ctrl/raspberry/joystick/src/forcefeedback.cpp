@@ -13,7 +13,7 @@
  * https://www.kernel.org/doc/Documentation/input/ff.txt
  */
 ForceFeedback::ForceFeedback(const std::string & eventXX)
-: PollDevice(DeviceType::JOYSTICK)
+: PollDevice(Device::DeviceType_JOYSTICK)
 {
     _handler = ::open(eventXX.c_str(), O_RDWR);
     if (_handler < 0)
