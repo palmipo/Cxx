@@ -6,7 +6,7 @@
 #include "log.h"
 
 RaspiGpio::RaspiGpio(int32_t * pins, int32_t length, int32_t handler)
-: PollDevice(Device::GPIO, handler)
+: PollDevice(Device::DeviceType_GPIO, handler)
 , _pins_number(new int32_t[length])
 , _pins_length(length)
 {
