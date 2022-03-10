@@ -5,13 +5,13 @@
 
 /* constructeur socket client */
 Socket::SocketBase::SocketBase()
-: PollDevice(Device::SOCKET)
+: PollDevice(Device::DeviceType_SOCKET)
 , _srv_mode(0)
 {}
 
 /* constructeur socket serveur */
 Socket::SocketBase::SocketBase(const std::string & addr, int16_t port)
-: PollDevice(Device::SOCKET)
+: PollDevice(Device::DeviceType_SOCKET)
 , _srv_mode(1)
 {}
 
