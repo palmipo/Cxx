@@ -15,7 +15,7 @@
  * https://www.kernel.org/doc/Documentation/input/joystick-api.txt
  */
 Joystick::Joystick(const std::string & jsX)
-: PollDevice(DeviceType::JOYSTICK)
+: PollDevice(Device::DeviceType_JOYSTICK)
 {
 	_handler = ::open(jsX.c_str(), O_RDONLY);
 	if (_handler < 0)
