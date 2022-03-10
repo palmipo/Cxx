@@ -5,14 +5,13 @@ OBJECTS = \
 
 POLL_PWD = ../../ctrl/raspberry/poll
 UTIL_PWD = ../../util
-LOG_PWD = ../../ctrl/raspberry/log
 GPIO_PWD = ../../ctrl/raspberry/gpio
 CC = g++
 MAKE = make
 INCLUDE = -Isrc -I$(GPIO_PWD)/src -I$(POLL_PWD)/src -I$(UTIL_PWD)/src
-LIBS = -L. -lraspigpio -lpoll -lutil
+LIBS = -L. -lraspigpio -lpoll
 
-CFLAGS = -g -std=c++11 $(INCLUDE) -DRASPI -fPIC
+CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
 
 all:
@@ -37,23 +36,17 @@ liblog.so:
 
 #
 #
-libutil.so:
-	$(MAKE) -C $(UTIL_PWD) $@
-	ln -s $(UTIL_PWD)/$@
-
-#
-#
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
 	ln -s $(POLL_PWD)/$@
 
 #
 #
-libpia.so: $(OBJECTS) libutil.so libpoll.so libraspigpio.so
+libpia.so: $(OBJECTS) libpoll.so libraspigpio.so
 	$(CC) $(CFLAGS) -shared $^ -o $@
 
 #
 #
 $(BIN_PWD)/%.o: src/%.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@ -fPIC -DRASPI
 
