@@ -1,11 +1,12 @@
 #ifndef NFRC522_H
 #define NFRC522_H
 
+#include "device.h"
 #include <cstdint>
 
 class PIA;
 class CtrlSPI;
-class MFRC522
+class MFRC522 : public Devive
 {
 public:
 	MFRC522(CtrlSPI * ctrl, PIA * irq = 0, PIA * rst = 0);
