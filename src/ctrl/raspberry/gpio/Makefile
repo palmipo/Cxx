@@ -10,7 +10,7 @@ CC = g++
 POLL_PWD = ../poll
 UTIL_PWD = ../../../util
 INCLUDE = -I$(POLL_PWD)/src -I$(UTIL_PWD)/src -Isrc
-LIBS = -L. -lpoll -lutil
+LIBS = -L. -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)

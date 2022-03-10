@@ -42,8 +42,6 @@ libsocket.so: $(OBJECTS)
 
 # WINDOWS
 libpoll.dll:
-	$(MAKE) libutil.dll
-	$(MAKE) liblog.dll
 	$(MAKE) -C $(POLL_PWD) $@
 	cp $(POLL_PWD)/$@ .
 
