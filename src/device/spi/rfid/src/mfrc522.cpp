@@ -40,23 +40,24 @@ void MFRC522::init()
 
 void MFRC522::softReset()
 {
-	uint8_t RcvOff=1, PowerDown=1, Command=0xffff;
+	uint8_t RcvOff=1, PowerDown=1, Command=CommandReg_softReset;
 	setCommandReg(RcvOff, PowerDown, Command);
 	
+	commandReg(&RcvOff, &PowerDown, &Command);
 	while (PowerDown)
 	{
-	Tempo::millisecondes (500);
+		Tempo::millisecondes (500);
 		commandReg(&RcvOff, &PowerDown, &Command);
 	}
 }
 
 uint8_t MFRC522::readRegister (uint8_t addr)
 {
-	int32_t length = 1;
-	uint8_t cmd[] = { (((addr << 1) & 0x7e) | 0x80) };
+	int32_t length = 2;
+	uint8_t cmd[] = { (((addr << 1) & 0x7e) | 0x80), 0 };
 	uint8_t data[ length ];
 	_spi->transfer(cmd, data, length);
-	return data[0];
+	return data[1];
 }
 
 void MFRC522::writeRegister (uint8_t addr, uint8_t val)
