@@ -16,7 +16,7 @@
 #include "log.h"
 
 RS232::RS232(const std::string & device_p)
-: PollDevice(Device::UART)
+: PollDevice(Device::DeviceType_UART)
 {
 	{
 		std::stringstream ss;
