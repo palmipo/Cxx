@@ -44,9 +44,6 @@ uint8_t UsbI2C::getVersion()
 	return version;
 }
 
-void UsbI2C::setOwnAddress(uint8_t own_address)
-{}
-
 void UsbI2C::set (uint8_t addr, uint8_t* buf, int32_t len)
 {
 	if (len == 1)
