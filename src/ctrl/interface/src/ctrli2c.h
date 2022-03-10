@@ -8,7 +8,7 @@ class CtrlI2C : public Device
 {
 public:
 	CtrlI2C()
-	: Device(DeviceType::I2C)
+	: Device(Device::DeviceType_I2C)
 	{}
 
 	virtual ~CtrlI2C()
