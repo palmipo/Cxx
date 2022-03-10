@@ -9,7 +9,7 @@ class DeviceI2C : public Device
 {
 	public:
 		DeviceI2C(uint8_t addr, CtrlI2C * bus)
-		: Device(DeviceType::I2C)
+		: Device(Device::DeviceType_I2C_DEVICE)
 		, _address(addr)
 		, _twi(bus)
 		{}
