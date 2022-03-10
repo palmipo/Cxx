@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 		spi.setClockRate(1000000);
 		spi.setBitPerWord(8);
 
-		RaspiGpioFactory gpio_factory("/dev/gpiochip1");
+		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
 		
 		int32_t irq_pin = 24, rst_pin = 25;
 		RaspiGpio * rst = gpio_factory.outputs(&rst_pin, 1);
