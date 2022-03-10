@@ -4,7 +4,8 @@
 #include "tempo.h"
 
 MFRC522::MFRC522(CtrlSPI * ctrl, PIA * irq, PIA * rst)
-: _spi(ctrl)
+: Device(Device::DeviceType_SPI_DEVICE)
+, _spi(ctrl)
 , _irq_gpio(irq)
 , _rst_gpio(rst)
 {}
