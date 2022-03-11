@@ -21,6 +21,10 @@ LDFLAGS = $(LIBS)
 all: test_rfid
 
 clean:
+	$(MAKE) -C $(POLL_PWD) $@
+	$(MAKE) -C $(GPIO_PWD) $@
+	$(MAKE) -C $(SPI_PWD) $@
+	$(MAKE) -C $(PIA_PWD) $@
 	rm $(BIN_PWD)/*.o libpia.so  libpoll.so  libraspigpio.so libspidevice.so libraspispi.so test_rfid
 
 test_rfid: $(BIN_PWD)/test_rfid.o libspidevice.so libraspispi.so libraspigpio.so libpia.so libpoll.so
