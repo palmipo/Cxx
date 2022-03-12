@@ -17,9 +17,9 @@ int main(int argc, char **argv)
 	{
 		RaspiSPI spi("/dev/spidev0.0");
 		spi.setMode(0);
-		spi.setClockRate(1000000);
+		spi.setClockRate(100000);
 		spi.setBitPerWord(8);
-/*
+
 		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
 		
 		int32_t irq_pin = 24, rst_pin = 25;
@@ -30,8 +30,7 @@ int main(int argc, char **argv)
 		RaspiPia irq_pia(irq);
 
 		MFRC522 rfid(&spi, &irq_pia, &rst_pia);
-*/
-		MFRC522 rfid(&spi, 0, 0);
+		//MFRC522 rfid(&spi, 0, 0);
 
 		rfid.init();
 

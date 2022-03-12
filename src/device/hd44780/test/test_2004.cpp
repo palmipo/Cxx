@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 		std::string str_date, str_heure, str_tempe;
 		struct tm *la_date;
 		long t;
-		//while (1)
+		while (1)
 		{
 			time(&t);
 			la_date = localtime(&t);
