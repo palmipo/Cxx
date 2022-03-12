@@ -1,16 +1,3 @@
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-#include <thread>
-/*
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <poll.h>
-*/
 #include "raspii2c.h"
 #include "ada772.h"
 #include "hd44780.h"
@@ -20,6 +7,10 @@
 #include "pollfactory.h"
 #include "polldevice.h"
 #include "tempo.h"
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include <thread>
 
 static void bouton(unsigned char value, void *user_data)
 {
@@ -77,7 +68,7 @@ int main(int argc, char **argv)
 		HD44780 lcd(&lcd_io, 16, 2);
 
 		RaspiGpioFactory gpio_fact("/dev/gpiochip0");
-		RaspiGpio * gpio = gpio_fact.event(14, GPIOEVENT_REQUEST_FALLING_EDGE);
+		RaspiGpio * gpio = gpio_fact.event(4);
 
 		PollFactory poll_fact;
 		poll_fact.setActionInCallback(irq, &lcd_io);
@@ -111,7 +102,10 @@ int main(int argc, char **argv)
 
 			Tempo::secondes(30);
 		}
+
 		fin = 1;
+		my_thread.join();
+
 		Tempo::minutes(1);
 	}
 	catch(...)
