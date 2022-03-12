@@ -11,7 +11,7 @@ int main(int argc, char ** argv)
 
 	try
 	{
-		BatmintonFactory factory("/dev/gpiochip0");
+		BatmintonFactory factory;
 
 		while(!fin)
 		{

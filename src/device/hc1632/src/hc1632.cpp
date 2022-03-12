@@ -1,13 +1,11 @@
 #include "hc1632.h"
-#include "gpio.h"
+#include "pia.h"
+#include "tempo.h"
 #include "log.h"
-
-#include <chrono>
-#include <thread>
 
 #define TEMPO 1
 
-HC1632::HC1632(Gpio * data, Gpio * write, std::vector < Gpio * > cs)
+HC1632::HC1632(PIA * data, PIA * write, PIA * cs, uint8_t master_mode)
 : _gpio_data(data)
 , _gpio_write(write)
 , _gpio_chipSelect(cs)
@@ -15,23 +13,16 @@ HC1632::HC1632(Gpio * data, Gpio * write, std::vector < Gpio * > cs)
 	uint8_t valeur = 1;
 	_gpio_write->write(valeur);
 	_gpio_data->write(valeur);
+	_gpio_chipSelect->write(valeur);
 
-	std::vector < Gpio * >::iterator it = cs.begin();
-	while (it != cs.end())
-	{
-		// _gpio_chipSelect.push_back(*it);
-		(*it)->write(valeur);
-		it++;
-	}
-	
-	init(cs.size());
+	init(master_mode);
 }
 
-void HC1632::write_chipselect(int32_t matrice, uint8_t valeur)
+void HC1632::write_chipselect(uint8_t valeur)
 {
 	uint8_t value = 1 - valeur;
-	_gpio_chipSelect[matrice]->write(value);
-	std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	_gpio_chipSelect->write(value);
+	Tempo::microsecondes(TEMPO);
 }
 
 
@@ -42,17 +33,17 @@ void HC1632::write_bit(uint8_t valeur)
 
 	value = valeur?1:0;
 	_gpio_data->write(value);
-	std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	Tempo::microsecondes(TEMPO);
 
 	value = 1;
 	_gpio_write->write(value);
-	std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	Tempo::microsecondes(TEMPO);
 }
 
 
-void HC1632::write_sys(int32_t matrice, uint8_t on)
+void HC1632::write_sys(uint8_t on)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
   
   write_bit(1);
   write_bit(0);
@@ -70,13 +61,13 @@ void HC1632::write_sys(int32_t matrice, uint8_t on)
   
   write_bit(0);
   
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_com_option(int32_t matrice, uint8_t config)
+void HC1632::write_com_option(uint8_t config)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
 
   write_bit(1);
   write_bit(0);
@@ -94,13 +85,13 @@ void HC1632::write_com_option(int32_t matrice, uint8_t config)
 
   write_bit(0);
 
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_mode(int32_t matrice, uint8_t mode)
+void HC1632::write_mode(uint8_t mode)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
   
   write_bit(1);
   write_bit(0);
@@ -118,13 +109,13 @@ void HC1632::write_mode(int32_t matrice, uint8_t mode)
   
   write_bit(0);
   
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_led(int32_t matrice, uint8_t on)
+void HC1632::write_led(uint8_t on)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
   
   write_bit(1);
   write_bit(0);
@@ -142,13 +133,13 @@ void HC1632::write_led(int32_t matrice, uint8_t on)
   
   write_bit(0);
   
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_blink(int32_t matrice, uint8_t on)
+void HC1632::write_blink(uint8_t on)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
   
   write_bit(1);
   write_bit(0);
@@ -166,13 +157,13 @@ void HC1632::write_blink(int32_t matrice, uint8_t on)
   
   write_bit(0);
   
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_led_pwm(int32_t matrice, uint8_t intensity)
+void HC1632::write_led_pwm(uint8_t intensity)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
   
   write_bit(1);
   write_bit(0);
@@ -190,13 +181,13 @@ void HC1632::write_led_pwm(int32_t matrice, uint8_t intensity)
   
   write_bit(0);
   
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_led_buffer(int32_t matrice, uint8_t * buffer, int32_t length)
+void HC1632::write_led_buffer(uint8_t * buffer, int32_t length)
 {
-  write_chipselect(matrice, 1);
+  write_chipselect(1);
   
   write_bit(1);
   write_bit(0);
@@ -220,13 +211,13 @@ void HC1632::write_led_buffer(int32_t matrice, uint8_t * buffer, int32_t length)
     }
   }
 
-  write_chipselect(matrice, 0);
+  write_chipselect(0);
 }
 
 
-void HC1632::write_led_pixel(int32_t matrice, uint8_t quartet, uint8_t buffer)
+void HC1632::write_led_pixel(uint8_t quartet, uint8_t buffer)
 {
-	write_chipselect(matrice, 1);
+	write_chipselect(1);
 
 	write_bit(1);
 	write_bit(0);
@@ -244,37 +235,34 @@ void HC1632::write_led_pixel(int32_t matrice, uint8_t quartet, uint8_t buffer)
 		write_bit(buffer&(1<<i));
 	}
 
-	write_chipselect(matrice, 0);
+	write_chipselect(0);
 }
 
-void HC1632::init(int32_t nb_matrix)
+void HC1632::init(uint8_t master_mode)
 {
-	for (int32_t i=0; i<nb_matrix; ++i)
-	{
-		// SYS DIS
-		write_sys(i, 0x00);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	// SYS DIS
+	write_sys(0x00);
+	Tempo::microsecondes(TEMPO);
 
-		// COM OPTION
-		write_com_option(i, 1);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	// COM OPTION
+	write_com_option(1);
+	Tempo::microsecondes(TEMPO);
 
-		// MASTER MODE
-		write_mode(i, (i==0) ? 2 : 0);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	// MASTER MODE
+	write_mode((master_mode) ? 2 : 0);
+	Tempo::microsecondes(TEMPO);
 
-		// SYS ON
-		write_sys(i, 0x01);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	// SYS ON
+	write_sys(0x01);
+	Tempo::microsecondes(TEMPO);
 
-		// LED ON
-		write_led(i, 0x01);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	// LED ON
+	write_led(0x01);
+	Tempo::microsecondes(TEMPO);
 
-		write_blink(i, 0x00);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
+	write_blink(0x00);
+	Tempo::microsecondes(TEMPO);
 
-		write_led_pwm(i, 0x02);
-		std::this_thread::sleep_for(std::chrono::microseconds(TEMPO));
-	}
+	write_led_pwm(0x02);
+	Tempo::microsecondes(TEMPO);
 }

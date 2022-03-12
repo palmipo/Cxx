@@ -1,10 +1,11 @@
 #include "badmintonfactory.h"
-#include "gpio.h"
+#include "raspigpiofactory.h"
+#include "raspigpio.h"
+#include "raspipia.h"
 #include "gpioexception.h"
 #include "log.h"
 #include "hc1632.h"
 
-#include <linux/gpio.h>
 #include <sstream>
 #include <vector>
 #include <thread>
@@ -36,8 +37,8 @@ const int32_t NB_POINT = 48;
 int32_t score_droit = 0;
 int32_t score_gauche = 0;
 
-BatmintonFactory::BatmintonFactory(const std::string & device)
-: GpioFactory(device)
+BatmintonFactory::BatmintonFactory()
+: Pollactory()
 , _status(0)
 {
 // GPIOHANDLE_REQUEST_INPUT
@@ -45,33 +46,39 @@ BatmintonFactory::BatmintonFactory(const std::string & device)
 // GPIOHANDLE_REQUEST_ACTIVE_LOW
 // GPIOHANDLE_REQUEST_OPEN_DRAIN
 // GPIOHANDLE_REQUEST_OPEN_SOURCE
-	Gpio * _bt_raz = event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE);
-	Gpio * _bt_droite = event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
-	Gpio * _bt_gauche = event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
-	Gpio * _bt_fin = event(FIN_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+	RaspiGpioFactory gpio_fact("/dev/gpiochip0");
+	RaspiGpio * _bt_raz = gpio_fact.event(RAZ_PIN,GPIOEVENT_REQUEST_FALLING_EDGE);
+	RaspiGpio * _bt_droite = gpio_fact.event(DROITE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+	RaspiGpio * _bt_gauche = gpio_fact.event(GAUCHE_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+	RaspiGpio * _bt_fin = gpio_fact.event(FIN_PIN, GPIOEVENT_REQUEST_FALLING_EDGE);
+	add(_bt_raz);
+	add(_bt_droite);
+	add(_bt_gauche);
+	add(_bt_fin);
 
-	Gpio * _data = output(DATA_PIN);
-	Gpio * _write = output(WRITE_PIN);
-	std::vector < Gpio * > _cs_vector;
+	RaspiGpio * _data = gpio_fact.output(&DATA_PIN, 1);
+	RaspiPIA pia_data(_data);
+	RaspiGpio * _write = gpio_fact.output(&WRITE_PIN, 1);
+	RaspiPIA pia_write(_write);
 	for (int32_t i=0; i<NB_MATRIX; ++i)
 	{
-		Gpio * cs = output(CS_PIN[i]);
-		_cs_vector.push_back(cs);
+		RaspiGpio * cs = gpio_fact.output(&CS_PIN[i], 1);
+		RaspiPIA pia_cs(_cs);
+		_matrix.push_back(new HC1632(pia_data, pia_write, pia_cs, ((i==0) ? 2 : 0)));
 	}
 
-	_matrix = new HC1632(_data, _write, _cs_vector);
 
-	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
-//	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
-//	_matrix->write_led_buffer(4, tiret, NB_POINT);
-//	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
-//	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
+	_matrix[0]->write_led_buffer(chiffre[score_gauche/10], NB_POINT);
+//	_matrix[2]->write_led_buffer(chiffre[score_gauche%10], NB_POINT);
+//	_matrix[4]->write_led_buffer(tiret, NB_POINT);
+//	_matrix[6]->write_led_buffer(chiffre[score_droit/10], NB_POINT);
+//	_matrix[8]->write_led_buffer(chiffre[score_droit%10], NB_POINT);
 
-//	_matrix->write_led_buffer(1, terrain[0], NB_POINT);
-//	_matrix->write_led_buffer(3, terrain[1], NB_POINT);
-//	_matrix->write_led_buffer(5, terrain[2], NB_POINT);
-//	_matrix->write_led_buffer(7, terrain[3], NB_POINT);
-//	_matrix->write_led_buffer(9, terrain[4], NB_POINT);
+//	_matrix[1]->write_led_buffer(terrain[0], NB_POINT);
+//	_matrix[3]->write_led_buffer(terrain[1], NB_POINT);
+//	_matrix[5]->write_led_buffer(terrain[2], NB_POINT);
+//	_matrix[7]->write_led_buffer(terrain[3], NB_POINT);
+//	_matrix[9]->write_led_buffer(terrain[4], NB_POINT);
 
 	_last_valid_irq = std::chrono::high_resolution_clock::now();
 
@@ -147,9 +154,9 @@ int32_t BatmintonFactory::status()
 
 void BatmintonFactory::majAffichage()
 {
-	_matrix->write_led_buffer(0, chiffre[score_gauche/10], NB_POINT);
-//	_matrix->write_led_buffer(2, chiffre[score_gauche%10], NB_POINT);
-//	_matrix->write_led_buffer(6, chiffre[score_droit/10], NB_POINT);
-//	_matrix->write_led_buffer(8, chiffre[score_droit%10], NB_POINT);
+	_matrix[0]->write_led_buffer(chiffre[score_gauche/10], NB_POINT);
+//	_matrix[2]->write_led_buffer(chiffre[score_gauche%10], NB_POINT);
+//	_matrix[6]->write_led_buffer(chiffre[score_droit/10], NB_POINT);
+//	_matrix[8]->write_led_buffer(chiffre[score_droit%10], NB_POINT);
 	_status = 0;
 }

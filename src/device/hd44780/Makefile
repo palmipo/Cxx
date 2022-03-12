@@ -30,7 +30,7 @@ clean:
 	rm -f $(BIN_PWD)/*.o *.so test_2004 test_hd44780
 
 test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libhd44780.so libraspigpio.so libi2cdevice.so libraspii2c.so libpoll.so
-	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lpoll -lraspigpio -lhd44780 -lada772
+	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lpoll -lraspigpio -lhd44780 -lada772 -lpthread
 
 $(BIN_PWD)/test_hd44780.o: test/test_hd44780.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -78,4 +78,5 @@ liblcd2004.so: $(BIN_PWD)/lcd2004.o
 	$(CC) -shared $^ -o $@
 
 $(BIN_PWD)/%.o: src/%.cpp
+	mkdir -p bin
 	$(CC) $(CFLAGS) -c $^ -fPIC -o $@

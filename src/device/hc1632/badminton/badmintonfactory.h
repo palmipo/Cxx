@@ -1,7 +1,7 @@
 #ifndef BATMINTON_FACTORY_H
 #define BATMINTON_FACTORY_H
 
-#include "gpiofactory.h"
+#include "pollfactory.h"
 #include <termios.h>
 #include <string>
 #include <chrono>
@@ -13,15 +13,14 @@ const int32_t GAUCHE_PIN = 24;
 const int32_t FIN_PIN = 9;
 const int32_t DATA_PIN = 7;
 const int32_t WRITE_PIN = 11;
-//const int32_t CS_PIN[NB_MATRIX] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
 const int32_t CS_PIN[NB_MATRIX] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
 
 class HC1632;
 class Gpio;
-class BatmintonFactory : public GpioFactory
+class BatmintonFactory : public Pollactory
 {
 	public :
-		BatmintonFactory(const std::string &);
+		BatmintonFactory();
 		virtual ~BatmintonFactory();
 
 		virtual int32_t status();

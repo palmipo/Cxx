@@ -30,22 +30,33 @@ void scrute(PollFactory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
-		factory->scrute(1000);
+		factory->scrute(100);
 	}
 }
 
 int main (int argc, char **argv)
 {
+	int32_t DROITE_PIN = 23;
+	int32_t GAUCHE_PIN = 24;
+	int32_t FIN_PIN = 9;
+	int32_t RAZ_PIN = 10;
+
 	try
 	{
 		int32_t fin = 0;
 
 		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
-		RaspiGpio * gpio = gpio_factory.event(17);
+		RaspiGpio * gpio_droite = gpio_factory.event(DROITE_PIN);
+		RaspiGpio * gpio_gauche = gpio_factory.event(GAUCHE_PIN);
+		RaspiGpio * gpio_fin = gpio_factory.event(FIN_PIN);
+		RaspiGpio * gpio_raz = gpio_factory.event(RAZ_PIN);
 
 		PollFactory poll_factory;
 		poll_factory.setActionInCallback(callback, 0);
-		poll_factory.add(gpio);
+		poll_factory.add(gpio_gauche);
+		poll_factory.add(gpio_droite);
+		poll_factory.add(gpio_fin);
+		poll_factory.add(gpio_raz);
 
 		std::thread t(scrute, &poll_factory, &fin);
 
