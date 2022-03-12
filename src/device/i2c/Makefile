@@ -37,7 +37,7 @@ PIA_PWD = ../pia
 CC = g++
 MAKE = make
 INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -Isrc -I$(PIA_PWD)/src -I$(POLL_PWD)/src -I$(I2C_PWD)/src -I$(USBI2C_PWD)/src -I$(RS232_PWD)/src -I$(GPIO_PWD)/src
-LIBS = -L. -li2cdevice -lpoll
+LIBS = -L. -li2cdevice
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -70,8 +70,8 @@ $(BIN_PWD)/ph_hd.o: test/ph_hd.cpp
 
 #
 #
-ph_enviro: $(BIN_PWD)/test_phat_enviro.o libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so
-	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c
+ph_enviro: $(BIN_PWD)/test_phat_enviro.o libpoll.so libi2cdevice.so libraspii2c.so libraspigpio.so libpia.so
+	$(CC) -o $@ $< $(LDFLAGS) -lraspii2c -lraspigpio -lpia -lpoll
 
 $(BIN_PWD)/test_phat_enviro.o: test/test_phat_enviro.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -138,6 +138,12 @@ libraspigpio.so:
 
 #
 #
+libpia.so:
+	$(MAKE) -C $(PIA_PWD) $@
+	ln -s $(PIA_PWD)/$@
+
+#
+#
 libpoll.so:
 	$(MAKE) -C $(POLL_PWD) $@
 	ln -s $(POLL_PWD)/$@
@@ -162,4 +168,5 @@ libi2cdevice.so: $(OBJECTS)
 #
 #
 $(BIN_PWD)/%.o: src/%.cpp
+	mkdir -p bin
 	$(CC) $(CFLAGS) -c $^ -o $@ -fPIC -DRASPI

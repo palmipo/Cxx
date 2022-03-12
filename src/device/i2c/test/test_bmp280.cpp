@@ -11,7 +11,7 @@ int main(int argc, char ** argv)
 {
 	try
 	{
-		RaspiI2C i2c(argv[1]);
+		RaspiI2C i2c("/dev/i2c-1");
 
 		BME280 capteur(0, &i2c);
 		std::cout << "id : " << (int)capteur.id() << std::endl;

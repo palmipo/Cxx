@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	{
 		RaspiSPI spi("/dev/spidev0.0");
 		spi.setMode(0);
-		spi.setClockRate(1000000);
+		spi.setClockRate(100000);
 		spi.setBitPerWord(8);
 
 		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
