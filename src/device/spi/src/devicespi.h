@@ -5,14 +5,13 @@
 
 class DeviceSPI : public Device
 {
-public:
-DeviceSPI()
-: Device(Device::DeviceType_SPI_DEVICE)
-{}
+	public:
+		DeviceSPI()
+		: Device(Device::DeviceType_SPI_DEVICE)
+		{}
 
-virtual ~DeviceSPI()
-{}
-
+		virtual ~DeviceSPI()
+		{}
 };
 
 #endif /* DEVICESPI_H */
