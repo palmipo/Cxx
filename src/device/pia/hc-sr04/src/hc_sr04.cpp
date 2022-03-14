@@ -43,5 +43,6 @@ void HC_SR04::setTimeRising(uint64_t time)
 void HC_SR04::setTimeFalling(uint64_t time)
 {
 	_timestamp_falling = time;
+	_status = 0;
 }
 
