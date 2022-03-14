@@ -3,6 +3,11 @@
 
 class DevicePwm
 {
+DevicePwm()
+{}
+
+virtual ~DevicePwm()
+{}
 };
 
 #endif /* DEVICEPWM /*
