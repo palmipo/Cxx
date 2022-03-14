@@ -16,6 +16,7 @@ class Device
 		const uint8_t DeviceType_I2C_DEVICE = 8;
 		const uint8_t DeviceType_SPI_DEVICE = 9;
 		const uint8_t DeviceType_UART_DEVICE = 10;
+		const uint8_t DeviceType_PWM_DEVICE = 11;
 
 		Device(uint8_t type)
 		: _type(type)
