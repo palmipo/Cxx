@@ -13,8 +13,9 @@ int main(int argc, char ** argv)
 	{
 		I2C i2c(argv[1]);
 
-		PCF8574AT pia(0, &i2c);
-		pia.set(0, 0x08);
+		PCF8574AT pia(&i2c);
+		pia.setDirection(0);
+		pia.set(0x08);
 	}
 	catch(...)
 	{
