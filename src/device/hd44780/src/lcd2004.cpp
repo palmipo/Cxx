@@ -24,7 +24,7 @@ LCD2004::~LCD2004()
 void LCD2004::setBackLight(uint8_t value)
 {
 	_backLight = (value ? 1 : 0) << BLUE;
-	_pia->set(0, _backLight);
+	_pia->set(_backLight);
 }
 
 void LCD2004::cmd(uint8_t cmd)
@@ -77,17 +77,17 @@ void LCD2004::enableBit(uint8_t msg)
 
 	// ecriture des donnees
 	octet = msg & ~(1<<EN);
-	_pia->set(0, octet);
+	_pia->set(octet);
 	Tempo::millisecondes(1);
 
 	// debut validation des donnees
 	octet = msg | (1<<EN);
-	_pia->set(0, octet);
+	_pia->set(octet);
 	Tempo::millisecondes(1);
 
 	// fin validation des donnees
 	octet = msg & ~(1<<EN);
-	_pia->set(0, octet);
+	_pia->set(octet);
 	Tempo::millisecondes(1);
 }
 
@@ -105,21 +105,21 @@ bool LCD2004::isBusy(uint8_t *addressCounter)
 
 uint8_t LCD2004::readData()
 {
-	_pia->set(0, _backLight | (1<<RS) | (1<<RW_));
+	_pia->set(_backLight | (1<<RS) | (1<<RW_));
 	Tempo::millisecondes(1);
 
-	uint8_t octet = _pia->get(0) & 0xF0;
-	octet |= (_pia->get(0) & 0xF0) >> 4;
+	uint8_t octet = _pia->get() & 0xF0;
+	octet |= (_pia->get() & 0xF0) >> 4;
 	return octet;
 }
 
 uint8_t LCD2004::readCmd()
 {
-	_pia->set(0, _backLight | (1<<RW_));
+	_pia->set(_backLight | (1<<RW_));
 	Tempo::millisecondes(1);
 
-	uint8_t octet = _pia->get(0) & 0xF0;
-	octet |= (_pia->get(0) & 0xF0) >> 4;
+	uint8_t octet = _pia->get() & 0xF0;
+	octet |= (_pia->get() & 0xF0) >> 4;
 	return octet;
 }
 
