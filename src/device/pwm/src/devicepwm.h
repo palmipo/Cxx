@@ -1,13 +1,15 @@
 #ifndef DEVICEPWM_H
 #define DEVICEPWM_H
 
-class DevicePwm
+#include "device.h"
+#include <cstdint>
+
+class DevicePwm : public Device
 {
 DevicePwm()
+: Device(Device::DeviceType_PWM_DEVICE)
 {}
 
-virtual ~DevicePwm()
-{}
 };
 
 #endif /* DEVICEPWM /*
