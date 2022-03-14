@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 //		DS1621 tempe(0, &i2c);
 //		tempe.debut_conversion();
 
-		PCF8574AT pia(0, &i2c);
+		PCF8574AT pia(&i2c);
 
 		LCD2004 lcd_io(&pia);
 		lcd_io.setBackLight(1);
