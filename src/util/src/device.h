@@ -33,7 +33,7 @@ class Device
 			return (device._type == _type);
 		}
 
-		virtual void setName(const std::string & name)
+		virtual void setName(std::string name)
 		{
 			_nom = name;
 		}

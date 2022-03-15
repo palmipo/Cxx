@@ -21,6 +21,7 @@ all:
 clean:
 	$(MAKE) -C $(GPIO_REP) $@
 	$(MAKE) -C $(POLL_REP) $@
+	$(MAKE) -C $(PIA_REP) $@
 	rm $(BIN_PWD)/*.o *.so bad
 
 test_aff: $(BIN_PWD)/test.o libpoll.so libraspigpio.so libpia.so libhc1632.so
