@@ -102,8 +102,8 @@ void HC1632::write_mode(uint8_t mode)
   write_bit(0);
   write_bit(1);
   
-  write_bit(mode & 0x02);
-  write_bit(mode & 0x01);
+  write_bit(0);
+  write_bit(mode ? 1 : 0);
   write_bit(0);
   write_bit(0);
   
