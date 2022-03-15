@@ -28,7 +28,7 @@ void HC1632::write_bit(uint8_t valeur)
 {
 	_gpio_write->write(0);
 
-	_gpio_data->write(value?1:0);
+	_gpio_data->write(valeur?1:0);
 	Tempo::microsecondes(TEMPO);
 
 	_gpio_write->write(1);
