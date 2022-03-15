@@ -10,33 +10,28 @@ HC1632::HC1632(PIA * data, PIA * write, PIA * cs, uint8_t master_mode)
 , _gpio_write(write)
 , _gpio_chipSelect(cs)
 {
-	uint8_t valeur = 1;
-	_gpio_write->write(valeur);
-	_gpio_data->write(valeur);
-	_gpio_chipSelect->write(valeur);
+	_gpio_write->write(1);
+	_gpio_data->write(1);
+	_gpio_chipSelect->write(1);
 
 	init(master_mode);
 }
 
 void HC1632::write_chipselect(uint8_t valeur)
 {
-	uint8_t value = 1 - valeur;
-	_gpio_chipSelect->write(value);
+	_gpio_chipSelect->write(valeur?0:1);
 	Tempo::microsecondes(TEMPO);
 }
 
 
 void HC1632::write_bit(uint8_t valeur)
 {
-	uint8_t value = 0;
-	_gpio_write->write(value);
+	_gpio_write->write(0);
 
-	value = valeur?1:0;
-	_gpio_data->write(value);
+	_gpio_data->write(value?1:0);
 	Tempo::microsecondes(TEMPO);
 
-	value = 1;
-	_gpio_write->write(value);
+	_gpio_write->write(1);
 	Tempo::microsecondes(TEMPO);
 }
 
@@ -226,13 +221,13 @@ void HC1632::write_led_pixel(uint8_t quartet, uint8_t buffer)
 	/* address */
 	for (int32_t i=0; i<7; ++i)
 	{
-		write_bit(quartet&(1<<(6-i)));
+		write_bit(quartet & (1<<(6-i)));
 	}
 
 	/* data */
 	for (int32_t i=0; i<4; ++i)
 	{
-		write_bit(buffer&(1<<i));
+		write_bit(buffer & (1<<i));
 	}
 
 	write_chipselect(0);
@@ -249,7 +244,7 @@ void HC1632::init(uint8_t master_mode)
 	Tempo::microsecondes(TEMPO);
 
 	// MASTER MODE
-	write_mode((master_mode) ? 2 : 0);
+	write_mode(master_mode);
 	Tempo::microsecondes(TEMPO);
 
 	// SYS ON
