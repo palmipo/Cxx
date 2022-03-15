@@ -2,6 +2,7 @@
 #define DEVICE_H
 
 #include <cstdint>
+#include <string>
 
 class Device
 {
@@ -32,8 +33,19 @@ class Device
 			return (device._type == _type);
 		}
 
+		virtual void setName(const std::string & name)
+		{
+			_nom = name;
+		}
+
+		virtual std::string name() const
+		{
+			return _nom;
+		}
+
 	protected:
 		uint8_t _type;
+		std::string _nom;
 };
 
 #endif

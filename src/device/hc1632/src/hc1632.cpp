@@ -97,8 +97,8 @@ void HC1632::write_mode(uint8_t mode)
   write_bit(0);
   write_bit(1);
   
-  write_bit(0);
   write_bit(mode ? 1 : 0);
+  write_bit(0);
   write_bit(0);
   write_bit(0);
   
@@ -258,6 +258,6 @@ void HC1632::init(uint8_t master_mode)
 	write_blink(0x00);
 	Tempo::microsecondes(TEMPO);
 
-	write_led_pwm(0x02);
+	write_led_pwm(0x0F);
 	Tempo::microsecondes(TEMPO);
 }

@@ -9,7 +9,7 @@
 #include <sstream>
 #include <thread>
 
-int32_t callback(PollDevice * device, void *)
+static int32_t callback(PollDevice * device, void *)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
 
@@ -20,13 +20,13 @@ int32_t callback(PollDevice * device, void *)
         int32_t res = ((RaspiGpio *)device)->readEvent(&id, &time);
 
 	std::stringstream ss;
-	ss << "callback : device->readEvent() id=" << id << " time=" << time << std::endl;
+	ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
 	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
 	return res;
 }
 
-void scrute(PollFactory * factory, int32_t * fin)
+static void scrute(PollFactory * factory, int32_t * fin)
 {
 	while (! *fin)
 	{
@@ -63,6 +63,7 @@ int main (int argc, char **argv)
 		Tempo::minutes(10);
 
 		fin = 1;
+		Tempo::secondes(200);
 		t.join();
 	}
 	catch(RaspiGpioException & e)

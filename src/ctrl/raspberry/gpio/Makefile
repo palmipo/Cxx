@@ -18,19 +18,16 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
+	$(MAKE) -C $(POLL_PWD) $@
 	rm -f $(BIN_PWD)/*.o *.so *.dll out
 
 in: $(BIN_PWD)/in.o libraspigpio.so libpoll.so
-	$(MAKE) libpoll.so
-	$(MAKE) libraspigpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspigpio -pthread
 
 $(BIN_PWD)/in.o: test/in.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 out: $(BIN_PWD)/out.o libraspigpio.so libpoll.so
-	$(MAKE) libpoll.so
-	$(MAKE) libraspigpio.so
 	$(CC) -o $@ $< $(LDFLAGS) -lraspigpio
 
 $(BIN_PWD)/out.o: test/out.cpp
