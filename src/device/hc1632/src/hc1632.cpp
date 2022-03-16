@@ -3,9 +3,10 @@
 #include "tempo.h"
 #include "log.h"
 
-#define TEMPO 1
+int32_t TEMPO = 100;
+int32_t TEMPO_1_2 = 50;
 
-HC1632::HC1632(PIA * data, PIA * write, PIA * cs, uint8_t master_mode)
+HC1632::HC1632(PIA  data, PIA * write, PIA * cs, uint8_t master_mode)
 : _gpio_data(data)
 , _gpio_write(write)
 , _gpio_chipSelect(cs)
@@ -27,9 +28,10 @@ void HC1632::write_chipselect(uint8_t valeur)
 void HC1632::write_bit(uint8_t valeur)
 {
 	_gpio_write->write(0);
+	Tempo::microsecondes(TEMPO_1_2);
 
 	_gpio_data->write(valeur?1:0);
-	Tempo::microsecondes(TEMPO);
+	Tempo::microsecondes(TEMPO_1_2);
 
 	_gpio_write->write(1);
 	Tempo::microsecondes(TEMPO);
@@ -97,7 +99,7 @@ void HC1632::write_mode(uint8_t mode)
   write_bit(0);
   write_bit(1);
   
-  write_bit(mode ? 1 : 0);
+  write_bit(mode);
   write_bit(0);
   write_bit(0);
   write_bit(0);
@@ -236,7 +238,7 @@ void HC1632::write_led_pixel(uint8_t quartet, uint8_t buffer)
 void HC1632::init(uint8_t master_mode)
 {
 	// SYS DIS
-	write_sys(0x00);
+	write_sys(0);
 	Tempo::microsecondes(TEMPO);
 
 	// COM OPTION
@@ -248,14 +250,14 @@ void HC1632::init(uint8_t master_mode)
 	Tempo::microsecondes(TEMPO);
 
 	// SYS ON
-	write_sys(0x01);
+	write_sys(1);
 	Tempo::microsecondes(TEMPO);
 
 	// LED ON
-	write_led(0x01);
+	write_led(1);
 	Tempo::microsecondes(TEMPO);
 
-	write_blink(0x00);
+	write_blink(0);
 	Tempo::microsecondes(TEMPO);
 
 	write_led_pwm(0x0F);
