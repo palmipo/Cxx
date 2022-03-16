@@ -1,9 +1,18 @@
 #include "hc1632.h"
+#include "raspigpioexception.h"
 #include "raspigpiofactory.h"
 #include "raspigpio.h"
 #include "raspipia.h"
+#include "log.h"
+#include "tempo.h"
+#include "polldevice.h"
+#include "pollfactory.h"
+#include <cstdint>
+#include <sstream>
+#include <thread>
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 uint8_t chiffre[10][48] ={
   { 0x00, 0x00, 0x00, 0x00, 0xFC, 0x3F, 0xFC, 0x3F, 0xFC, 0x3F, 0xFC, 0x3F, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0xFC, 0x3F, 0xFC, 0x3F, 0xFC, 0x3F, 0xFC, 0x3F, 0x00, 0x00, 0x00, 0x00 }
@@ -26,7 +35,33 @@ int32_t GAUCHE_PIN = 24;
 int32_t FIN_PIN = 9;
 int32_t DATA_PIN = 7;
 int32_t WRITE_PIN = 11;
-int32_t CS_PIN[] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
+int32_t CS_PIN[] = { 12, 13, 8, 17, 22, 5, 6, 25, 27, 18 };
+//int32_t CS_PIN[] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
+
+static int32_t callback(PollDevice * device, void *)
+{
+	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
+
+        // GPIOEVENT_EVENT_RISING_EDGE
+        // GPIOEVENT_EVENT_FALLING_EDGE
+	uint32_t id;
+	uint64_t time;
+        int32_t res = ((RaspiGpio *)device)->readEvent(&id, &time);
+
+	std::stringstream ss;
+	ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+
+	return res;
+}
+
+static void scrute(PollFactory * factory, int32_t * fin)
+{
+	while (! *fin)
+	{
+		factory->scrute(100);
+	}
+}
 
 int main(int argc, char **argv)
 {
@@ -36,26 +71,51 @@ int main(int argc, char **argv)
 
 	RaspiGpio * data = gpio_fact.outputs(&DATA_PIN, 1);
 	RaspiGpio * clk = gpio_fact.outputs(&WRITE_PIN, 1);
-	RaspiGpio * cs = gpio_fact.outputs(CS_PIN, 1);
-
-	std::cout << "pia" << std::endl;
 
 	RaspiPia pia_data(data);
 	RaspiPia pia_clk(clk);
-	RaspiPia pia_cs(cs);
 
-	std::cout << "afficheur" << std::endl;
+	std::vector<HC1632 *> afficheur;
 
-	HC1632 afficheur(&pia_data, &pia_clk, &pia_cs, 1);
-	std::cout << "write led buffer" << std::endl;
+	for (int32_t i=0; i<NB_MATRIX; ++i)
+	{
+		RaspiGpio * cs = gpio_fact.outputs(CS_PIN+i, 1);
+		RaspiPia pia_cs(cs);
+		afficheur.push_back(new HC1632(&pia_data, &pia_clk, &pia_cs, (i==0)));
+		afficheur[i]->write_led_buffer(chiffre[i], NB_POINT);
+	}
 
-	uint8_t buf[NB_POINT];
-	std::memset(buf, 0xFF, NB_POINT);
-	afficheur.write_led_buffer(buf, NB_POINT);
+		int32_t fin = 0;
+
+		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
+		RaspiGpio * gpio_droite = gpio_factory.event(DROITE_PIN);
+		RaspiGpio * gpio_gauche = gpio_factory.event(GAUCHE_PIN);
+		RaspiGpio * gpio_fin = gpio_factory.event(FIN_PIN);
+		RaspiGpio * gpio_raz = gpio_factory.event(RAZ_PIN);
+
+		PollFactory poll_factory;
+		poll_factory.setActionInCallback(callback, 0);
+		poll_factory.add(gpio_gauche);
+		poll_factory.add(gpio_droite);
+		poll_factory.add(gpio_fin);
+		poll_factory.add(gpio_raz);
+
+		std::thread t(scrute, &poll_factory, &fin);
+
+		Tempo::minutes(10);
+
+		fin = 1;
+		Tempo::secondes(200);
+		t.join();
 
 	std::cout << "fin" << std::endl;
 
 	return 0;
+	}
+	catch (RaspiGpioException e)
+	{
+		std::cerr << "exception !!!" << e.what() << std::endl;
+		Log::getLogger()->debug(__FILE__, __LINE__, e.what());
 	}
 	catch (...)
 	{

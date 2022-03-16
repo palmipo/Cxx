@@ -25,7 +25,7 @@ clean:
 	rm $(BIN_PWD)/*.o *.so bad
 
 test_aff: $(BIN_PWD)/test.o libpoll.so libraspigpio.so libpia.so libhc1632.so
-	$(CC) $^ -o $@ $(LDFLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS) -pthread
 
 $(BIN_PWD)/test.o: test/test.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
