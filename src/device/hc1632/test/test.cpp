@@ -36,9 +36,9 @@ int32_t FIN_PIN = 9;
 int32_t DATA_PIN = 7;
 int32_t WRITE_PIN = 11;
 int32_t CS_PIN[] = { 12, 13, 8, 17, 22, 5, 6, 25, 27, 18 };
-//int32_t CS_PIN[] = { 25, 8, 12, 27, 13, 6, 17, 5, 22, 18 };
+int32_t compteur = 0;
 
-static int32_t callback(PollDevice * device, void *)
+static int32_t callback(PollDevice * device, void * user_data)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
 
@@ -51,6 +51,10 @@ static int32_t callback(PollDevice * device, void *)
 	std::stringstream ss;
 	ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
 	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+
+	std::vector<HC1632 *> * afficheur = ((std::vector<HC1632 *> *)user_data);
+	(*afficheur)[0]->write_led_buffer(chiffre[compteur], NB_POINT);
+	compteur += 1;
 
 	return res;
 }
@@ -67,10 +71,10 @@ int main(int argc, char **argv)
 {
 	try
 	{
-	RaspiGpioFactory gpio_fact("/dev/gpiochip0");
+	RaspiGpioFactory gpio_factory("/dev/gpiochip0");
 
-	RaspiGpio * data = gpio_fact.outputs(&DATA_PIN, 1);
-	RaspiGpio * clk = gpio_fact.outputs(&WRITE_PIN, 1);
+	RaspiGpio * data = gpio_factory.outputs(&DATA_PIN, 1);
+	RaspiGpio * clk = gpio_factory.outputs(&WRITE_PIN, 1);
 
 	RaspiPia pia_data(data);
 	RaspiPia pia_clk(clk);
@@ -79,22 +83,20 @@ int main(int argc, char **argv)
 
 	for (int32_t i=0; i<NB_MATRIX; ++i)
 	{
-		RaspiGpio * cs = gpio_fact.outputs(CS_PIN+i, 1);
+		RaspiGpio * cs = gpio_factory.outputs(CS_PIN+i, 1);
 		RaspiPia pia_cs(cs);
 		afficheur.push_back(new HC1632(&pia_data, &pia_clk, &pia_cs, (i==0)));
-		afficheur[i]->write_led_buffer(chiffre[i], NB_POINT);
 	}
 
 		int32_t fin = 0;
 
-		RaspiGpioFactory gpio_factory("/dev/gpiochip0");
 		RaspiGpio * gpio_droite = gpio_factory.event(DROITE_PIN);
 		RaspiGpio * gpio_gauche = gpio_factory.event(GAUCHE_PIN);
 		RaspiGpio * gpio_fin = gpio_factory.event(FIN_PIN);
 		RaspiGpio * gpio_raz = gpio_factory.event(RAZ_PIN);
 
 		PollFactory poll_factory;
-		poll_factory.setActionInCallback(callback, 0);
+		poll_factory.setActionInCallback(callback, &afficheur);
 		poll_factory.add(gpio_gauche);
 		poll_factory.add(gpio_droite);
 		poll_factory.add(gpio_fin);
