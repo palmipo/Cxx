@@ -52,8 +52,9 @@ static int32_t callback(PollDevice * device, void * user_data)
 	ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
 	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
-	std::vector<HC1632 *> * afficheur = ((std::vector<HC1632 *> *)user_data);
-	(*afficheur)[0]->write_led_buffer(chiffre[compteur], NB_POINT);
+	std::vector<HC1632 *>* aff = ((std::vector<HC1632 *>*)user_data);
+	std::vector<HC1632 *> afficheur = *aff;
+	afficheur[0]->write_led_buffer(chiffre[compteur], NB_POINT);
 	compteur += 1;
 
 	return res;
@@ -85,7 +86,7 @@ int main(int argc, char **argv)
 	{
 		RaspiGpio * cs = gpio_factory.outputs(CS_PIN+i, 1);
 		RaspiPia pia_cs(cs);
-		afficheur.push_back(new HC1632(&pia_data, &pia_clk, &pia_cs, (i==0)));
+		afficheur.push_back( new HC1632(&pia_data, &pia_clk, &pia_cs, (i==0)) );
 	}
 
 		int32_t fin = 0;
