@@ -1,10 +1,11 @@
 #ifndef RS485_H
 #define RS485_H
 
+#include "uart.h"
 #include <cstdint>
 
 class RS232;
-class RS485
+class RS485 : public Uart
 {
 RS485(RS232 *, PIA * = 0, PIA * = 0);
 virtual ~RS485();
