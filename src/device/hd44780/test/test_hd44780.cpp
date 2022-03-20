@@ -1,7 +1,9 @@
 #include "raspii2c.h"
+#include "i2cexception.h"
 #include "ada772.h"
 #include "hd44780.h"
 #include "mcp23017.h"
+#include "raspigpioexception.h"
 #include "raspigpiofactory.h"
 #include "raspigpio.h"
 #include "pollfactory.h"
@@ -68,7 +70,7 @@ int main(int argc, char **argv)
 		HD44780 lcd(&lcd_io, 16, 2);
 
 		RaspiGpioFactory gpio_fact("/dev/gpiochip0");
-		RaspiGpio * gpio = gpio_fact.event(4);
+		RaspiGpio * gpio = gpio_fact.event(4, GPIOEVENT_EVENT_FALLING_EDGE);
 
 		PollFactory poll_fact;
 		poll_fact.setActionInCallback(irq, &lcd_io);
@@ -107,6 +109,16 @@ int main(int argc, char **argv)
 		my_thread.join();
 
 		Tempo::minutes(1);
+	}
+	catch(I2CException e)
+	{
+		std::cout << "erreur " << e.what() << std::endl;
+		return -1;
+	}
+	catch(RaspiGpioException e)
+	{
+		std::cout << "erreur " << e.what() << std::endl;
+		return -1;
 	}
 	catch(...)
 	{

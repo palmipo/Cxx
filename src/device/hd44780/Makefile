@@ -5,16 +5,15 @@ OBJECTS = \
 
 UTIL_REP= ../../util
 INTERFACE_REP= ../../ctrl/interface
-POLL_REP= ../../ctrl/raspberry/poll
-I2C_REP = ../../ctrl/raspberry/i2c
-GPIO_REP = ../../ctrl/raspberry/gpio
-USBI2C_REP = ../../ctrl/usb_i2c
-RS232_REP = ../../ctrl/raspberry/rs232
+RASPI_REP= ../../ctrl/raspberry
+POLL_REP= $(RASPI_REP)/poll
+I2C_REP = $(RASPI_REP)/i2c
+GPIO_REP = $(RASPI_REP)/gpio
 I2CDEV_REP = ../i2c
 AR = ar
 CC = g++
 MAKE = make
-INCLUDE = -I$(INTERFACE_REP)/src -I$(UTIL_REP)/src -Isrc -I$(I2C_REP)/src -I$(USBI2C_REP)/src -I$(RS232_REP)/src -I$(I2CDEV_REP)/src -I$(GPIO_REP)/src -I$(POLL_REP)/src
+INCLUDE = -I$(INTERFACE_REP)/src -I$(UTIL_REP)/src -Isrc -I$(I2C_REP)/src -I$(I2CDEV_REP)/src -I$(GPIO_REP)/src -I$(POLL_REP)/src
 LIBS =
 
 CFLAGS = -g $(INCLUDE) -DRASPI
@@ -23,43 +22,23 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	$(MAKE) -C $(RS232_REP) $@
-	$(MAKE) -C $(USBI2C_REP) $@
-	$(MAKE) -C $(I2C_REP) $@
-	$(MAKE) -C $(I2CDEV_REP) $@
 	rm -f $(BIN_PWD)/*.o *.so test_2004 test_hd44780
 
-test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libhd44780.so libraspigpio.so libi2cdevice.so libraspii2c.so libpoll.so
-	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lpoll -lraspigpio -lhd44780 -lada772 -lpthread
+test_hd44780: $(BIN_PWD)/test_hd44780.o libada772.so libhd44780.so libraspi.so libi2cdevice.so
+	$(CC) $< -o $@ $(LDFLAGS) -L. -li2cdevice -lraspi -lhd44780 -lada772 -lpthread
 
 $(BIN_PWD)/test_hd44780.o: test/test_hd44780.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-test_2004: $(BIN_PWD)/test_2004.o liblcd2004.so libhd44780.so libi2cdevice.so libraspii2c.so
-	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspii2c -li2cdevice -lhd44780 -llcd2004
+test_2004: $(BIN_PWD)/test_2004.o liblcd2004.so libhd44780.so libi2cdevice.so libraspi.so
+	$(CC) $< -o $@ $(LDFLAGS) -L. -lraspi -li2cdevice -lhd44780 -llcd2004
 
 $(BIN_PWD)/test_2004.o: test/test_2004.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-libpoll.so:
-	$(MAKE) -C $(POLL_REP) $@
-	ln -s $(POLL_REP)/$@
-
-librs232.so:
-	$(MAKE) -C $(RS232_REP) $@
-	ln -s $(RS232_REP)/$@
-
-libusbi2c.so:
-	$(MAKE) -C $(USBI2C_REP) $@
-	ln -s $(USBI2C_REP)/$@
-
-libraspigpio.so:
-	$(MAKE) -C $(GPIO_REP) $@
-	ln -s $(GPIO_REP)/$@
-
-libraspii2c.so:
-	$(MAKE) -C $(I2C_REP) $@
-	ln -s $(I2C_REP)/$@
+libraspi.so:
+	$(MAKE) -C $(RASPI_REP) $@
+	ln -s $(RASPI_REP)/$@
 
 libi2cdevice.so:
 	$(MAKE) -C $(I2CDEV_REP) $@
