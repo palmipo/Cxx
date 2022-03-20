@@ -1,7 +1,9 @@
 #include "raspii2c.h"
+#include "i2cexception.h"
 #include "ada772.h"
 #include "hd44780.h"
 #include "mcp23017.h"
+#include "raspigpioexception.h"
 #include "raspigpiofactory.h"
 #include "raspigpio.h"
 #include "pollfactory.h"
@@ -111,6 +113,16 @@ int main(int argc, char **argv)
 		my_thread.join();
 
 		Tempo::minutes(1);
+	}
+	catch(I2CException e)
+	{
+		std::cout << "erreur " << e.what() << std::endl;
+		return -1;
+	}
+	catch(RaspiGpioException e)
+	{
+		std::cout << "erreur " << e.what() << std::endl;
+		return -1;
 	}
 	catch(...)
 	{
