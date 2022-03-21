@@ -18,6 +18,7 @@ class RaspiGpio : public PollDevice
 
 		// GPIOEVENT_EVENT_RISING_EDGE
 		// GPIOEVENT_EVENT_FALLING_EDGE
+		// nanoseconds
 		virtual int32_t readEvent(uint32_t * = 0, uint64_t * = 0);
 
 	protected:
