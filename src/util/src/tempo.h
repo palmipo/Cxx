@@ -6,6 +6,11 @@
 class Tempo
 {
 	public:
+		static void heures(uint32_t duree)
+		{
+			std::this_thread::sleep_for(std::chrono::hours(duree));
+		}
+
 		static void minutes(uint32_t duree)
 		{
 			std::this_thread::sleep_for(std::chrono::minutes(duree));

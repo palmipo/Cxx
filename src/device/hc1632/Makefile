@@ -11,7 +11,7 @@ PIA_REP = ../pia
 AR = ar
 CC = g++
 MAKE = make
-INCLUDE = -I$(UTIL_REP)/src -I$(PIA_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc -Ibadminton
+INCLUDE = -I$(UTIL_REP)/src -I$(PIA_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc
 LIBS = -L. -lpia -lraspi -lhc1632 -pthread
 
 CFLAGS = -g -std=c++11 $(INCLUDE)

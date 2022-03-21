@@ -18,6 +18,12 @@ HC1632::HC1632(PIA * data, PIA * write, PIA * cs, uint8_t master_mode)
 	init(master_mode);
 }
 
+HC1632::~HC1632()
+{
+	write_led(0);
+	write_sys(0);
+}
+
 void HC1632::write_chipselect(uint8_t valeur)
 {
 	_gpio_chipSelect->write(valeur?0:1);

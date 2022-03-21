@@ -115,11 +115,18 @@ int main(int argc, char **argv)
 
 		std::thread t(scrute, &poll_factory, &fin);
 
-		Tempo::minutes(10);
+		Tempo::minutes(1);
+		//Tempo::minutes(10);
 
 		fin = 1;
 		t.join();
-		Tempo::secondes(200);
+
+		Tempo::minutes(1);
+
+		for (int32_t i=0; i<NB_MATRIX; ++i)
+		{
+			delete afficheur[i];
+		}
 
 		std::cout << "fin" << std::endl;
 
