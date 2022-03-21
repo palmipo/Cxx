@@ -37,7 +37,7 @@ int32_t DATA_PIN = 7;
 int32_t WRITE_PIN = 11;
 int32_t CS_PIN[] = { 12, 13, 8, 17, 22, 5, 6, 25, 27, 18 };
 int32_t compteur = 0;
-
+uint64_t last_pressed = 0;
 static int32_t callback(PollDevice * device, void * user_data)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
@@ -45,18 +45,22 @@ static int32_t callback(PollDevice * device, void * user_data)
         // GPIOEVENT_EVENT_RISING_EDGE
         // GPIOEVENT_EVENT_FALLING_EDGE
 	uint32_t id;
-	uint64_t time;
-        int32_t res = ((RaspiGpio *)device)->readEvent(&id, &time);
+	uint64_t time_pressed;
+        int32_t res = ((RaspiGpio *)device)->readEvent(&id, &time_pressed);
 
-	std::stringstream ss;
-	ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	if ((time_pressed - last_pressed) > 20000)
+	{
+		last_pressed = time_pressed;
 
-	std::vector<HC1632 *>* aff = ((std::vector<HC1632 *>*)user_data);
-	std::vector<HC1632 *> afficheur = *aff;
-	afficheur[0]->write_led_buffer(chiffre[compteur], NB_POINT);
-	compteur += 1;
+		std::stringstream ss;
+		ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
+		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
+		std::vector<HC1632 *>* aff = ((std::vector<HC1632 *>*)user_data);
+		std::vector<HC1632 *> afficheur = *aff;
+		afficheur[0]->write_led_buffer(chiffre[compteur], NB_POINT);
+		compteur += 1;
+	}
 	return res;
 }
 
