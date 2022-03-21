@@ -10,7 +10,8 @@ class RaspiGpio : public PollDevice
 		RaspiGpio(int32_t *, int32_t, int32_t);
 		virtual ~RaspiGpio();
 
-		virtual int32_t pinNumber(int32_t) const;
+		virtual int32_t pin(int32_t) const;
+		virtual int32_t pinNumber() const;
 
 		virtual int32_t write(uint8_t *, int32_t);
 		virtual int32_t read(uint8_t *, int32_t);
