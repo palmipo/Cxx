@@ -11,13 +11,23 @@ RaspiPia::~RaspiPia()
 
 void RaspiPia::write(uint8_t val)
 {
-	_gpio->write(&val, 1);
+	uint8_t data[_gpio->pinNumber()];
+	for (int32_t i=0; i<_gpio->pinNumber(); ++i)
+	{
+		data[i] = val & (1<<i);
+	}
+	_gpio->write(data, i);
 }
 
 uint8_t RaspiPia::read()
 {
-	uint8_t val;
-	_gpio->read(&val, 1);
+	uint8_t data[_gpio->pinNumber()];
+	_gpio->read(data, _gpio->pinNumber());
+	uint8_t val = 0;
+	for (int32_t i=0; i<_gpio->pinNumber(); ++i)
+	{
+		val |= data[i] << i;
+	}
 	return val;
 }
 
