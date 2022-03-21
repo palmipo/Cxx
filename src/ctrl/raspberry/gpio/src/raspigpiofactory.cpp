@@ -30,6 +30,12 @@ RaspiGpioFactory::~RaspiGpioFactory()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "~RaspiGpioFactory");
 
+	// fermeture du port
+	if (::close(_handler))
+	{
+		Log::getLogger()->error(__FILE__, __LINE__, std::strerror(errno));
+	}
+
 	std::map < int32_t, RaspiGpio * >::iterator it = _io_map.begin();
 	while (it != _io_map.end())
 	{
@@ -39,12 +45,6 @@ RaspiGpioFactory::~RaspiGpioFactory()
 			it->second = 0;
 		}
 		it++;
-	}
-
-	// fermeture du port
-	if (::close(_handler))
-	{
-		Log::getLogger()->error(__FILE__, __LINE__, std::strerror(errno));
 	}
 }
 

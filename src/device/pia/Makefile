@@ -3,8 +3,9 @@ BIN_PWD = bin/$(HOSTNAME)
 OBJECTS = \
 	$(BIN_PWD)/raspipia.o
 
-POLL_PWD = ../../ctrl/raspberry/poll
 UTIL_PWD = ../../util
+RASPI_PWD = ../../ctrl/raspberry
+POLL_PWD = ../../ctrl/raspberry/poll
 GPIO_PWD = ../../ctrl/raspberry/gpio
 CC = g++
 MAKE = make
@@ -19,30 +20,18 @@ all:
 #
 #
 clean:
-	$(MAKE) -C $(GPIO_PWD) $@
+	$(MAKE) -C $(RASPI_PWD) $@
 	rm -f $(BIN_PWD)/*.o *.so
 
 #
 #
-libraspigpio.so:
-	$(MAKE) -C $(GPIO_PWD) $@
-	ln -s $(GPIO_PWD)/$@
+libraspi.so:
+	$(MAKE) -C $(RASPI_PWD) $@
+	ln -s $(RASPI_PWD)/$@
 
 #
 #
-liblog.so:
-	$(MAKE) -C $(LOG_PWD) $@
-	ln -s $(LOG_PWD)/$@
-
-#
-#
-libpoll.so:
-	$(MAKE) -C $(POLL_PWD) $@
-	ln -s $(POLL_PWD)/$@
-
-#
-#
-libpia.so: $(OBJECTS) libpoll.so libraspigpio.so
+libpia.so: $(OBJECTS) libraspi.so
 	$(CC) $(CFLAGS) -shared $^ -o $@
 
 #

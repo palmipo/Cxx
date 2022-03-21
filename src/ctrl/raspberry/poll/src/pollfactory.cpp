@@ -19,13 +19,6 @@ PollFactory::PollFactory()
 PollFactory::~PollFactory()
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "~PollFactory");
-
-	std::map<int32_t, PollDevice*>::iterator it = _liste.begin();
-	while (it != _liste.end())
-	{
-		delete it->second; it->second = 0;
-		it++;
-	}
 }
 
 void PollFactory::add(PollDevice * t)

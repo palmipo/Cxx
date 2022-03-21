@@ -9,6 +9,7 @@
 #include <sstream>
 #include <thread>
 #include <chrono>
+#include <cstdint>
 
 int32_t callback(PollDevice * device, void * user_data)
 {
@@ -53,7 +54,6 @@ int main(int argc,char **argv)
 	PollFactory poll_fact;
 	poll_fact.setActionInCallback(callback, &telemetre);
 	poll_fact.add(in);
-	poll_fact.add(out);
 
 	int32_t fin = 0;
 	std::thread t(scrute, &poll_fact, &fin);
@@ -62,6 +62,7 @@ int main(int argc,char **argv)
 
 	while (telemetre.isBusy());
 	fin = 1;
+	t.join();
 
 	uint64_t dst = telemetre.distance();
 

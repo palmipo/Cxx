@@ -30,14 +30,13 @@ uint8_t chiffre[10][48] ={
 int32_t NB_POINT = 48;
 int32_t NB_MATRIX = 10;
 int32_t DROITE_PIN = 23;
-int32_t RAZ_PIN = 10;
 int32_t GAUCHE_PIN = 24;
-int32_t FIN_PIN = 9;
+int32_t FIN_PIN = 10; //9;
 int32_t DATA_PIN = 7;
 int32_t WRITE_PIN = 11;
 int32_t CS_PIN[] = { 12, 13, 8, 17, 22, 5, 6, 25, 27, 18 };
 int32_t compteur = 0;
-uint64_t last_pressed = 0;
+static uint64_t last_pressed = 0;
 static int32_t callback(PollDevice * device, void * user_data)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "callback");
@@ -47,19 +46,28 @@ static int32_t callback(PollDevice * device, void * user_data)
 	uint32_t id;
 	uint64_t time_pressed;
         int32_t res = ((RaspiGpio *)device)->readEvent(&id, &time_pressed);
+	{
+	std::stringstream ss;
+	ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	}
 
-	if ((time_pressed - last_pressed) > 20000)
+	uint64_t delta = time_pressed - last_pressed;
+	{
+	std::stringstream ss;
+	ss << "delta : " << delta;
+	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
+	}
+
+	if (delta > 20000)
 	{
 		last_pressed = time_pressed;
-
-		std::stringstream ss;
-		ss << "callback : device->readEvent() id=" << id << " time=" << time << " " << device->name() << std::endl;
-		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 
 		std::vector<HC1632 *>* aff = ((std::vector<HC1632 *>*)user_data);
 		std::vector<HC1632 *> afficheur = *aff;
 		afficheur[0]->write_led_buffer(chiffre[compteur], NB_POINT);
 		compteur += 1;
+		compteur %= 10;
 	}
 	return res;
 }
@@ -89,35 +97,33 @@ int main(int argc, char **argv)
 	for (int32_t i=0; i<NB_MATRIX; ++i)
 	{
 		RaspiGpio * cs = gpio_factory.outputs(CS_PIN+i, 1);
-		RaspiPia pia_cs(cs);
-		afficheur.push_back( new HC1632(&pia_data, &pia_clk, &pia_cs, (i==0)) );
+		RaspiPia * pia_cs = new RaspiPia(cs);
+		afficheur.push_back( new HC1632(&pia_data, &pia_clk, pia_cs, (i==0)) );
 	}
 
 		int32_t fin = 0;
 
-		RaspiGpio * gpio_droite = gpio_factory.event(DROITE_PIN);
-		RaspiGpio * gpio_gauche = gpio_factory.event(GAUCHE_PIN);
-		RaspiGpio * gpio_fin = gpio_factory.event(FIN_PIN);
-		RaspiGpio * gpio_raz = gpio_factory.event(RAZ_PIN);
+		RaspiGpio * gpio_droite = gpio_factory.event(DROITE_PIN, GPIOEVENT_EVENT_FALLING_EDGE);
+		RaspiGpio * gpio_gauche = gpio_factory.event(GAUCHE_PIN, GPIOEVENT_EVENT_FALLING_EDGE);
+		RaspiGpio * gpio_fin = gpio_factory.event(FIN_PIN, GPIOEVENT_EVENT_FALLING_EDGE);
 
 		PollFactory poll_factory;
 		poll_factory.setActionInCallback(callback, &afficheur);
 		poll_factory.add(gpio_gauche);
 		poll_factory.add(gpio_droite);
 		poll_factory.add(gpio_fin);
-		poll_factory.add(gpio_raz);
 
 		std::thread t(scrute, &poll_factory, &fin);
 
 		Tempo::minutes(10);
 
 		fin = 1;
-		Tempo::secondes(200);
 		t.join();
+		Tempo::secondes(200);
 
-	std::cout << "fin" << std::endl;
+		std::cout << "fin" << std::endl;
 
-	return 0;
+		return 0;
 	}
 	catch (RaspiGpioException e)
 	{

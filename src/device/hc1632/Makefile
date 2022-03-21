@@ -12,7 +12,7 @@ AR = ar
 CC = g++
 MAKE = make
 INCLUDE = -I$(UTIL_REP)/src -I$(PIA_REP)/src -I$(POLL_REP)/src -I$(GPIO_REP)/src -Isrc -Ibadminton
-LIBS = -L. -lpia -lraspi -lhc1632
+LIBS = -L. -lpia -lraspi -lhc1632 -pthread
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -25,7 +25,7 @@ clean:
 	rm $(BIN_PWD)/*.o *.so bad test_aff
 
 test_aff: $(BIN_PWD)/test.o libraspi.so libpia.so libhc1632.so
-	$(CC) $^ -o $@ $(LDFLAGS) -pthread
+	$(CC) $^ -o $@ $(LDFLAGS)
 
 $(BIN_PWD)/test.o: test/test.cpp
 	$(CC) $(CFLAGS) -c $^ -o $@

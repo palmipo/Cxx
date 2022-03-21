@@ -37,6 +37,13 @@ LDFLAGS = $(LIBS)
 all: libraspi.so
 
 clean:
+	$(MAKE) -C $(GPIO_PWD) $@
+	$(MAKE) -C $(I2C_PWD) $@
+	$(MAKE) -C $(JOYSTICK_PWD) $@
+	$(MAKE) -C $(POLL_PWD) $@
+	$(MAKE) -C $(UART_PWD) $@
+	$(MAKE) -C $(SOCKET_PWD) $@
+	$(MAKE) -C $(SPI_PWD) $@
 	rm -f $(BIN_PWD)/*.o *.so
 
 
