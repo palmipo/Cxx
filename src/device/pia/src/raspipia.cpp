@@ -26,7 +26,7 @@ uint8_t RaspiPia::read()
 	uint8_t val = 0;
 	for (int32_t i=0; i<_gpio->pinNumber(); ++i)
 	{
-		val |= data[i] << i;
+		val |= (data[i] ? 1 : 0) << i;
 	}
 	return val;
 }
