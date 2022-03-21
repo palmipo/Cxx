@@ -31,9 +31,14 @@ RaspiGpio::~RaspiGpio()
 	}
 }
 
-int32_t RaspiGpio::pinNumber(int32_t id) const
+int32_t RaspiGpio::pin(int32_t id) const
 {
 	return _pins_number[ id % _pins_length ];
+}
+
+int32_t RaspiGpio::pinNumber() const
+{
+	return _pins_length;
 }
 
 int32_t RaspiGpio::write(uint8_t * data, int32_t length)
