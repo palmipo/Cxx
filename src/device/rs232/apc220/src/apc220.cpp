@@ -8,28 +8,26 @@
 #include <iostream>
 #include <sstream>
 
-APC220::APC220(PIA * pin_set, PIA * pin_enable, PIA * pin_aux, RS232 * uart)
+int32_t SET = 0;
+int32_t EN = 1;
+int32_t AUX = 2;
+APC220::APC220(PIA * pin, RS232 * uart)
 : _uart(uart)
-, _pin_set(pin_set)
-, _pin_enable(pin_enable)
-, _pin_aux(pin_aux)
+, _pin(pin)
 {
 	_uart->setConfig(B9600, 8, 'N', 1, 0);
 	_uart->setInterCharacterTimer(0xFF);
-	_pin_set->write(1);
-	_pin_enable->write(1);
-	_pin_aux->write(0);
+	_pin_set->write((1<<SET)|(1<<EN)|(0<<AUX));
 }
 
 APC220::~APC220()
 {
-	_pin_set->write(0);
-	_pin_enable->write(0);
+	_pin_set->write((1<<SET)|(0<<EN)|(0<<AUX));
 }
 
 void APC220::setConfig(int32_t frequency, int32_t air_data_rate, int32_t output_power, int32_t data_rate_in, int32_t parity)
 {
-	_pin_set->write(0);
+	_pin_set->write((0<<SET)|(1<<EN)|(0<<AUX));
 
 	std::stringstream ss;
 	ss << "WR" << (uint8_t)0x20 << "434000" << (uint8_t)0x20 << "3" << (uint8_t)0x20 << "9" << (uint8_t)0x20 << "0" << (uint8_t)0x20 << "0" << (uint8_t)0x0D << (uint8_t)0x0A;
@@ -40,12 +38,12 @@ void APC220::setConfig(int32_t frequency, int32_t air_data_rate, int32_t output_
 	len = _uart->read(msg, 100);
 	std::cout << __FILE__ << __LINE__ << msg << std::endl;
 
-	_pin_set->write(1);
+	_pin_set->write((1<<SET)|(1<<EN)|(0<<AUX));
 }
 
 void APC220::getConfig()
 {
-	_pin_set->write(0);
+	_pin_set->write((0<<SET)|(1<<EN)|(0<<AUX));
 
 	std::stringstream ss;
 	ss << "RD" << (uint8_t)0x0D << (uint8_t)0x0A;
@@ -56,17 +54,27 @@ void APC220::getConfig()
 	len = _uart->read(msg, 100);
 	std::cout << __FILE__ << __LINE__ << msg << std::endl;
 
-	_pin_set->write(1);
+	_pin_set->write((1<<SET)|(1<<EN)|(0<<AUX));
 }
 
 int32_t APC220::read(uint8_t *msg, int32_t len)
 {
-	return _uart->read(msg, len);
+	_pin_set->write((1<<SET)|(1<<EN)|(0<<AUX));
+
+	int32_t length = _uart->read(msg, len);
+
+	_pin_set->write((1<<SET)|(1<<EN)|(0<<AUX));
+
+	return length;
 }
 
 int32_t APC220::write(uint8_t *msg, int32_t len)
 {
-_pin_aux->write(1);
-	return _uart->write(msg, len);
-_pin_aux->write(0);
+	_pin_set->write((1<<SET)|(1<<EN)|(1<<AUX));
+
+	int32_t length = _uart->write(msg, len);
+
+	_pin_set->write((1<<SET)|(1<<EN)|(0<<AUX));
+
+	return length;
 }
