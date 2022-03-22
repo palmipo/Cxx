@@ -8,15 +8,17 @@
 #include <iostream>
 #include <sstream>
 
-APC220::APC220(PIA * pin_set, PIA * pin_enable, RS232 * uart)
+APC220::APC220(PIA * pin_set, PIA * pin_enable, PIA * pin_aux, RS232 * uart)
 : _uart(uart)
 , _pin_set(pin_set)
 , _pin_enable(pin_enable)
+, _pin_aux(pin_aux)
 {
 	_uart->setConfig(B9600, 8, 'N', 1, 0);
 	_uart->setInterCharacterTimer(0xFF);
 	_pin_set->write(1);
 	_pin_enable->write(1);
+	_pin_aux->write(0);
 }
 
 APC220::~APC220()
@@ -57,12 +59,14 @@ void APC220::getConfig()
 	_pin_set->write(1);
 }
 
-int32_t APC220::get(uint8_t *msg, int32_t len)
+int32_t APC220::read(uint8_t *msg, int32_t len)
 {
 	return _uart->read(msg, len);
 }
 
-int32_t APC220::set(uint8_t *msg, int32_t len)
+int32_t APC220::write(uint8_t *msg, int32_t len)
 {
+_pin_aux->write(1);
 	return _uart->write(msg, len);
+_pin_aux->write(0);
 }
