@@ -1,12 +1,23 @@
 #include "ada1334.h"
 #include "raspii2c.h"
 #include "i2cexception.h"
-#include "gpiofactory.h"
-#include "gpioexception.h"
+#include "pollfactory.h"
+#include "polldevice.h"
+#include "raspipia.h"
+#include "raspigpiofactory.h"
+#include "raspigpioexception.h"
+#include "tempo.h"
 #include "log.h"
 #include <sstream>
 #include <thread>
 #include <iomanip>
+
+static int32_t action(PollDevice * device, void * user_data)
+{
+	uint32_t id = 0;
+	uint64_t timestamp = 0;
+	((RaspiGpio *)device)->readEvent(&id, &timestamp);
+}
 
 static void scrute(PollFactory * factory, bool fin)
 {
@@ -20,24 +31,32 @@ int main(int argc, char **argv)
 {
 	try
 	{
+		int32_t pin_out = 18;
+		int32_t pin_in = 4;
+
 		RaspiI2C i2c_bus("/dev/i2c-1");
 
-		GpioFactory fact("/dev/gpiochip0");
-		Gpio * gpio_led = fact.output(18);
-		Gpio * gpio_irq = fact.event();
+		RaspiGpioFactory fact("/dev/gpiochip0");
+		RaspiGpio * gpio_led = fact.output(&pin, 1);
+		RaspiGpio * gpio_irq = fact.event(pin_in);
 
-		RaspiGpio led(gpio_led);
-		RaspiGpio irq(gpio_irq);
+		RaspiPia led(gpio_led);
+		RaspiPia irq(gpio_irq);
 
 		ADA1334 capteur(&led, &irq, &i2c_bus);
 		capteur.led(0);
 
 		int32_t cpt=0;
-		while(cpt < 60)
-		{
-			fact.scrute(1000);
-			++cpt;
-		}
+		PollFactory poll_fact;
+		poll_fact.setActionInCallback(action, 0);
+		poll_fact.add(gpio_irq);
+
+		int32_t fin = 0;
+		std::thread my_thread(scrute, &poll_fact, &fin);
+		Tempo::minutes(10);
+
+		fin = 1;
+		Tempo::minutes(1);
 	}
 	catch(I2CException e)
 	{
