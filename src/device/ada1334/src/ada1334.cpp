@@ -8,12 +8,9 @@
 #include <thread>
 #include <iomanip>
 
-//event(IRQ_PIN, GPIOEVENT_REQUEST_FALLING_EDGE, GPIOHANDLE_REQUEST_OPEN_DRAIN);
-//Gpio * gpio = output(LED_PIN);
-ADA1334::ADA1334(PIA * led, PIA * irq, I2C * i2c_bus)
+ADA1334::ADA1334(PIA * led, I2C * i2c_bus)
 : _i2c(i2c_bus)
 , _led(led)
-, _irq(irq)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "ADA1334");
 
@@ -44,7 +41,7 @@ void ADA1334::led(uint8_t on)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "led");
 
-	_led->write(on);
+	_led->write(on ? 1 : 0);
 }
 
 int32_t ADA1334::event()
