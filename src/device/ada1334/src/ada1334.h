@@ -9,7 +9,7 @@ class TCS34725;
 class ADA1334
 {
 	public:
-		ADA1334(PIA *, PIA *, I2C *);
+		ADA1334(PIA *, I2C *);
 		virtual ~ADA1334();
 
 		virtual void led(uint8_t on);
@@ -19,7 +19,6 @@ class ADA1334
 
 		TCS34725 * _capteur_lumiere;
 		PIA * _led;
-		PIA * _irq;
 };
 
 #endif /* ADA1334_H */
