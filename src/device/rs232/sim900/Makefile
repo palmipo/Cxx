@@ -1,16 +1,18 @@
 BIN_PWD = bin/$(HOSTNAME)
 
 OBJECTS = \
-	$(BIN_PWD)/sim900buffer.o \
 	$(BIN_PWD)/sim900.o
 
-POLL_PWD = ../../../ctrl/raspberry/poll
-LOG_PWD = ../../../ctrl/raspberry/log
-RS232_PWD = ../../../ctrl/raspberry/rs232
+RASPI_PWD = ../../../ctrl/raspberry
+POLL_PWD = $(RASPI_PWD)/poll
+RS232_PWD = $(RASPI_PWD)/rs232
+UTIL_PWD = ../../../util
+I2C_DEVICE_PWD = ../../i2c
+HD44780_PWD = ../../hd44780
 CC = g++
 MAKE = make
-INCLUDE = -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -I$(RS232_PWD)/src/ -I$(I2C_PWD)/src/ -I$(I2C_DEVICE_PWD)/src/ -I$(HD44780_PWD)/src/
-LIBS = -L. -lrs232 -lpoll -llog
+INCLUDE = -Isrc -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(RS232_PWD)/src/
+LIBS = -L. -lraspi
 
 CFLAGS = -g -std=c++11 $(INCLUDE)
 LDFLAGS = $(LIBS)
@@ -18,23 +20,9 @@ LDFLAGS = $(LIBS)
 all: send_sms
 
 clean:
-	$(MAKE) -C $(LOG_PWD) $@
-	$(MAKE) -C $(POLL_PWD) $@
-	$(MAKE) -C $(RS232_PWD) $@
 	rm -f $(BIN_PWD)/*.o *.dll *.so send_sms
 
-send_sms: $(BIN_PWD)/send_sms.o
-	$(MAKE) liblog.so
-	$(MAKE) libpoll.so
-	$(MAKE)	librs232.so
-	$(MAKE) libsim900.so
-	$(CC) $< -o $@ $(LDFLAGS) -lsim900 -lpthread
-
-send_sms.exe: $(BIN_PWD)/send_sms.o
-	$(MAKE) liblog.dll
-	$(MAKE) libpoll.dll
-	$(MAKE)	librs232.dll
-	$(MAKE) libsim900.dll
+send_sms: $(BIN_PWD)/send_sms.o libraspi.so libsim900.so
 	$(CC) $< -o $@ $(LDFLAGS) -lsim900 -lpthread
 
 $(BIN_PWD)/send_sms.o: test/send_sms.cpp
@@ -43,32 +31,9 @@ $(BIN_PWD)/send_sms.o: test/send_sms.cpp
 libsim900.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
 
-libpoll.so:
-	$(MAKE) -C $(POLL_PWD) $@
-	ln -s $(POLL_PWD)/$@
-
-liblog.so:
-	$(MAKE) -C $(LOG_PWD) $@
-	ln -s $(LOG_PWD)/$@
-
-librs232.so:
-	$(MAKE) -C $(RS232_PWD) $@
-	ln -s $(RS232_PWD)/$@
-
-libsim900.dll: $(OBJECTS)
-	$(CC) -shared $^ -o $@
-
-libpoll.dll:
-	$(MAKE) -C $(POLL_PWD) $@
-	ln -s $(POLL_PWD)/$@
-
-liblog.dll:
-	$(MAKE) -C $(LOG_PWD) $@
-	ln -s $(LOG_PWD)/$@
-
-librs232.dll:
-	$(MAKE) -C $(RS232_PWD) $@
-	ln -s $(RS232_PWD)/$@
+libraspi.so:
+	$(MAKE) -C $(RASPI_PWD) $@
+	ln -s $(RASPI_PWD)/$@
 
 $(BIN_PWD)/%.o: src/%.cpp
-	$(CC) $(CFLAGS) -c $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@ -fPIC -DRASPI

@@ -1,10 +1,4 @@
-#ifdef USB_I2C
-#include "rs232.h"
-#include "rs232factory.h"
-#include "usb_i2c.h"
-#else
 #include "raspii2c.h"
-#endif
 #include "pcf8574at.h"
 #include "lcd2004.h"
 #include "hd44780.h"
@@ -15,26 +9,14 @@
 
 int main(int argc, char **argv)
 {
-	if (argc != 2)
-	{
-		std::cout << argv[0] << " </dev/i2c-1>" << std::endl;
-		return -1;
-	}
-
 	try
 	{
-#ifdef USB_I2C
-		RS232Factory factory;
-		RS232 * serial = factory.addSerialConnection(argv[1]);
-		UsbI2C i2c(serial);
-#else
-		RaspiI2C i2c(argv[1]);
-#endif
+		RaspiI2C i2c("/dev/i2c-1");
 
 //		DS1621 tempe(0, &i2c);
 //		tempe.debut_conversion();
 
-		PCF8574AT pia(&i2c);
+		PCF8574AT pia(0, &i2c);
 
 		LCD2004 lcd_io(&pia);
 		lcd_io.setBackLight(1);
