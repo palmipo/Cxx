@@ -14,7 +14,6 @@ OBJECTS = \
 	$(BIN_PWD)/modbusmsgfc15.o \
 	$(BIN_PWD)/modbusmsgfc16.o \
 	$(BIN_PWD)/modbusmsgheader.o \
-	$(BIN_PWD)/modbusfifo.o \
 	$(BIN_PWD)/modbusrtu.o \
 	$(BIN_PWD)/modbustcp.o
 
@@ -26,14 +25,13 @@ ELECTECHSUP = \
 MAKE = make
 MKDIR = mkdir -p
 CC = g++
-RASPI_CTRL = ../../ctrl/raspberry
+RASPI_PWD = ../../ctrl/raspberry
 UTIL_PWD = ../../util
-LOG_PWD = $(RASPI_CTRL)/log
-POLL_PWD = $(RASPI_CTRL)/poll
-SOCKET_PWD = $(RASPI_CTRL)/socket
-RS232_PWD = $(RASPI_CTRL)/rs232
-INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -I$(LOG_PWD)/src -Isrc -Ielectechsup/src -I$(SOCKET_PWD)/src -I$(RS232_PWD)/src
-LIBS = -L. -lutil -llog -lrs232 -lpoll -lsocket
+POLL_PWD = $(RASPI_PWD)/poll
+RS232_PWD = $(RASPI_PWD)/rs232
+SOCKET_PWD = $(RASPI_PWD)/socket
+INCLUDE = -Isrc -Ielectechsup/src -I$(RS232_PWD)/src -I$(SOCKET_PWD)/src -I$(UTIL_PWD)/src -I$(POLL_PWD)/src
+LIBS = -L.
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASPI
 LDFLAGS = $(LIBS)
@@ -41,36 +39,17 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	$(MAKE) -C $(LOG_PWD) $@
-	$(MAKE) -C $(UTIL_PWD) $@
-	$(MAKE) -C $(POLL_PWD) $@
-	$(MAKE) -C $(RS232_PWD) $@
-	$(MAKE) -C $(SOCKET_PWD) $@
-	rm -f $(BIN_PWD)/*.o *.so *.dll fwupd modbus_cmd
+	rm -f $(BIN_PWD)/*.o *.so modbus_cmd
 
-cabane: $(BIN_PWD)/cabane.o
-	$(MAKE) liblog.so
-	$(MAKE) libutil.so
-	$(MAKE) libpoll.so
-	$(MAKE) librs232.so
-	$(MAKE) libsocket.so
-	$(MAKE) libmodbus.so
-	$(MAKE) libelectechsup.so
-	$(CC) $^ -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lpthread
+cabane: $(BIN_PWD)/cabane.o libraspi.so libmodbus.so libelectechsup.so
+	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lraspi
 
 $(BIN_PWD)/cabane.o: domotic/cabane.cpp
 	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-modbus_cmd: $(BIN_PWD)/modbus_cmd.o
-	$(MAKE) liblog.so
-	$(MAKE) libutil.so
-	$(MAKE) libpoll.so
-	$(MAKE) librs232.so
-	$(MAKE) libsocket.so
-	$(MAKE) libmodbus.so
-	$(MAKE) libelectechsup.so
-	$(CC) $^ -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lpthread
+modbus_cmd: $(BIN_PWD)/modbus_cmd.o libraspi.so libmodbus.so libelectechsup.so
+	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lraspi
 
 $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 	$(MKDIR) $(BIN_PWD)
@@ -79,25 +58,9 @@ $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 #
 # LINUX
 #
-libutil.so:
-	$(MAKE) -C $(UTIL_PWD) $@
-	ln -s $(UTIL_PWD)/$@
-
-liblog.so:
-	$(MAKE) -C $(LOG_PWD) $@
-	ln -s $(LOG_PWD)/$@
-
-libpoll.so:
-	$(MAKE) -C $(POLL_PWD) $@
-	ln -s $(POLL_PWD)/$@
-
-librs232.so:
-	$(MAKE) -C $(RS232_PWD) $@
-	ln -s $(RS232_PWD)/$@
-
-libsocket.so:
-	$(MAKE) -C $(SOCKET_PWD) $@
-	ln -s $(SOCKET_PWD)/$@
+libraspi.so:
+	$(MAKE) -C $(RASPI_PWD) $@
+	ln -s $(RASPI_PWD)/$@
 
 libmodbus.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@

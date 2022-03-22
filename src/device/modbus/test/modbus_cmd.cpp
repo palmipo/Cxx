@@ -1,43 +1,18 @@
 #include "rs232.h"
 #include "rs232factory.h"
 #include "rs232exception.h"
+#include "modbusexception.h"
 #include "modbusmsgheader.h"
+#include "modbusrtu.h"
 #include "r4d3b16.h"
 #include "n4dih32.h"
 #include "r4dcb08.h"
-#include "modbusrtu.h"
-#include "modbusexception.h"
-#include "pollfactory.h"
 #include "tempo.h"
 #include "log.h"
-#include "polldevice.h"
 #include <cstdint>
 #include <sstream>
 #include <iostream>
 #include <thread>
-
-int32_t action(PollDevice * device, void * user_data)
-{
-	Modbus::ModbusRtu * rtu = (Modbus::ModbusRtu *)user_data;
-
-	uint8_t data[1024];
-	int32_t length = ((RS232 *)device)->recvUntilEnd(data, 1024);
-	rtu->read(data, length);
-
-	std::stringstream ss;
-	ss << "reception de : " << length << " caracteres." << std::endl;
-	Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-	
-	return length;
-}
-
-void scrute(PollFactory * factory, int32_t * fin)
-{
-	while (! *fin)
-	{
-		factory->scrute(100);
-	}
-}
 
 int main(int argc, char **argv)
 {
@@ -55,14 +30,6 @@ int main(int argc, char **argv)
 		uart->setConfig(B9600, 8, 'N', 1);
 
 		Modbus::ModbusRtu rtu(uart);
-
-		//~ PollFactory poll_factory;
-		//~ poll_factory.setActionInCallback(action, &rtu);
-		//~ poll_factory.add(uart);
-
-		int32_t fin = 0;
-		
-		//~ std::thread t(scrute, &poll_factory, &fin);
 
 		Modbus::R4D3B16 msg_out(4, &rtu);
 		//~ msg_out.closeAll();
@@ -108,22 +75,12 @@ int main(int argc, char **argv)
 
 		Tempo::secondes(10);
 
-		fin = 1;
-		//~ t.join();
-
 		return 0;
 	}
 	catch(Modbus::ModbusException e)
 	{
 		std::stringstream ss;
 		ss << "ModbusException : " << e.what();
-		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
-		return -1;
-	}
-	catch(PollException e)
-	{
-		std::stringstream ss;
-		ss << "PollException : " << e.what();
 		Log::getLogger()->debug(__FILE__, __LINE__, ss.str());
 		return -1;
 	}
