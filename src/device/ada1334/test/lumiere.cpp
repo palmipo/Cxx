@@ -17,6 +17,8 @@ static int32_t action(PollDevice * device, void * user_data)
 	uint32_t id = 0;
 	uint64_t timestamp = 0;
 	((RaspiGpio *)device)->readEvent(&id, &timestamp);
+
+	ADA1334 * capteur = (ADA1334 *)user_data;
 }
 
 static void scrute(PollFactory * factory, bool fin)
@@ -41,13 +43,11 @@ int main(int argc, char **argv)
 		RaspiGpio * gpio_irq = fact.event(pin_in);
 
 		RaspiPia led(gpio_led);
-		RaspiPia irq(gpio_irq);
 
 		ADA1334 capteur(&led, &i2c_bus);
 
-		int32_t cpt=0;
 		PollFactory poll_fact;
-		poll_fact.setActionInCallback(action, 0);
+		poll_fact.setActionInCallback(action, &capteur);
 		poll_fact.add(gpio_irq);
 
 		int32_t fin = 0;
