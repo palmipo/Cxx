@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 		int32_t fin = 0;
 
 		std::thread my_thread(scrute, &poll_fact, &fin);
-		my_thread.detach();
+		//my_thread.detach();
 
 	try
 	{
@@ -141,11 +141,12 @@ int main(int argc, char **argv)
 		std::cout << "erreur ..." << std::endl;
 		return -1;
 	}
-		fin = 1;
-		//my_thread.join();
 
-		Tempo::minutes(1);
-		lcd_io.setBackLight(0);
+	fin = 1;
+	//my_thread.join();
+
+	Tempo::minutes(1);
+	lcd_io.setBackLight(0);
 
 	return 0;
 }
