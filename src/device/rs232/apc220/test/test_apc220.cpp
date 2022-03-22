@@ -9,17 +9,15 @@ int main(int argc, char **argv)
 	RS232Factory fact;
 	RS232 * uart = fact.add(argv[1]);
 
-	int32_t pin_set = 10;
-	int32_t pin_enable = 11;
+	// SET, EN, AUX
+	int32_t pin[] = { 10, 11, 12 };
 
 	RaspiGpioFactory gpio(argv[2]);
-	RaspiGpio * out_set = gpio.outputs(&pin_set, 1);
-	RaspiGpio * out_enable = gpio.outputs(&pin_enable, 1);
+	RaspiGpio * out = gpio.outputs(pin, 3);
 
-	RaspiPia pia_set(out_set);
-	RaspiPia pia_enable(out_enable);
+	RaspiPia pia(out);
 
-	APC220 radio(&pia_set, &pia_enable, uart);
+	APC220 radio(&pia, uart);
 	radio.getConfig();
 
 	return 0;
