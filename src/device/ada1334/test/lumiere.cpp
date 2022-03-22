@@ -37,14 +37,13 @@ int main(int argc, char **argv)
 		RaspiI2C i2c_bus("/dev/i2c-1");
 
 		RaspiGpioFactory fact("/dev/gpiochip0");
-		RaspiGpio * gpio_led = fact.output(&pin, 1);
+		RaspiGpio * gpio_led = fact.outputs(&pin, 1);
 		RaspiGpio * gpio_irq = fact.event(pin_in);
 
 		RaspiPia led(gpio_led);
 		RaspiPia irq(gpio_irq);
 
-		ADA1334 capteur(&led, &irq, &i2c_bus);
-		capteur.led(0);
+		ADA1334 capteur(&led, &i2c_bus);
 
 		int32_t cpt=0;
 		PollFactory poll_fact;
