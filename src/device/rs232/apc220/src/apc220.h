@@ -8,7 +8,7 @@ class RS232;
 class APC220
 {
 	public:
-		APC220(PIA *, PIA *, PIA *, RS232 *);
+		APC220(PIA *, RS232 *);
 		virtual ~APC220();
 	
 		void setConfig(int32_t, int32_t, int32_t, int32_t, int32_t);
@@ -17,9 +17,8 @@ class APC220
 		int32_t write(uint8_t*, int32_t);
 
 	protected:
-		PIA * _pin_set;
-		PIA * _pin_enable;
-PIA * _pin_aux;
+		// SET, EN, AUX
+		PIA * _pin;
 		RS232 * _uart;
 };
 
