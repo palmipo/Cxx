@@ -7,12 +7,12 @@
 int main(int argc, char **argv)
 {
 	RS232Factory fact;
-	RS232 * uart = fact.add(argv[1]);
+	RS232 * uart = fact.add("/dev/ttyAMA0");
 
 	// SET, EN, AUX
 	int32_t pin[] = { 10, 11, 12 };
 
-	RaspiGpioFactory gpio(argv[2]);
+	RaspiGpioFactory gpio("/dev/gpiochip0");
 	RaspiGpio * out = gpio.outputs(pin, 3);
 
 	RaspiPia pia(out);
