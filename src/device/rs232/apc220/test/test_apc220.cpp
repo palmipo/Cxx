@@ -18,7 +18,13 @@ int main(int argc, char **argv)
 	RaspiPia pia(out);
 
 	APC220 radio(&pia, uart);
+	radio.setConfig(434000, 3, 9, 0, 0);
 	radio.getConfig();
+
+	radio.write("coucou", 6);
+
+	uint8_t data[512];
+	radio.read(data, 512);
 
 	return 0;
 }
