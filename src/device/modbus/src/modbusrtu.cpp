@@ -1,10 +1,8 @@
 #include "modbusrtu.h"
 #include "modbusexception.h"
-#include "modbusfifo.h"
 #include "modbusmsgfc03.h"
 #include "modbusmsgfc06.h"
 #include "rs232.h"
-#include "fifo.h"
 #include "log.h"
 #include <iomanip>
 #include <sstream>
@@ -13,12 +11,10 @@
 Modbus::ModbusRtu::ModbusRtu(RS232 * serial)
 : ModbusChannel(serial)
 , _module_address(0xF8)
-, _fifo(new Fifo(2048))
 {}
 
 Modbus::ModbusRtu::~ModbusRtu()
 {
-	delete _fifo;
 }
 
 int8_t Modbus::ModbusRtu::id_slave() const
@@ -35,20 +31,6 @@ void Modbus::ModbusRtu::set_id_slave(uint8_t id_slave)
 	_module_address = id_slave;
 }
 
-int32_t Modbus::ModbusRtu::read(uint8_t * data, int32_t length)
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "read(uint8_t *, int32_t)");
-
-	return length;
-}
-
-int32_t Modbus::ModbusRtu::read()
-{
-	Log::getLogger()->debug(__FILE__, __LINE__, "read()");
-
-	return 0;
-}
-
 int32_t Modbus::ModbusRtu::read(Modbus::ModbusMsg * msg)
 {
 	Log::getLogger()->debug(__FILE__, __LINE__, "read(ModbusMsg *)");
@@ -56,7 +38,13 @@ int32_t Modbus::ModbusRtu::read(Modbus::ModbusMsg * msg)
 	uint8_t data[1024];
 	int32_t length = _device->read(data, 1024);
 
-	msg->write(data+1, length-3);
+	//~ uint16_t ccrc = calcul_crc(data, length-2);
+	//~ uint16_t crc = (data[length-2] << 8) | data[length-1];
+
+	//~ if ((ccrc == crc) && (data[0] == _module_address))
+	//~ {
+		msg->write(data+1, length-3);
+	//~ }
 
 	return length;
 }

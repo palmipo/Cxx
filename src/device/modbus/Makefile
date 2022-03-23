@@ -39,7 +39,7 @@ LDFLAGS = $(LIBS)
 all:
 
 clean:
-	rm -f $(BIN_PWD)/*.o *.so modbus_cmd
+	rm -f $(BIN_PWD)/*.o $(ELECTECHSUP_PWD)/*.o *.so modbus_cmd
 
 cabane: $(BIN_PWD)/cabane.o libraspi.so libmodbus.so libelectechsup.so
 	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lraspi
