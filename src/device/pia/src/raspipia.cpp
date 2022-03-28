@@ -2,7 +2,7 @@
 #include "raspigpio.h"
 
 RaspiPia::RaspiPia(RaspiGpio * gpio)
-: PIA()
+: CtrlPia()
 , _gpio(gpio)
 {}
 
@@ -30,4 +30,3 @@ uint8_t RaspiPia::read()
 	}
 	return val;
 }
-
