@@ -1,19 +1,20 @@
-#ifndef UART_H
-#define UART_H
+#ifndef CTRLUART_H
+#define CTRLUART_H
 
 #include "device.h"
 #include <cstdint>
 
-class Uart : public Device
+class CtrlUart : public Device
 {
-Uart()
+CtrlUart()
+: Device(DeviceType::UART)
 {}
 
-virtual ~Uart()
+virtual ~CtrlUart()
 {}
 
 virtual int32_t read(int8_t, int32_t) = 0;
 virtual int32_t write(int8_t, int32_t) = 0;
 };
 
-#endif /* UART_H */
+#endif /* CTRLUART_H */
