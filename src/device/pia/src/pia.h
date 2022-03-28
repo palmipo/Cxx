@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-class CtrlPia
+class CtrlPia : public Device
 {
 	public :
 		CtrlPia()
