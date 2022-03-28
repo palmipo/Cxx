@@ -3,11 +3,11 @@
 
 #include <cstdint>
 
-class PIA;
+class CtrlPia;
 class HC1632
 {
 	public:
-		HC1632(PIA * data, PIA * write, PIA * cs, uint8_t master_mode);
+		HC1632(CtrlPia * data, CtrlPia * write, CtrlPia * cs, uint8_t master_mode);
 		virtual ~HC1632();
 
 		virtual void write_sys(uint8_t on);
@@ -25,9 +25,9 @@ class HC1632
 		virtual void write_bit(uint8_t valeur);
 
 	protected:
-		PIA * _gpio_data;
-		PIA * _gpio_write;
-		PIA * _gpio_chipSelect;
+		CtrlPia * _gpio_data;
+		CtrlPia * _gpio_write;
+		CtrlPia * _gpio_chipSelect;
 };
 
 #endif /* HC1632_H */
