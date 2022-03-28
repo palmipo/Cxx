@@ -1,10 +1,10 @@
 #ifndef RASPIPIA_H
 #define RASPIPIA_H
 
-#include "pia.h"
+#include "ctrlpia.h"
 
 class RaspiGpio;
-class RaspiPia : public PIA
+class RaspiPia : public CtrlPia
 {
 	public:
 		RaspiPia(RaspiGpio *);
@@ -18,4 +18,3 @@ class RaspiPia : public PIA
 };
 
 #endif /* RASPIPIA_H */
-
