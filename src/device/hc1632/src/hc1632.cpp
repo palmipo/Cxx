@@ -1,12 +1,12 @@
 #include "hc1632.h"
-#include "pia.h"
+#include "ctrlpia.h"
 #include "tempo.h"
 #include "log.h"
 
 int32_t TEMPO = 100;
 int32_t TEMPO_1_2 = 50;
 
-HC1632::HC1632(PIA * data, PIA * write, PIA * cs, uint8_t master_mode)
+HC1632::HC1632(CtrlPia * data, CtrlPia * write, CtrlPia * cs, uint8_t master_mode)
 : _gpio_data(data)
 , _gpio_write(write)
 , _gpio_chipSelect(cs)
