@@ -48,13 +48,13 @@ RS232 * RS232Factory::get(const std::string & device_p)
 void RS232Factory::del(const std::string & device_p)
 {
 	std::map<std::string, RS232 *>::iterator it = _port.find(device_p);
-	if (it != _port.end())
+	if (it == _port.end())
 	{
-		delete it->second;
-		_port.erase(it);
+		std::stringstream ss;
+		ss << "device not find : " << device_p;
+		throw RS232Exception(__FILE__, __LINE__, ss.str());
 	}
 
-	std::stringstream ss;
-	ss << "device not find : " << device_p;
-	throw RS232Exception(__FILE__, __LINE__, ss.str());
+	delete it->second;
+	_port.erase(it);
 }
