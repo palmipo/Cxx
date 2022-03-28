@@ -2,6 +2,7 @@
 #define RS232_H
 
 #include "polldevice.h"
+#include "ctrluart.h"
 #include <termios.h>
 #include <string>
 
@@ -15,7 +16,7 @@
 #define RS232_DLL
 #endif
 
-class RS232_DLL RS232 : public PollDevice, Uart
+class RS232_DLL RS232 : public PollDevice, CtrlUart
 {
 	public :
 		RS232(const std::string &);
