@@ -1,22 +1,20 @@
-#ifndef PIA_H
-#define PIA_H
+#ifndef CTRLPIA_H
+#define CTRLPIA_H
 
 #include <cstdint>
 
-class PIA
+class CtrlPia
 {
 	public :
-		PIA() 
+		CtrlPia()
+		: Device(DeviceType::PIA) 
 		{}
 
-		virtual ~PIA()
+		virtual ~CtrlPia()
 		{}
 
 		virtual void write(uint8_t) = 0;
 		virtual uint8_t read() = 0;
-
-		//virtual void toggle() = 0;
-		//virtual void sortieTemporiser(uint64_t) = 0;
 };
 
-#endif /* GPIO_H */
+#endif /* CTRLPIA_H */
