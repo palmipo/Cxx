@@ -3,11 +3,11 @@
 
 #include <cstdint>
 
-class PIA;
+class CtrlPia;
 class HC_SR04
 {
 	public:
-		HC_SR04(PIA *);
+		HC_SR04(CtrlPia *);
 		virtual ~HC_SR04();
 
 		virtual void start();
@@ -19,7 +19,7 @@ class HC_SR04
 		virtual uint64_t distance();
 
 	protected:
-		PIA * _out;
+		CtrlPia * _out;
 		int32_t _status;
 		uint64_t _distance;
 		uint64_t _timestamp_rising;
