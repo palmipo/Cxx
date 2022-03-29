@@ -3,14 +3,14 @@
 
 #include <cstdint>
 
-class CtrlPia : public Device
+class CtrlPIA : public Device
 {
 	public :
-		CtrlPia()
+		CtrlPIA()
 		: Device(DeviceType::PIA) 
 		{}
 
-		virtual ~CtrlPia()
+		virtual ~CtrlPIA()
 		{}
 
 		virtual void write(uint8_t) = 0;
