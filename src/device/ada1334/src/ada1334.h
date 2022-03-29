@@ -3,13 +3,13 @@
 
 #include <cstdint>
 
-class I2C;
-class PIA;
+class CtrlI2C;
+class CtrlPia;
 class TCS34725;
 class ADA1334
 {
 	public:
-		ADA1334(PIA *, I2C *);
+		ADA1334(CtrlPia *, CtrlI2C *);
 		virtual ~ADA1334();
 
 		virtual void led(uint8_t on);
@@ -18,7 +18,7 @@ class ADA1334
 		virtual int32_t event(PollDevice *);
 
 		TCS34725 * _capteur_lumiere;
-		PIA * _led;
+		CtrlPia * _led;
 };
 
 #endif /* ADA1334_H */
