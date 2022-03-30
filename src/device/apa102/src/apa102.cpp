@@ -1,6 +1,6 @@
 #include "apa102.h"
 
-APA102::APA102(PIA * out)
+APA102::APA102(CtrlPIA * out)
 : _out(out)
 {}
 

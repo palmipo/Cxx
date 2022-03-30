@@ -1,7 +1,7 @@
 #include "colecovision.h"
-#include "pia.h"
+#include "ctrlpia.h"
 
-ColecoVision::ColecoVision(PIA * out, PIA * in)
+ColecoVision::ColecoVision(CtrlPIA * out, CtrlPIA * in)
 : _out(out)
 , _in(in)
 {}

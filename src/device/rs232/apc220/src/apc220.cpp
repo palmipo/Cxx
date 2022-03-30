@@ -3,8 +3,8 @@
  */
 
 #include "apc220.h"
-#include "pia.h"
-#include "rs232.h"
+#include "ctrlpia.h"
+#include "ctrluart.h"
 #include "tempo.h"
 #include <iostream>
 #include <sstream>
@@ -12,7 +12,7 @@
 int32_t SET = 0;
 int32_t EN = 1;
 int32_t AUX = 2;
-APC220::APC220(PIA * pin, RS232 * uart)
+APC220::APC220(CtrlPIA * pin, CtrlUART * uart)
 : _uart(uart)
 , _pin(pin)
 {

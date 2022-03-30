@@ -7,7 +7,7 @@
 class CtrlUart : public Device
 {
 CtrlUart()
-: Device(DeviceType::UART)
+: Device(Device::DeviceType_UART)
 {}
 
 virtual ~CtrlUart()

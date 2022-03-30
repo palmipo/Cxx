@@ -3,12 +3,12 @@
 
 #include <cstdint>
 
-class PIA;
-class RS232;
+class CtrlPIA;
+class CtrlUART;
 class APC220
 {
 	public:
-		APC220(PIA *, RS232 *);
+		APC220(CtrlPIA *, CtrlUART *);
 		virtual ~APC220();
 	
 		void setConfig(int32_t, int32_t, int32_t, int32_t, int32_t);
@@ -18,8 +18,8 @@ class APC220
 
 	protected:
 		// SET, EN, AUX
-		PIA * _pin;
-		RS232 * _uart;
+		CtrlPIA * _pin;
+		CtrlUART * _uart;
 };
 
 #endif

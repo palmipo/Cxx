@@ -7,7 +7,7 @@ class CtrlPIA : public Device
 {
 	public :
 		CtrlPIA()
-		: Device(DeviceType::PIA) 
+		: Device(Device::DeviceType_PIA) 
 		{}
 
 		virtual ~CtrlPIA()

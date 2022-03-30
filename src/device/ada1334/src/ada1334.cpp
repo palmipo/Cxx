@@ -1,14 +1,14 @@
 #include "ada1334.h"
 #include "tcs34725.h"
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "i2cexception.h"
 #include "log.h"
-#include "pia.h"
+#include "ctrlpia.h"
 #include <sstream>
 #include <thread>
 #include <iomanip>
 
-ADA1334::ADA1334(PIA * led, I2C * i2c_bus)
+ADA1334::ADA1334(CtrlPIA * led, CtrlI2C * i2c_bus)
 : _i2c(i2c_bus)
 , _led(led)
 {

@@ -1,18 +1,20 @@
 #ifndef COLECOVISION_H
 #define COLECOVISION_H
 
-class PIA;
+#include <cstdint>
+
+class CtrlPIA;
 class ColecoVision
 {
 public:
-	ColecoVision(PIA *, PIA *);
+	ColecoVision(CtrlPIA *, CtrlPIA *);
 	virtual ~ColecoVision();
 
 	void read();
 
 protected:
-	PIA * _out;
-	PIA * _in;
+	CtrlPIA * _out;
+	CtrlPIA * _in;
 };
 
 #endif /* COLECOVISION_H */
