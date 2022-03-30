@@ -19,7 +19,6 @@
 
 RS232::RS232(const std::string & device_p)
 : PollDevice(Device::DeviceType_UART)
-, CtrlUART()
 {
 	{
 		std::stringstream ss;
