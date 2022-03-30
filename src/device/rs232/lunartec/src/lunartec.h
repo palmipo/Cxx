@@ -4,11 +4,11 @@
 #include <string>
 #include <cstdint>
 
-class RS232;
+class CtrlUART;
 class Lunartec
 {
 public:
-	Lunartec(int32_t, RS232 *);
+	Lunartec(int32_t, CtrlUART *);
 	~Lunartec();
 
 	void set_time();
@@ -19,7 +19,7 @@ protected:
 	uint8_t check_sum(const std::string &);
 
 private:
-	RS232 * _usart;
+	CtrlUART * _usart;
 	int32_t _id;
 };
 

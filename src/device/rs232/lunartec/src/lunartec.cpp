@@ -1,14 +1,14 @@
 #include "lunartec.h"
-#include "rs232.h"
+#include "ctrluart.h"
 #include "rs232exception.h"
 #include <sstream>
 #include <iomanip>
 #include <time.h>
 
-Lunartec::Lunartec(int32_t id, RS232 * serial)
+Lunartec::Lunartec(int32_t id, CtrlUART * serial)
 : _id(id), _usart(serial)
 {
-	_usart->setConfig(B9600, 8, 'N', 1, 1);
+	/* _usart->setConfig(B9600, 8, 'N', 1, 1); */
 
 	std::stringstream cmd;
 	cmd << std::string("<ID><");

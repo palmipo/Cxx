@@ -1,4 +1,5 @@
 #include "rs232.h"
+#include "raspiuart.h"
 #include "lunartec.h"
 #include <iostream>
 #include <sstream>
@@ -13,7 +14,10 @@ int main(int argc, char **argv)
 	
 	try
 	{
-		RS232 uart(argv[1]);
+		RS232 serial(argv[1]);
+		serial.setConfig(B9600, 8, 'N', 1, 1);
+
+		RaspiUart uart(&serial);
 		Lunartec lunartec(1, &uart);
 		
 		std::stringstream ss;
