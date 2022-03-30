@@ -9,8 +9,9 @@ MKDIR = mkdir -p
 CC = g++
 
 UTIL_PWD = ../../../util
+INTERFACE_PWD = ../../interface
 POLL_PWD = ../poll
-INCLUDE = -I$(UTIL_PWD)/src -I$(POLL_PWD)/src -Isrc
+INCLUDE = -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -I$(POLL_PWD)/src -Isrc
 LIBS = -L. -lpoll
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -DRASPI
@@ -34,11 +35,6 @@ fwup : $(BIN_PWD)/fwup.o
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
 
-fwup.exe : $(BIN_PWD)/fwup.o
-	$(MAKE) libpoll.dll
-	$(MAKE) librs232.dll
-	$(CC) -o $@ $^ $(LDFLAGS) -lrs232
-
 $(BIN_PWD)/fwup.o: test/fwup.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
@@ -47,22 +43,12 @@ dump : $(BIN_PWD)/dump.o
 	$(MAKE) librs232.so
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
 
-dump.exe : $(BIN_PWD)/dump.o
-	$(MAKE) libpoll.dll
-	$(MAKE) librs232.dll
-	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
-
 $(BIN_PWD)/dump.o: test/dump.cpp
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 echo : $(BIN_PWD)/echo.o
 	$(MAKE) libpoll.so
 	$(MAKE) librs232.so
-	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
-
-echo.exe : $(BIN_PWD)/echo.o
-	$(MAKE) libpoll.dll
-	$(MAKE) librs232.dll
 	$(CC) -o $@ $^ $(LDFLAGS) -lrs232 -lpthread
 
 $(BIN_PWD)/echo.o: test/echo.cpp
@@ -75,15 +61,6 @@ libpoll.so:
 
 librs232.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@
-
-# WINDOWS
-libpoll.dll:
-	$(MAKE) -C $(POLL_PWD) $@
-	cp $(POLL_PWD)/$@ .
-
-librs232.dll: $(OBJECTS)
-	$(MAKE) libpoll.dll
-	$(CC) -shared $^ -o $@ $(LDFLAGS)
 
 # GLOBAL
 $(BIN_PWD)/%.o: src/%.cpp

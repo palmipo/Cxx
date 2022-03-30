@@ -1,5 +1,7 @@
 #include "rs232.h"
 #include "rs232exception.h"
+#include "device.h"
+#include "polldevice.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -17,6 +19,7 @@
 
 RS232::RS232(const std::string & device_p)
 : PollDevice(Device::DeviceType_UART)
+, CtrlUART()
 {
 	{
 		std::stringstream ss;

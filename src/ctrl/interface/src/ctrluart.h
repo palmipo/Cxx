@@ -4,17 +4,18 @@
 #include "device.h"
 #include <cstdint>
 
-class CtrlUart : public Device
+class CtrlUART : public Device
 {
-CtrlUart()
-: Device(Device::DeviceType_UART)
-{}
+public:
+	CtrlUART()
+	: Device(Device::DeviceType_UART)
+	{}
 
-virtual ~CtrlUart()
-{}
+	virtual ~CtrlUART()
+	{}
 
-virtual int32_t read(int8_t, int32_t) = 0;
-virtual int32_t write(int8_t, int32_t) = 0;
+	virtual int32_t read(int8_t, int32_t) = 0;
+	virtual int32_t write(int8_t, int32_t) = 0;
 };
 
 #endif /* CTRLUART_H */

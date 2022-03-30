@@ -16,7 +16,7 @@
 #define RS232_DLL
 #endif
 
-class RS232_DLL RS232 : public PollDevice, CtrlUart
+class RS232_DLL RS232 : public PollDevice, public CtrlUART
 {
 	public :
 		RS232(const std::string &);
