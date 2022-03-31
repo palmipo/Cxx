@@ -14,14 +14,14 @@
 	#define MODBUS_DLL
 #endif
 
-class RS232;
+class CtrlUART;
 namespace Modbus
 {
 	class ModbusMsg;
 	class MODBUS_DLL ModbusRtu : public ModbusChannel
 	{
 		public:
-			ModbusRtu(RS232 *);
+			ModbusRtu(CtrlUART *);
 			virtual ~ModbusRtu();
 
 			virtual int32_t read(ModbusMsg *);
@@ -34,6 +34,7 @@ namespace Modbus
 			virtual uint16_t calcul_crc(uint8_t *, int32_t);
 
 		protected:
+			CtrlUART * _serial;
 			uint8_t _module_address;
 		};
 }

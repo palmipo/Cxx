@@ -14,22 +14,23 @@
 	#define MODBUS_DLL
 #endif
 
-class PollDevice;
+class CtrlSOCKET;
 namespace Modbus
 {
 	class ModbusMsg;
 	class MODBUS_DLL ModbusTcp : public ModbusChannel
 	{
         public:
-			ModbusTcp(PollDevice *);
+			ModbusTcp(CtrlSOCKET *);
 			virtual ~ModbusTcp();
 
 			virtual int32_t read(ModbusMsg *);
 			virtual int32_t write(ModbusMsg *);
 
         protected:
-			uint16_t _transaction_id;
-			uint16_t _protocol_id;
+		CtrlSOCKET * _socket;
+		uint16_t _transaction_id;
+		uint16_t _protocol_id;
 	};
 }
 

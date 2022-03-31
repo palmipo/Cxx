@@ -1,15 +1,15 @@
 #include "modbustcp.h"
-#include "sockettcp.h"
+#include "ctrlsocket.h"
 #include "modbusmsgheader.h"
 #include "modbusexception.h"
-#include "polldevice.h"
 #include "log.h"
 #include <iostream>
 #include <sstream>
-#include <thread>
+//#include <thread>
 
-Modbus::ModbusTcp::ModbusTcp(PollDevice * socket)
+Modbus::ModbusTcp::ModbusTcp(CtrlSOCKET * socket)
 : ModbusChannel(socket)
+, _socket(socket)
 , _transaction_id(1)
 , _protocol_id(0)
 {}
@@ -22,7 +22,7 @@ int32_t Modbus::ModbusTcp::read(ModbusMsg * msg)
 	Log::getLogger()->debug(__FILE__, __LINE__, "actionIn");
 
 	uint8_t trame[512];
-	int32_t len = _device->read(trame, 512);
+	int32_t len = _socket->read(trame, 512);
 	if (len > 6)
 	{
 		uint32_t cpt = 0;
@@ -76,6 +76,6 @@ int32_t Modbus::ModbusTcp::write(ModbusMsg * msg)
 
 	cpt += len;
 
-	return ((Socket::SocketTcp *)_device)->write(trame, cpt);
+	return _socket->write(trame, cpt);
 }
 

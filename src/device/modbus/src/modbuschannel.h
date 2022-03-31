@@ -13,20 +13,20 @@
 	#define MODBUS_DLL
 #endif
 
-class PollDevice;
+class Device;
 namespace Modbus
 {
 	class ModbusMsg;
 	class MODBUS_DLL ModbusChannel
 	{
 		public:
-			ModbusChannel(PollDevice *);
+			ModbusChannel(Device *);
 
 			virtual int32_t read(ModbusMsg *) = 0;
 			virtual int32_t write(ModbusMsg *) = 0;
 		
 		protected:
-			PollDevice * _device;
+			Device * _device;
 	};
 }
 #endif

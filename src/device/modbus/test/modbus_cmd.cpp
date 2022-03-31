@@ -1,6 +1,7 @@
 #include "rs232.h"
 #include "rs232factory.h"
 #include "rs232exception.h"
+#include "raspiuart.h"
 #include "modbusexception.h"
 #include "modbusmsgheader.h"
 #include "modbusrtu.h"
@@ -26,10 +27,12 @@ int main(int argc, char **argv)
 	try
 	{
 		RS232Factory uart_factory;
-		RS232 * uart = uart_factory.add(argv[1]);
-		uart->setConfig(B9600, 8, 'N', 1);
+		RS232 * serial = uart_factory.add(argv[1]);
+		serial->setConfig(B9600, 8, 'N', 1);
 
-		Modbus::ModbusRtu rtu(uart);
+		RaspiUart uart(serial);
+
+		Modbus::ModbusRtu rtu(&uart);
 
 		Modbus::R4D3B16 msg_out(4, &rtu);
 		//~ msg_out.closeAll();

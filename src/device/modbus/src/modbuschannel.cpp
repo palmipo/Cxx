@@ -1,7 +1,7 @@
 #include "modbuschannel.h"
-#include "polldevice.h"
+#include "device.h"
 
-Modbus::ModbusChannel::ModbusChannel(PollDevice * device)
+Modbus::ModbusChannel::ModbusChannel(Device * device)
 : _device(device)
 {}
 

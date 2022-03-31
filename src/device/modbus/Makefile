@@ -25,12 +25,14 @@ ELECTECHSUP = \
 MAKE = make
 MKDIR = mkdir -p
 CC = g++
+INTERFACE_PWD = ../../ctrl/interface
 RASPI_PWD = ../../ctrl/raspberry
 UTIL_PWD = ../../util
 POLL_PWD = $(RASPI_PWD)/poll
 RS232_PWD = $(RASPI_PWD)/rs232
 SOCKET_PWD = $(RASPI_PWD)/socket
-INCLUDE = -Isrc -Ielectechsup/src -I$(RS232_PWD)/src -I$(SOCKET_PWD)/src -I$(UTIL_PWD)/src -I$(POLL_PWD)/src
+UART_PWD = ../rs232
+INCLUDE = -Isrc -Ielectechsup/src -I$(UART_PWD)/src -I$(RS232_PWD)/src -I$(SOCKET_PWD)/src -I$(UTIL_PWD)/src -I$(INTERFACE_PWD)/src -I$(POLL_PWD)/src
 LIBS = -L.
 
 CFLAGS = -g -std=c++11 $(INCLUDE) -fPIC -DRASPI
@@ -41,15 +43,15 @@ all:
 clean:
 	rm -f $(BIN_PWD)/*.o $(ELECTECHSUP_PWD)/*.o *.so modbus_cmd
 
-cabane: $(BIN_PWD)/cabane.o libraspi.so libmodbus.so libelectechsup.so
-	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lraspi
+cabane: $(BIN_PWD)/cabane.o libraspi.so libuart.so libmodbus.so libelectechsup.so
+	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -luart -lraspi
 
 $(BIN_PWD)/cabane.o: domotic/cabane.cpp
 	$(MKDIR) $(BIN_PWD)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-modbus_cmd: $(BIN_PWD)/modbus_cmd.o libraspi.so libmodbus.so libelectechsup.so
-	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -lraspi
+modbus_cmd: $(BIN_PWD)/modbus_cmd.o libraspi.so libuart.so libmodbus.so libelectechsup.so
+	$(CC) $< -o $@ $(LDFLAGS) -lelectechsup -lmodbus -luart -lraspi
 
 $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 	$(MKDIR) $(BIN_PWD)
@@ -61,6 +63,10 @@ $(BIN_PWD)/modbus_cmd.o: test/modbus_cmd.cpp
 libraspi.so:
 	$(MAKE) -C $(RASPI_PWD) $@
 	ln -s $(RASPI_PWD)/$@
+
+libuart.so:
+	$(MAKE) -C $(UART_PWD) $@
+	ln -s $(UART_PWD)/$@
 
 libmodbus.so: $(OBJECTS)
 	$(CC) -shared $^ -o $@

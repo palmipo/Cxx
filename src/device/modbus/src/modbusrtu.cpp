@@ -2,14 +2,15 @@
 #include "modbusexception.h"
 #include "modbusmsgfc03.h"
 #include "modbusmsgfc06.h"
-#include "rs232.h"
+#include "ctrluart.h"
 #include "log.h"
 #include <iomanip>
 #include <sstream>
 #include <thread>
 
-Modbus::ModbusRtu::ModbusRtu(RS232 * serial)
+Modbus::ModbusRtu::ModbusRtu(CtrlUART * serial)
 : ModbusChannel(serial)
+, _serial(serial)
 , _module_address(0xF8)
 {}
 
@@ -36,15 +37,18 @@ int32_t Modbus::ModbusRtu::read(Modbus::ModbusMsg * msg)
 	Log::getLogger()->debug(__FILE__, __LINE__, "read(ModbusMsg *)");
 
 	uint8_t data[1024];
-	int32_t length = _device->read(data, 1024);
+	int32_t length = _serial->read(data, 1024);
 
-	//~ uint16_t ccrc = calcul_crc(data, length-2);
-	//~ uint16_t crc = (data[length-2] << 8) | data[length-1];
+	uint16_t ccrc = calcul_crc(data, length-2);
+	uint16_t crc = (data[length-2] << 8) | data[length-1];
 
-	//~ if ((ccrc == crc) && (data[0] == _module_address))
-	//~ {
-		msg->write(data+1, length-3);
-	//~ }
+	if ((ccrc != crc) || (data[0] != _module_address))
+	{
+		Log::getLogger()->debug(__FILE__, __LINE__, "reception d'un message pour un autre destinataire !");
+		throw Modbus::ModbusException(__FILE__, __LINE__, "reception d'un message pour un autre destinataire !");
+	}
+
+	msg->write(data+1, length-3);
 
 	return length;
 }
@@ -73,7 +77,7 @@ int32_t Modbus::ModbusRtu::write(ModbusMsg * msg)
 	data[cpt] = crc & 0x00FF;
 	cpt += 1;
 
-	_device->write(data, cpt);
+	_serial->write(data, cpt);
 
 	return cpt;
 }
