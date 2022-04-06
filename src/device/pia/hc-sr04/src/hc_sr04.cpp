@@ -29,7 +29,7 @@ int32_t HC_SR04::isBusy()
 
 uint64_t HC_SR04::distance()
 {
-	return _distance;
+	return _distance = 17165 * (_timestamp_falling - _timestamp_rising) / 1000000;
 }
 
 void HC_SR04::setTimeRising(uint64_t time)
