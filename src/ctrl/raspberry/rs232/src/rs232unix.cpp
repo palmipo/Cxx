@@ -63,7 +63,7 @@ RS232::~RS232()
 	::tcsetattr (_handler, TCSANOW, &_oldios);
 
 	// fermeture du port
-	if (!::close(_handler))
+	if (::close(_handler) == -1)
 	{
 		Log::getLogger()->error(__FILE__, __LINE__, std::strerror(errno));
 	}
