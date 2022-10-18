@@ -1,5 +1,6 @@
 #include "modbusmsgheader.h"
 #include "modbusmsgexception.h"
+#include "codec.h"
 #include "log.h"
 #include <sstream>
 
@@ -23,19 +24,20 @@ uint8_t Modbus::ModbusMsgHeader::errorCode() const
 
 int32_t Modbus::ModbusMsgHeader::write(uint8_t * data, int32_t length)
 {
-	if (_function_code != data[0] & 0x7F)
+Codec codec;
+uint8_t fct_code = 0;
+codec.encoder_decoder(&fct_code, 0, data, 0, 7);
+codec.encoder_decoder(&_error_code, 0, data, 7, 1);
+	if (_function_code != fct_code)
 	{
 		throw ModbusMsgException(__FILE__, __LINE__, "reception d'un message incoherent");
 	}
 
-	int32_t cpt = 0;
-
-	_function_code = data[cpt] & 0x7F;
-	_error_code = data[cpt] & 0x80;
-	cpt += 1;
+uint8_t cpt = 1;
 
 	if (_error_code)
 	{
+codec.encoder_decoder(&code_erreur, 0, data, 8, 8);
 		uint8_t code_erreur = data[cpt];
 		cpt+=1;
 
