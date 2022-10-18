@@ -1,5 +1,6 @@
 #include "modbusmsgfc06.h"
 #include "modbusmsgexception.h"
+#include "codec.h"
 #include "log.h"
 #include <sstream>
 
@@ -28,12 +29,17 @@ int32_t Modbus::ModbusMsgFC06::read(uint8_t * data, int32_t length)
 
 	int32_t cpt = Modbus::ModbusMsgHeader::read(data, length);
 
-	data[cpt] = (_address & 0xFF00) >> 8; ++cpt;
-	data[cpt] = _address & 0x00FF; ++cpt;
+Codec codec;
+codec.encoder_decoder(data, cpt, &_address, 0, 16);
+//	data[cpt] = (_address & 0xFF00) >> 8; ++cpt;
+//	data[cpt] = _address & 0x00FF; ++cpt;
+cpt += 16;
 
-	data[cpt] = (_value & 0xFF00) >> 8; ++cpt;
-	data[cpt] = _value & 0x00FF; ++cpt;
-	
+codec.encoder_decoder(data, cpt, &_value, 0, 16);
+//	data[cpt] = (_value & 0xFF00) >> 8; ++cpt;
+//	data[cpt] = _value & 0x00FF; ++cpt;
+cpt += 16;
+
 	return cpt;
 }
 
@@ -43,8 +49,13 @@ int32_t Modbus::ModbusMsgFC06::write(uint8_t * data, int32_t length)
 
 	int32_t cpt = Modbus::ModbusMsgHeader::write(data, length);
 
-	
+Codec codec;
+codec.encoder_decoder(&_address, 0, data, cpt, 16);	
+cpt += 16;
 	_address = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
+
+codec.encoder_decoder(&_value, 0, data, cpt, 16);
+cpt += 16;
 	_value = (data[cpt] << 8) | data[cpt+1]; cpt += 2;
 
 	//~ std::stringstream ss;
