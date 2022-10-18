@@ -24,22 +24,23 @@ uint8_t Modbus::ModbusMsgHeader::errorCode() const
 
 int32_t Modbus::ModbusMsgHeader::write(uint8_t * data, int32_t length)
 {
+int32_t cpt = 0;
 Codec codec;
 uint8_t fct_code = 0;
-codec.encoder_decoder(&fct_code, 0, data, 0, 7);
-codec.encoder_decoder(&_error_code, 0, data, 7, 1);
+codec.encoder_decoder(&fct_code, 0, data, cpt, 7);
+cpt += 7;
+codec.encoder_decoder(&_error_code, 0, data, cpt, 1);
+cpt += 1;
 	if (_function_code != fct_code)
 	{
 		throw ModbusMsgException(__FILE__, __LINE__, "reception d'un message incoherent");
 	}
 
-uint8_t cpt = 1;
-
 	if (_error_code)
 	{
-codec.encoder_decoder(&code_erreur, 0, data, 8, 8);
+codec.encoder_decoder(&code_erreur, 0, data, cpt, 8);
 		uint8_t code_erreur = data[cpt];
-		cpt+=1;
+		cpt += 8;
 
 		std::string msg;
 		switch(code_erreur)
@@ -97,9 +98,10 @@ codec.encoder_decoder(&code_erreur, 0, data, 8, 8);
 
 int32_t Modbus::ModbusMsgHeader::read(uint8_t * data, int32_t length)
 {
-	uint32_t cpt = 1;
+	uint32_t cpt = 0;
 Codec codec;
-codec.encoder_decoder(data, 0, &_function_code, 0, 8);
+codec.encoder_decoder(data, cpt, &_function_code, 0, 8);
+cpt += 8;
 
 	return cpt;
 }
