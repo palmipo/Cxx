@@ -97,10 +97,9 @@ codec.encoder_decoder(&code_erreur, 0, data, 8, 8);
 
 int32_t Modbus::ModbusMsgHeader::read(uint8_t * data, int32_t length)
 {
-	uint32_t cpt = 0;
-
-	data[cpt] = _function_code;
-	cpt += 1;
+	uint32_t cpt = 1;
+Codec codec;
+codec.encoder_decoder(data, 0, &_function_code, 0, 8);
 
 	return cpt;
 }
