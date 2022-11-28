@@ -4,7 +4,7 @@
 // PICO_DEFAULT_I2C_SDA_PIN
 // PICO_DEFAULT_I2C_SCL_PIN
 PicoI2C::PicoI2C(i2c_inst_t * i2c, uint32_t pin_sda, uint32_t pin_scl)
-: _fd(i2c)
+: CtrlI2C(), _fd(i2c)
 {
 	i2c_init(_fd, 100000);
 	gpio_set_function(pin_sda, GPIO_FUNC_I2C);
