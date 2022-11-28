@@ -1,12 +1,12 @@
 #ifndef PICO_I2C_H
 #define PICO_I2C_H
 
-#include "i2c.h"
+#include "ctrli2c.h"
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 #include "hardware/i2c.h"
 
-class PicoI2C : public I2C
+class PicoI2C : public CtrlI2C
 {
 public:
 	PicoI2C (i2c_inst_t *, uint32_t, uint32_t);
