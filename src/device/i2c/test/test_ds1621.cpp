@@ -21,7 +21,7 @@ int main(int argc, char ** argv)
 		while (1)
 		{
 			std::stringstream ss;
-			u8 t = temperature.lecture_temperature();
+			int8_t = temperature.lecture_temperature();
 			ss << (int)t << "C";
 			afficheur.afficher((s8*)ss.str().c_str(), ss.str().length());
 
