@@ -48,7 +48,7 @@ void DS1621::setThermostatOutputSignal (uint8_t valeur)
 	_twi->set(_address, twi_snd_buffer, 2);
 }
 
-void DS1621::seuil_inferieur_thermostat (uint8_t valeur)
+void DS1621::seuil_inferieur_thermostat (int8_t valeur)
 {
 	uint8_t cpt = 0;
 	uint8_t twi_snd_buffer[3];
@@ -64,12 +64,12 @@ void DS1621::seuil_inferieur_thermostat (uint8_t valeur)
 
 	// seuil inferieur capteur temperature
 	twi_snd_buffer[0] = DS1621_COMMAND_ACCESS_TL;
-	twi_snd_buffer[1] = valeur;
+	twi_snd_buffer[1] = (1<<8) + valeur;
 	twi_snd_buffer[2] = 0;
 	_twi->set(_address, twi_snd_buffer, 3);
 }
 
-void DS1621::seuil_superieur_thermostat (uint8_t valeur)
+void DS1621::seuil_superieur_thermostat (int8_t valeur)
 {
 	uint8_t cpt = 0;
 	uint8_t twi_snd_buffer[3];
@@ -85,7 +85,7 @@ void DS1621::seuil_superieur_thermostat (uint8_t valeur)
 
 	// seuil superieur capteur temperature
 	twi_snd_buffer[0] = DS1621_COMMAND_ACCESS_TH;
-	twi_snd_buffer[1] = valeur;
+	twi_snd_buffer[1] = (1<<8) + valeur;
 	twi_snd_buffer[2] = 0;
 	_twi->set(_address, twi_snd_buffer, 3);
 }
@@ -128,7 +128,7 @@ void DS1621::fin_conversion ()
 	_twi->set(_address, &twi_snd_buffer, 1);
 }
 
-uint8_t DS1621::lecture_temperature ()
+int8_t DS1621::lecture_temperature ()
 {
 	// si conversion terminee
 	uint8_t twi_snd_buffer;
@@ -146,7 +146,7 @@ uint8_t DS1621::lecture_temperature ()
 	// lecture de la temperature
 	twi_snd_buffer = DS1621_COMMAND_READ_TEMPERATURE;
 	_twi->transfer (_address, &twi_snd_buffer, 1, twi_rcv_buffer, 2);
-	uint8_t tr = twi_rcv_buffer[0];
+	int8_t tr = (1<<8) - twi_rcv_buffer[0];
 	
 	// lecture du counter
 	twi_snd_buffer = DS1621_COMMAND_READ_COUNTER;
