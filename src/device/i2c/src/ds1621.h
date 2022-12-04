@@ -12,11 +12,11 @@ class DS1621 : public DeviceI2C
 
 		void conversion_unique (uint8_t);
 		void setThermostatOutputSignal(uint8_t);
-		void seuil_inferieur_thermostat(uint8_t);
-		void seuil_superieur_thermostat(uint8_t);
+		void seuil_inferieur_thermostat(int8_t);
+		void seuil_superieur_thermostat(int8_t);
 		void debut_conversion();
 		void fin_conversion();
-		uint8_t lecture_temperature();
+		int8_t lecture_temperature();
 };
 
 #endif
